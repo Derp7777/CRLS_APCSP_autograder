@@ -9,7 +9,8 @@ $ apt-get install python3
 
 $ python3 -m venv venv1 
 
-$ pip install ....??>>>>/
+$ pip install  delegator.py flask flask-bootstrap flask-WTF python-dotenv
+
 
 Test:
 
