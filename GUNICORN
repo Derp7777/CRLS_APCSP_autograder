@@ -1,0 +1,5 @@
+get into virtualenv
+
+don't have regular gunicorn installed (that will use python 2)
+
+

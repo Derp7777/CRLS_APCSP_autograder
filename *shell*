@@ -1,0 +1,26 @@
+root@ubuntu:/etc/supervisor/conf.d# ls
+#autograder#
+root@ubuntu:/etc/supervisor/conf.d# pwd
+/etc/supervisor/conf.d
+root@ubuntu:/etc/supervisor/conf.d# cd $HOME
+root@ubuntu:~# ls
+autograder  Documents  flask.tar                        Music     Public            PycharmProjects  Videos
+Desktop     Downloads  java_error_in_PYCHARM_30324.log  Pictures  pycharm-2018.3.1  Templates
+root@ubuntu:~# cd ~ewu
+root@ubuntu:~# ls
+autograder  Documents  flask.tar                        Music     Public            PycharmProjects  Videos
+Desktop     Downloads  java_error_in_PYCHARM_30324.log  Pictures  pycharm-2018.3.1  Templates
+root@ubuntu:~# cd $HOME
+root@ubuntu:~# ls
+autograder  Documents  flask.tar                        Music     Public            PycharmProjects  Videos
+Desktop     Downloads  java_error_in_PYCHARM_30324.log  Pictures  pycharm-2018.3.1  Templates
+root@ubuntu:~# cd ~ewu
+root@ubuntu:~# ls
+autograder  Documents  flask.tar                        Music     Public            PycharmProjects  Videos
+Desktop     Downloads  java_error_in_PYCHARM_30324.log  Pictures  pycharm-2018.3.1  Templates
+root@ubuntu:~# cd autograder
+root@ubuntu:~/autograder# ls
+aafaf.py  app  autograder.py  config.py  GUNICORN  __pycache__  venv1
+root@ubuntu:~/autograder# 
+root@ubuntu:~/autograder# mkdir /var/log/autograder
+root@ubuntu:~/autograder# 

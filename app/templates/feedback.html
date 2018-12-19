@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1> Hi {{ user.username }}</h1>
+    <h2> Here is feedback on this file:  {{ filename }} </h2>
+    {% if score_info.finished_scoring == False %}
+    <h3> Score not calculated.  Please complete or correct and resubmit.  <br>
+      Score will be calculated when lab mostly done.</h3>
+    {% else %}
+	<h3> Score {{ score_info.score }} / {{ score_info.max_score }}    
+    {% endif %}
+
+    {% for test in tests %}
+        <h3> {{ test.name }} </h3>
+    
+	     
+        {% autoescape false %}
+            {% if test.pass == True %}
+                <ul>
+                    <li>{{ test.pass_message }}</li>
+                </ul>
+            {% else %}
+                <ul>
+                    <li> {{ test.fail_message }}</li>
+                </ul>
+            {% endif %}
+        {% endautoescape %}
+    {% endfor %}
+{% endblock %}
