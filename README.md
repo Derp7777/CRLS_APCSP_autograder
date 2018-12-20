@@ -1,7 +1,7 @@
 Autograder for CRLS APCSP class
 
 
-written in flask
+written in python with flask framework
 
 Deployment on Ubuntu 16.04 or 18.04
 
