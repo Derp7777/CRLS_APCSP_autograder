@@ -9,7 +9,9 @@ $ apt-get install python3
 
 $ python3 -m venv venv1 
 
-$ pip install  delegator.py flask flask-bootstrap flask-WTF python-dotenv
+$ . venv1/bin/activate
+
+$ (venv)  pip install  delegator.py flask flask-bootstrap flask-WTF python-dotenv
 
 
 Test:
@@ -21,7 +23,8 @@ You should see the application.
 Try to autograde a file
 
 
-$ <something about gunicorn here>
+Set up gunicorn (internal server to run the python app)
+$ (venv)  pip install gunicorn
 $ <something about ngnx here>
 
 
