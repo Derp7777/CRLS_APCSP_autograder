@@ -123,7 +123,7 @@ def feedback_1040():
                             "Note: you must have a comma, period, space, or something between wishes."
                             "Review the sample run if this isn't clear. <br>"
                             }
-            if not search_object:
+            if not search_object or c.err:
                 test_order_1['pass'] = False
             else:
                 score_info['score'] += 5
@@ -173,7 +173,11 @@ def feedback_1040():
             tests.append(test_input_variable)
 
             # Check that things are in correct order (a, b, c, then b, c, a)
-            
+        
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > '\
+                  + filename_output
+            c = delegator.run(cmd)
+
             search_object = re.search(r".+ "
                                       r"a1 "
                                       r".+ "
@@ -197,7 +201,7 @@ def feedback_1040():
                                             "Note: you must have a comma, period, space, or something between wishes."
                                             "Review the instructions if this isn't clear. <br>"
                             }
-            if not search_object:
+            if not search_object or c.err:
                 test_order_2['pass'] = False
             else:
                 score_info['score'] += 5
