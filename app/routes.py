@@ -278,7 +278,7 @@ def feedback_1060():
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_1.06.py <br><br>"
+                                     "2018_luismartinez_1.060.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -458,10 +458,6 @@ def feedback_1060():
         test_filename['pass'] = False
         tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
-
-
-
 
 
 @app.route('/feedback_2020')
