@@ -102,7 +102,7 @@ def feedback_1040():
                   + filename_output
             c = delegator.run(cmd)
             if c.err:
-                flash('bad! You have an error somewhere in running program')
+                flash('bad! You have an error somewhere in running program correct order 1.040')
                 flash(c.err)
             with open(filename_output, 'r') as myfile:
                 outfile_data = myfile.read()
@@ -361,7 +361,7 @@ def feedback_1060():
                   + filename_output
             c = delegator.run(cmd)
             if c.err:
-                flash('bad! You have an error somewhere in running program')
+                flash('bad! You have an error somewhere in running program first 5 inputs show up')
             with open(filename_output, 'r') as myfile:
                 outfile_data = myfile.read()
 
@@ -387,11 +387,11 @@ def feedback_1060():
 
             # Check for 3 punctuations
             filename_output = filename + '.out'
-            cmd = 'python ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.06.in > ' \
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.060.in > ' \
                   + filename_output
             c = delegator.run(cmd)
             if c.err:
-                flash('bad! You have an error somewhere in running program')
+                flash('bad! You have an error somewhere in running program check 3 punctuations')
             with open(filename_output, 'r') as myfile:
                 outfile_data = myfile.read()
 
@@ -471,20 +471,20 @@ def feedback_2020():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 59, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 55, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     find_year = re.search('2018', filename)
-    find_lab = re.search('1.060', filename)
+    find_lab = re.search('2.020', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
                      "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_1.06.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_1.06.py <br><br>"
+                                     "2018_luismartinez_2.020.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -494,130 +494,74 @@ def feedback_2020():
         test_filename['pass'] = True
         tests.append(test_filename)
 
-        # Check that asks at least 5 questions
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
+        # Check that input1 is good (input / 2)
+        filename_output = filename + '.out'
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.020-1.in > ' \
+                  + filename_output
         c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_inputs_1 = {"name": "Testing for at least 5 input questions (5 points)",
+        if c.err:
+            flash('bad! You have an error somewhere in running program check input1')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+            
+        search_object = re.search(r"49.5", outfile_data, re.X | re.M | re.S)
+        test_output_1 = {"name": "Testing that the number divides by 2 correctly and prints it out (15 points)",
                          "pass": True,
-                         "pass_message": "Pass!  Asks at least 5 inputs questions",
-                         "fail_message": "Fail.  Code does not have at least 5 input questions.<br>"
-                                         "The program needs to ask for 5 inputs of parts of speech"
-                                         "Please fix error and resubmit (other tests not run). <br>",
-                         }
-        if inputs < 5:
-            test_inputs_1['pass'] = False
+                         "pass_message": "Pass!  The number divides by 2 correctly and prints it out.",
+                         "fail_message": "Fail.  Check that the number divides by 2 correctly and prints it out.<br>"
+                                         "For example, if you input 5, it should output 2.5.<br>"
+                                         "<br> ",
+                        }
+        if search_object:
+            score_info['score'] += 15
         else:
-            score_info['score'] += 5
-        tests.append(test_inputs_1)
+            test_output_1['pass'] = False
+        tests.append(test_output_1)
 
-        # Check that inputs are named after part of speech
-        cmd = 'grep -E "verb|noun|adjective|adverb|preposition" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        parts_of_speech = int(c.out)
-        test_parts_of_speech = {"name": "Testing that variables named after parts of speech (5 points)",
-                                "pass": True,
-                                "pass_message": "Pass!  Code asks at least 5 parts of speech in code",
-                                "fail_message": "Fail.  Variables should be named after parts of speech. "
-                                                "(noun, verb1, adjective, noun3, adverb10, etc...)<br>"
-                                                "The program needs to ask for 5 inputs of parts of speech.<br>"
-                                                "Please fix error and resubmit (other tests not run). <br>",
-                                }
-
-        if parts_of_speech < 5:
-            test_parts_of_speech['pass'] = False
-            tests.append(test_parts_of_speech)
+        # Check input2 is good (int(input / 2))
+        search_object = re.search(r"49", outfile_data, re.X | re.M | re.S)
+        test_output_2 = {"name": "Testing that the number divides by 2 correctly and prints it out INTEGER (15 points)",
+                         "pass": True,
+                         "pass_message": "Pass!  The number divides by 2 correctly and prints it out.",
+                         "fail_message": "Fail.  Check that first 5 inputs show up in the output printout.<br>"
+                                         "Check that the number divides by 2 correctly and prints it out INTEGER.<br>"
+                                         "For example, if you input 5, it should output 2 <br>"
+                                         " Other tests not run. They will be run after filename is fixed.<br>"       
+                                         "<br> ",
+                        }
+        if not search_object:
+            test_output_2['pass'] = False
+            tests.append(test_output_2)
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
-            tests.append(test_parts_of_speech)
+            tests.append(test_output_2)
+            score_info['score'] += 15
 
-            # Check for at least 1 print statement
-            cmd = 'grep "print" ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            prints = int(c.out)
-            test_one_print = {"name": "Testing for at least 1 print statement (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass!  Asks at least 1 print statement.",
-                              "fail_message": "Fail.  Code does not have at least 1 print statement.<br>"
-                                              "The program needs to have print statements"
-                              }
-            if prints < 1:
-                test_one_print['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_one_print)
-
-            # Check for less than 3 print statement
-            test_three_print = {"name": "Testing for  less than 3 print statements (5 points)",
-                                "pass": True,
-                                "pass_message": "Pass!  Fewer than 3 print statements.",
-                                "fail_message": "Fail.  Code has more than 3 print statements.<br>"
-                                                "The program should have max 3 prints"
-                                }
-            if prints > 3:
-                test_three_print['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_three_print)
-
-            # Check that things are in correct order.  First 5 inputs show up in output)
+            # check input3 is good (input / 2) AND (int(input/2)) for 3.5 number
             filename_output = filename + '.out'
-            cmd = 'python ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.06.in > ' \
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.020-2.in > ' \
                   + filename_output
             c = delegator.run(cmd)
             if c.err:
-                flash('bad! You have an error somewhere in running program')
+                flash('bad! You have an error somewhere in running program check input2')
             with open(filename_output, 'r') as myfile:
                 outfile_data = myfile.read()
 
-            search_object_1 = re.search(r"a1", outfile_data, re.X | re.M | re.S)
-            search_object_2 = re.search(r"a2", outfile_data, re.X | re.M | re.S)
-            search_object_3 = re.search(r"a3", outfile_data, re.X | re.M | re.S)
-            search_object_4 = re.search(r"b1", outfile_data, re.X | re.M | re.S)
-            search_object_5 = re.search(r"b2", outfile_data, re.X | re.M | re.S)
+            search_object1 = re.search(r"49.75", outfile_data, re.X | re.M | re.S)
+            search_object2 = re.search(r"49", outfile_data, re.X | re.M | re.S)
 
-            test_show_5 = {"name": "Testing that first 5 inputs show up in the output printout (5 points)",
-                           "pass": True,
-                           "pass_message": "Pass!  First 5 inputs show up in the output printout",
-                           "fail_message": "Fail.  Check that first 5 inputs show up in the output printout.<br>"
-                                           "For example, if you typed in noun1, verb1, noun2, verb2, and adjective<br>"
-                                           "noun1, verb1, noun2, verb2, and adjective should all appear in the prinout."
-                                           "<br> ",
-                           }
-            if search_object_1 and search_object_2 and search_object_3 and search_object_4 and search_object_5:
-                score_info['score'] += 15
+            test_output_3 = {"name": "Testing that it works for float numbers (6 points)",
+                             "pass": True,
+                             "pass_message": "Pass!  It works for float numbers",
+                             "fail_message": "Fail.  Check that it works for float numbers.<br>"
+                                             "For example, if you typed in 3.5, it should output 1.75 and 1"
+                                             "<br> ",
+                            }
+            if search_object1 and search_object2:
+                score_info['score'] += 6
             else:
-                test_show_5['pass'] = False
-            tests.append(test_show_5)
-
-            # Check for 3 punctuations
-            filename_output = filename + '.out'
-            cmd = 'python ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.06.in > ' \
-                  + filename_output
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program')
-            with open(filename_output, 'r') as myfile:
-                outfile_data = myfile.read()
-
-            num_periods = outfile_data.count('.')
-            num_questions = outfile_data.count('?')
-            num_exclamations = outfile_data.count('!')
-            num_punctuations = num_periods + num_questions + num_exclamations
-            test_puncts = {"name": "Testing that there are at least 3 punctuations (5 points)",
-                           "pass": True,
-                           "pass_message": "Pass!  There are at least 3 punctuations.",
-                           "fail_message": "Fail.  Check that there are at least 3 punctuations.<br>"
-                                           "Looking for at least 3 periods, questions marks, or exclamations "
-                                           "<br> ",
-                           }
-            if num_punctuations < 3:
-                test_puncts['pass'] = False
-            else:
-                score_info['score'] += 5
-
-            tests.append(test_puncts)
+                test_output_2['pass'] = False
+            tests.append(test_output_3)
 
             # Find number of PEP8 errors
             cmd = 'pycodestyle ' + filename + ' | wc -l  '
@@ -627,9 +571,9 @@ def feedback_2020():
                          "pass": True,
                          "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
                          "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
+                                          "This translates to -" + str(
+                                              side_errors) + " point(s) deduction.<br>"
+                        }
             if side_errors != 0:
                 test_pep8['pass'] = False
             score_info['score'] += max(0, int(14) - side_errors)
@@ -649,7 +593,7 @@ def feedback_2020():
                                          "If you didn't have any problems, then ask somebody to check that your code"
                                          " gives correct outputs, given an input.<br>"
                                          "This translates to -5 points deduction.<br>",
-                         }
+                        }
             if help_comments == 0:
                 test_help['pass'] = False
             else:
@@ -658,7 +602,4 @@ def feedback_2020():
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
