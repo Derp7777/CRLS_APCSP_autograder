@@ -39,8 +39,10 @@ def index():
                 return redirect(url_for('feedback_2020', filename=filename))
             elif request.form['lab'] == '2.032a':
                 return redirect(url_for('feedback_2032a', filename=filename))
-
-
+            elif request.form['lab'] == '2.032b':
+                return redirect(url_for('feedback_2032b', filename=filename))
+            elif request.form['lab'] == '2.040':
+                return redirect(url_for('feedback_2040', filename=filename))
     form = UploadForm()
     user = {'username': 'CRLS Scholar!!!'}
     return render_template('index.html', title='Home', user=user, form=form)
@@ -88,8 +90,8 @@ def feedback_1040():
                          "pass": True,
                          "pass_message": "Pass!  Genie asks at least 3 questions (first part of lab)",
                          "fail_message": "Fail.  Code does not have at least 3 inputs (first part of lab).<br>"
-                         "The Genie needs to ask for 3 wishes for the first part"
-                         "Please fix error and resubmit (other tests not run). <br>",
+                                         "The Genie needs to ask for 3 wishes for the first part"
+                                         "Please fix error and resubmit (other tests not run). <br>",
                          }
         if inputs < 3:
             test_inputs_1['pass'] = False
@@ -98,10 +100,10 @@ def feedback_1040():
         else:
             score_info['score'] += 5
             tests.append(test_inputs_1)
-            
+
             # Check that things are in correct order (a, b, c)
             filename_output = filename + '.out'
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > '\
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
                   + filename_output
             c = delegator.run(cmd)
             if c.err:
@@ -122,9 +124,9 @@ def feedback_1040():
                             "pass": True,
                             "pass_message": "Pass!  Genie appears to answer your wishes in correct order",
                             "fail_message": "Fail.  Double check that the Genie is answering in correct order. <br>"
-                            "Genie needs to reply back with the 3 wishes you asked for in a particular order. <br>"
-                            "Note: you must have a comma, period, space, or something between wishes."
-                            "Review the sample run if this isn't clear. <br>"
+                                            "Genie needs to reply back with the 3 wishes you asked for in a particular order. <br>"
+                                            "Note: you must have a comma, period, space, or something between wishes."
+                                            "Review the sample run if this isn't clear. <br>"
                             }
             if not search_object or c.err:
                 test_order_1['pass'] = False
@@ -142,7 +144,7 @@ def feedback_1040():
                              "pass_message": "Pass!  Genie asks at least 6 questions (first + second part of lab)",
                              "fail_message": "Fail. Code does not have at least 6 inputs (first + second part of lab)."
                                              "<br>"
-                             "The Genie needs to ask for 3 wishes for the first part and 3 for the second part",
+                                             "The Genie needs to ask for 3 wishes for the first part and 3 for the second part",
                              }
             if inputs < 6:
                 test_inputs_2['pass'] = False
@@ -163,11 +165,11 @@ def feedback_1040():
                                            "(5 points)",
                                    "pass": True,
                                    "pass_message": "Pass!  Genie appears to have stuck repeated strings into variables,"
-                                   " per instructions AND there are at least 6 inputs",
+                                                   " per instructions AND there are at least 6 inputs",
                                    "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
                                                    "<br>"
-                                   "Please recheck the instructions about putting repeated strings into variables. "
-                                   "This translates to -10 points deduction.<br>",
+                                                   "Please recheck the instructions about putting repeated strings into variables. "
+                                                   "This translates to -10 points deduction.<br>",
                                    }
             if inputs_variable > 4:
                 test_input_variable['pass'] = False
@@ -176,8 +178,8 @@ def feedback_1040():
             tests.append(test_input_variable)
 
             # Check that things are in correct order (a, b, c, then b, c, a)
-        
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > '\
+
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
                   + filename_output
             c = delegator.run(cmd)
 
@@ -221,8 +223,9 @@ def feedback_1040():
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
                          "pass": True,
                          "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>" 
-                         "This translates to -" + str(side_errors) + " point(s) deduction.<br>"
+                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
                          }
             if side_errors != 0:
                 test_pep8['pass'] = False
@@ -236,12 +239,12 @@ def feedback_1040():
             test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
                          "pass": True,
                          "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                         "Be sure your comment is meaningful, otherwise this can be overturned on review.",
+                                         "Be sure your comment is meaningful, otherwise this can be overturned on review.",
                          "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                         " how somebody helped you with your code.  <br>"
-                         "If you didn't have any problems, then ask somebody to check that your code"
-                         " gives correct outputs, given an input.<br>"
-                         "This translates to -5 points deduction.<br>",
+                                         " how somebody helped you with your code.  <br>"
+                                         "If you didn't have any problems, then ask somebody to check that your code"
+                                         " gives correct outputs, given an input.<br>"
+                                         "This translates to -5 points deduction.<br>",
                          }
             if help_comments == 0:
                 test_help['pass'] = False
@@ -505,7 +508,7 @@ def feedback_2020():
             flash('bad! You have an error somewhere in running program check input1')
         with open(filename_output, 'r') as myfile:
             outfile_data = myfile.read()
-            
+
         search_object = re.search(r"49.5", outfile_data, re.X | re.M | re.S)
         test_output_1 = {"name": "Testing that the number divides by 2 correctly and prints it out (15 points)",
                          "pass": True,
@@ -528,7 +531,7 @@ def feedback_2020():
                          "fail_message": "Fail.  Check that first 5 inputs show up in the output printout.<br>"
                                          "Check that the number divides by 2 correctly and prints it out INTEGER.<br>"
                                          "For example, if you input 5, it should output 2 <br>"
-                                         " Other tests not run. They will be run after filename is fixed.<br>"       
+                                         " Other tests not run. They will be run after filename is fixed.<br>"
                                          "<br> ",
                          }
         if not search_object:
@@ -573,7 +576,8 @@ def feedback_2020():
                          "pass": True,
                          "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
                          "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                         "This translates to -" + str(side_errors) + " point(s) deduction.<br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
                          }
             if side_errors != 0:
                 test_pep8['pass'] = False
@@ -603,6 +607,10 @@ def feedback_2020():
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2032a')
@@ -622,7 +630,7 @@ def feedback_2032a():
     filename = request.args['filename']
     filename = '/tmp/' + filename
     find_year = re.search('2018', filename)
-    find_lab = re.search('2.032', filename)
+    find_lab = re.search('2.032a', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
                      "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032a.py)",
@@ -654,7 +662,7 @@ def feedback_2032a():
         if ifs == 0:
             score_info['score'] += 5
         else:
-            test_output_1['pass'] = False
+            test_ifs['pass'] = False
         tests.append(test_ifs)
 
         # test all 8 cases
@@ -756,9 +764,6 @@ def feedback_2032a():
         if search_object:
             eight_cases_score += 1
 
-
-
-
         test_eight_tests = {"name": "Testing that all 8 test cases work (8 points)",
                             "pass": True,
                             "pass_message": "Pass!  All 8 test cases work",
@@ -773,7 +778,6 @@ def feedback_2032a():
             test_eight_tests['pass'] = False
         score_info['score'] += eight_cases_score
         tests.append(test_eight_tests)
-
 
         # Find number of PEP8 errors
         cmd = 'pycodestyle ' + filename + ' | wc -l  '
@@ -792,7 +796,6 @@ def feedback_2032a():
         tests.append(test_pep8)
 
         flash(score_info['score'])
-
 
         # Check for help comment
         cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
@@ -817,3 +820,382 @@ def feedback_2032a():
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/feedback_2032b')
+def feedback_2032b():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 22.5, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2018', filename)
+    find_lab = re.search('2.032b', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032b.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2018_luismartinez_2.032b.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for ifs
+        cmd = 'grep "if" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        ifs = int(c.out)
+
+        test_ifs = {"name": "Checking for zero if statements (5 points)",
+                    "pass": True,
+                    "pass_message": "Pass!  Zero if statements",
+                    "fail_message": "Fail.  Code should not have any if statements.<br>"
+                                    "For example, print(1==1) NOT if (1 == 1): print('True') <br>"
+                                    "Review instructions or ask teacher for more details<br> ",
+                    }
+        if ifs == 0:
+            score_info['score'] += 5
+        else:
+            test_ifs['pass'] = False
+        tests.append(test_ifs)
+
+        # test all 8 cases
+        filename_output = filename + '.out'
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-1.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-1')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+        eight_cases_score = 0
+
+        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-2.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-2')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-3.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-3')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-4.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-4')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-5.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-5')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-6.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-6')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-7.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-7')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032-8.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check 2.032-8')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
+
+        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
+        if search_object:
+            eight_cases_score += 1
+
+        test_eight_tests = {"name": "Testing that all 8 test cases work (8 points)",
+                            "pass": True,
+                            "pass_message": "Pass!  All 8 test cases work",
+                            "fail_message": "Fail.  Check your 8 test cases.<br>"
+                                            "Please review the table that is after the 2.032b program run "
+                                            "in your assignment <br> "
+                                            "As part of this assignment, you should have populated that table.<br>"
+                                            "You should test your code with the data from this table.",
+                            }
+
+        if eight_cases_score != 8:
+            test_eight_tests['pass'] = False
+        score_info['score'] += eight_cases_score
+        tests.append(test_eight_tests)
+
+        # Find number of PEP8 errors
+        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                      "This translates to -" + str(
+                         side_errors) + " point(s) deduction.<br>"
+                     }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(7) - side_errors)
+        tests.append(test_pep8)
+
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                     "Be sure your comment is meaningful, otherwise this can be "
+                                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                     " how somebody helped you with your code.  <br>"
+                                     "If you didn't have any problems, then ask somebody to check that your code"
+                                     " gives correct outputs, given an input.<br>"
+                                     "This translates to -5 points deduction.<br>",
+                     }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_help)
+
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/feedback_2040')
+def feedback_2040():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 46, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2018', filename)
+    find_lab = re.search('2.040', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032b.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2018_luismartinez_2.040.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for equals, aka variable assignment
+        cmd = 'grep "=" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        equals = int(c.out)
+
+        test_variables = {"name": "Checking for variables, need > 4 (5 points)",
+                          "pass": True,
+                          "pass_message": "Pass!  At least 4 equals signs assigning variables",
+                          "fail_message": "Fail.  Code should assign at least 4 prizes.<br>"
+                                          "For example, prize1 = 'brand new car' prize2 =..etc.. <br>"
+                                          "Review instructions or ask teacher for more details<br> ",
+                          }
+        if equals > 4:
+            score_info['score'] += 5
+        else:
+            test_variables['pass'] = False
+        tests.append(test_variables)
+
+        # test input
+        cmd = 'grep "input" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        inputs = int(c.out)
+
+        test_inputs = {"name": "Checking for asking use question (5 points)",
+                       "pass": True,
+                       "pass_message": "Pass!  At least 4 equals signs assigning variables",
+                       "fail_message": "Fail. Code should ask user for a door to choose.<br>"
+                       }
+        if inputs >= 1:
+            score_info['score'] += 5
+        else:
+            test_inputs['pass'] = False
+        tests.append(test_inputs)
+
+        # test if
+        cmd = 'grep "if" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        ifs = int(c.out)
+
+        test_ifs = {"name": "Checking for at least one if(5 points)",
+                    "pass": True,
+                    "pass_message": "Pass!  At least 1 if in code",
+                    "fail_message": "Fail. Code should use an if to help decide what to print <br>"
+                                    " depending on what door was chosen"
+                    }
+        if ifs >= 1:
+            score_info['score'] += 5
+        else:
+            test_ifs['pass'] = False
+        tests.append(test_ifs)
+
+        # test else
+        cmd = 'grep "^else" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        elses = int(c.out)
+
+        test_elses = {"name": "Checking for at least one else at beginning of line(5 points)",
+                      "pass": True,
+                      "pass_message": "Pass!  At least one else in code at beginning of line",
+                      "fail_message": "Fail. Code should use an else in case user doesn't pick door 1-4"
+                      }
+        if elses >= 1:
+            score_info['score'] += 6
+        else:
+            test_elses['pass'] = False
+        tests.append(test_elses)
+
+        # test elif
+        cmd = 'grep "elif" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        elifs = int(c.out)
+
+        test_elifs = {"name": "Checking for at least 3 elifs (6 points)",
+                      "pass": True,
+                      "pass_message": "Pass!  At least 3 elifs in code",
+                      "fail_message": "Fail. Review the presentation for why we use elif vs if.  This question will be "
+                                      "on <br> your lab understanding Google form for sure."
+                      }
+        if elifs >= 3:
+            score_info['score'] += 6
+        else:
+            test_elifs['pass'] = False
+        tests.append(test_elifs)
+
+        # Find number of PEP8 errors
+        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                      "This translates to -" + str(
+                         side_errors) + " point(s) deduction.<br>"
+                     }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                     "Be sure your comment is meaningful, otherwise this can be "
+                                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                     " how somebody helped you with your code.  <br>"
+                                     "If you didn't have any problems, then ask somebody to check that your code"
+                                     " gives correct outputs, given an input.<br>"
+                                     "This translates to -5 points deduction.<br>",
+                     }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
