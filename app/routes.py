@@ -48,7 +48,7 @@ def index():
             elif request.form['lab'] == '2.050b':
                 return redirect(url_for('feedback_2050b', filename=filename))
             elif request.form['lab'] == '3.011':
-                return redirect(url_for('feedback_3.011', filename=filename))
+                return redirect(url_for('feedback_3011', filename=filename))
 
             
     form = UploadForm()
@@ -577,7 +577,7 @@ def feedback_2020():
             tests.append(test_output_3)
 
             # Find number of PEP8 errors
-            cmd = 'pycodestyle ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -792,7 +792,7 @@ def feedback_2032a():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1008,7 +1008,7 @@ def feedback_2032b():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1072,7 +1072,7 @@ def feedback_2040():
     find_lab = re.search('2.040', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032b.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.040.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
@@ -1087,7 +1087,7 @@ def feedback_2040():
         tests.append(test_filename)
 
         # Check for equals, aka variable assignment
-        cmd = 'grep "=" ' + filename + ' | wc -l  '
+        cmd = 'grep "=" ' + filename + ' | grep -v "==" | wc -l  '
         c = delegator.run(cmd)
         equals = int(c.out)
 
@@ -1170,27 +1170,30 @@ def feedback_2040():
             test_elifs['pass'] = False
         tests.append(test_elifs)
 
+
+
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l '
         c = delegator.run(cmd)
         side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                      "pass": True,
                      "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
                      "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
+                     "This translates to -" + str(
                          side_errors) + " point(s) deduction.<br>"
-                     }
+        }
         if side_errors != 0:
             test_pep8['pass'] = False
         score_info['score'] += max(0, int(14) - side_errors)
         tests.append(test_pep8)
+            
 
         # Check for help comment
         cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
         c = delegator.run(cmd)
         help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
                      "pass": True,
                      "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
                                      "Be sure your comment is meaningful, otherwise this can be "
@@ -1254,7 +1257,7 @@ def feedback_2050a():
         with open(filename, 'r') as myfile:
             filename_data = myfile.read()
 
-        search_object = re.search(r".+ = .* \[ .* \]", outfile_data, re.X | re.M | re.S)
+        search_object = re.search(r".+ = .* \[ .* \]", filename_data, re.X | re.M | re.S)
 
         test_list = {"name": "Testing that there is something looking like a list",
                      "pass": True,
@@ -1270,28 +1273,23 @@ def feedback_2050a():
 
 
         # Check for uinput 
-        cmd = 'grep "input" ' + filename + ' | grep help | wc -l  '
+        cmd = 'grep "input" ' + filename + '  | wc -l  '
         c = delegator.run(cmd)
         inputs = int(c.out)
-        test_input = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+        test_input = {"name": "Testing that you ask the user for an input (3 points)",
                      "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
+                     "pass_message": "Pass (for now).  You have ask the user for an input.  <br>",
+                     "fail_message": "Fail.  You need to ask the user for an input<br>"
+                                     "This translates to -3 points deduction.<br>",
                      }
         if inputs == 0:
-            test_help['pass'] = False
+            test_input['pass'] = False
         else:
             score_info['score'] += 3
         tests.append(test_input)
 
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1354,14 +1352,14 @@ def feedback_2050b():
     filename = request.args['filename']
     filename = '/tmp/' + filename
     find_year = re.search('2018', filename)
-    find_lab = re.search('2.050a', filename)
+    find_lab = re.search('2.050b', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.050a.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.050b.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.050a.py <br><br>"
+                                     "2018_luismartinez_2.050b.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1375,7 +1373,7 @@ def feedback_2050b():
         with open(filename, 'r') as myfile:
             filename_data = myfile.read()
 
-        search_object = re.search(r".+ = .* \[ .* \] (.|\n)*  .+ = .* \[ .* \]  ", outfile_data, re.X | re.M | re.S)
+        search_object = re.search(r".+ = .* \[ .* \] (.|\n)*  .+ = .* \[ .* \]  ", filename_data, re.X | re.M | re.S)
 
         test_twolist = {"name": "Testing that there is something looking like a 2 lists",
                         "pass": True,
@@ -1390,7 +1388,7 @@ def feedback_2050b():
         tests.append(test_twolist)
 
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1404,8 +1402,6 @@ def feedback_2050b():
             test_pep8['pass'] = False
         score_info['score'] += max(0, int(7) - side_errors)
         tests.append(test_pep8)
-
-        flash(score_info['score'])
 
         # Check for help comment
         cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
@@ -1475,7 +1471,7 @@ def feedback_3011():
         with open(filename, 'r') as myfile:
             filename_data = myfile.read()
 
-        search_object = re.search(r".+ = .* \[ .* \]", outfile_data, re.X | re.M | re.S)
+        search_object = re.search(r".+ = .* \[ .* \]", filename_data, re.X | re.M | re.S)
 
         test_list = {"name": "Testing that there is something looking like a list",
                      "pass": True,
@@ -1490,7 +1486,7 @@ def feedback_3011():
         tests.append(test_list)
 
         # test for 4+ items list
-        search_object = re.search(r".+ = .* \[ .* , .* , .* , .* \]", outfile_data, re.X | re.M | re.S)
+        search_object = re.search(r".+ = .* \[ .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
 
         test_four_item_list = {"name": "Testing that there is something looking like a 4+ items in list",
                                "pass": True,
@@ -1513,7 +1509,7 @@ def feedback_3011():
                      "pass_message": "Pass (for now).  You have a print statment.  <br>",
                      "fail_message": "Fail.  You do not have a print of any sort <br>",
                      }
-        if help_comments == 0:
+        if prints == 0:
             test_print['pass'] = False
         else:
             score_info['score'] += 5
@@ -1528,14 +1524,14 @@ def feedback_3011():
                      "pass_message": "Pass (for now).  You have an input statment.  <br>",
                      "fail_message": "Fail.  You do not have an input of any sort <br>",
                      }
-        if help_comments == 0:
+        if inputs == 0:
             test_input['pass'] = False
         else:
             score_info['score'] += 5
         tests.append(test_input)
         
         # Find number of PEP8 errors
-        cmd = 'pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
