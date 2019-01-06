@@ -11,8 +11,12 @@ $ python3 -m venv venv1
 
 $ . venv1/bin/activate
 
-$ (venv)  pip install  delegator.py flask flask-bootstrap flask-WTF python-dotenv
+$ (venv)  pip install  delegator.py flask flask-bootstrap flask-WTF python-dotenv pycodestyle
 
+
+edit $HOME/.config/pycodestyle
+[pycodestyle]
+max-line-length=120
 
 Test:
 
