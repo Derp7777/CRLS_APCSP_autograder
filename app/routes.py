@@ -49,7 +49,10 @@ def index():
                 return redirect(url_for('feedback_2050b', filename=filename))
             elif request.form['lab'] == '3.011':
                 return redirect(url_for('feedback_3011', filename=filename))
+            elif request.form['lab'] == '3.020':
+                return redirect(url_for('feedback_3020', filename=filename))
 
+            
             
     form = UploadForm()
     user = {'username': 'CRLS Scholar!!!'}
@@ -1515,6 +1518,210 @@ def feedback_3011():
             score_info['score'] += 5
         tests.append(test_print)
 
+        # Check for any input
+        cmd = 'grep "input" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        inputs = int(c.out)
+        test_input = {"name": "Testing for an input of any type (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have an input statment.  <br>",
+                     "fail_message": "Fail.  You do not have an input of any sort <br>",
+                     }
+        if inputs == 0:
+            test_input['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_input)
+        
+        # Find number of PEP8 errors
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                      "This translates to -" + str(
+                         side_errors) + " point(s) deduction.<br>"
+                     }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+
+        flash(score_info['score'])
+
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                     "Be sure your comment is meaningful, otherwise this can be "
+                                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                     " how somebody helped you with your code.  <br>"
+                                     "If you didn't have any problems, then ask somebody to check that your code"
+                                     " gives correct outputs, given an input.<br>"
+                                     "This translates to -5 points deduction.<br>",
+                     }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+def extract_functions(orig_file):
+
+    import re
+    outfile_name = orig_file.replace('.py', '.functions.py')
+    outfile = open(outfile_name, 'w')
+    
+    with open(orig_file) as infile:
+        for line in infile.readlines():
+            print(line)
+            keep_line = re.match("^([^a-z] | def ) \s+ .+ " , line,  re.X | re.M | re.S)
+            if keep_line:
+                print("keep this line: " + line)
+                outfile.write(line)
+                
+
+    
+@app.route('/feedback_3020')
+def feedback_3020():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 38, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('3.020', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.020.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_3.020.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        extract_functions(filename)
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for function birthday_song
+        cmd = 'grep "def birthday_song(" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        birthday_song = int(c.out)
+        test_birthday_song = {"name": "Testing that birthday song function exists (4 points)",
+                              "pass": True,
+                              "pass_message": "Pass.  birthday_song function exists.  <br>",
+                              "fail_message": "Fail.  birthday_song function isn't in the code. <br>"
+                              "Fix code and resubmit. <br>",
+        }
+        if birthday_song == 0:
+            test_birthday_song['pass'] = False
+        else:
+            score_info['score'] += 4
+        tests.append(test_birthday_song)
+
+        if test_birthday_song['pass'] == True 
+
+            # Check that function is called once
+            test_birthday_song_run = {"name": "Testing that birthday song function is called at least once (4 points)",
+                                      "pass": False,
+                                      "pass_message": "Pass.  birthday_song function is called.  <br>",
+                                      "fail_message": "Fail.  birthday_song function isn't called in the code. <br>"
+            }
+            with open(orig_file) as infile:
+                for line in infile.readlines():
+                    found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
+                    if found:
+                        test_birthday_song_run['pass'] = True
+            infile.close()
+            if test_birthday_song_run['pass'] == True:
+                score_info['score'] += 4
+            tests.append(test_birthday_song_run)
+
+            #test that output of any sort with happy birthday
+            extract_functions(filename)
+            functions_filename = filename.replace('.py', '.functions.py')
+            test_filename = filename.replace('.py', '.test.py')
+            with open(orig_file, w) as testfile:
+                testfile.write("import unittest\n")
+                testfile.write("import io\n")
+                testfile.write("from contextlib import redirect_stdout\n")
+                testfile.write("class testAutograde(unittest.TestCase):\n")
+                testfile.write("def test_happy_birthday(self):\n")
+                testfile.write("    f = io.StringIO()\n")
+                testfile.write("    with redirect_stdout(f):\n")
+                testfile.write("        birthday_song('joe')\n")
+                testfile.write("    birthday_song_output = f.getvalue()\n")
+                testfile.write("    birthday_song_output = birthday_song_output.rstrip()\n")
+                testfile.write("    self.assertEqual(birthday_song_output, 'happyf birthday to youjoe')\n")
+                testfile.write("if __name__ == '__main__':\n")
+                testfile.write("    unittest.main()\n")
+            testfile.close()
+                               
+            found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
+            if found:
+                test_birthday_song_run['pass'] = True
+                infile.close()
+     
+
+
+            
+            # Check for function birthday_song
+            cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            pick_card = int(c.out)
+            test_pick_card = {"name": "Testing that birthday song function exists (4 points)",
+                              "pass": True,
+                              "pass_message": "Pass.  pick_card function exists.  <br>",
+                              "fail_message": "Fail.  pick_card function isn't in the code.  <br>",
+            }
+            if pick_card == 0:
+                test_pick_card['pass'] = False
+            else:
+                score_info['score'] += 4
+                tests.append(test_pick_card)
+
+
+        else:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            
+        
+
+
+
+
+
+
+
+        
         # Check for any input
         cmd = 'grep "input" ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
