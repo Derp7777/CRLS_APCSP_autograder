@@ -1,7 +1,3 @@
-def birthday_song(name):
-    print("happy birthday to you" + name)
-
-
 import unittest
 import io
 from contextlib import redirect_stdout
