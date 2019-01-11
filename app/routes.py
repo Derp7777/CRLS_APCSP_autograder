@@ -1608,7 +1608,7 @@ def feedback_3020():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 38, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 57, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
