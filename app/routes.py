@@ -1628,7 +1628,6 @@ def feedback_3020():
                      }
 
     if find_year and find_lab:
-        extract_functions(filename)
         test_filename['pass'] = True
         tests.append(test_filename)
 
@@ -1640,7 +1639,9 @@ def feedback_3020():
                               "pass": True,
                               "pass_message": "Pass.  birthday_song function exists.  <br>",
                               "fail_message": "Fail.  birthday_song function isn't in the code. <br>"
-                              "Fix code and resubmit. <br>",
+                                              "It may be spelled incorrectly.  The function needs to be named "
+                                              "birthday_song, exactly."
+                                              "Fix code and resubmit. <br>",
         }
         if birthday_song == 0:
             test_birthday_song['pass'] = False
@@ -1649,53 +1650,151 @@ def feedback_3020():
         tests.append(test_birthday_song)
 
         # Only continue if you have a birthday_song_function
-        if test_birthday_song['pass'] == True
-
+        if test_birthday_song['pass']:
             # Check that function is called once
             test_birthday_song_run = {"name": "Testing that birthday song function is called at least once (4 points)",
                                       "pass": False,
                                       "pass_message": "Pass.  birthday_song function is called.  <br>",
                                       "fail_message": "Fail.  birthday_song function isn't called in the code. <br>"
             }
-            with open(orig_file) as infile:
+            with open(filename) as infile:
                 for line in infile.readlines():
                     found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
                     if found:
                         test_birthday_song_run['pass'] = True
             infile.close()
-            if test_birthday_song_run['pass'] == True:
+            if test_birthday_song_run['pass']:
                 score_info['score'] += 4
             tests.append(test_birthday_song_run)
 
-            #test that output of any sort with happy birthday
+            # test that output of any sort with happy birthday
+
+            # extract functions and create python test file
             extract_functions(filename)
             functions_filename = filename.replace('.py', '.functions.py')
-            test_filename = filename.replace('.py', '.test.py')
-
-            found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
-            if found:
-                test_birthday_song_run['pass'] = True
-                infile.close()
-
-
-
-
-            # Check for function birthday_song
-            cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
+            cmd = ' cat ' + functions_filename + \
+                  ' /home/ewu/CRLS_APCSP_autograder/var/3.020.test.py > /tmp/3.020.test.py'
             c = delegator.run(cmd)
-            pick_card = int(c.out)
-            test_pick_card = {"name": "Testing that birthday song function exists (4 points)",
-                              "pass": True,
-                              "pass_message": "Pass.  pick_card function exists.  <br>",
-                              "fail_message": "Fail.  pick_card function isn't in the code.  <br>",
+            if c.err:
+                flash("There was a problem creating the python test file")
+
+
+            # test to see happy birthday output spits out 'birthday'
+            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_happy_birthday 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_birthday_song_birthday =  {"name": "Testing that birthday song function is "
+                                                    "prints 'birthday' (4 points)",
+                                            "pass": True,
+                                            "pass_message": "Pass.  birthday_song function prints 'birthday'.  <br>",
+                                            "fail_message": "Fail.  birthday_song function doesn't print 'birthday'."
+                                                            " <br>"
             }
-            if pick_card == 0:
-                test_pick_card['pass'] = False
+            if failures > 0:
+                test_birthday_song_birthday['pass'] = False
             else:
                 score_info['score'] += 4
-                tests.append(test_pick_card)
+            tests.append(test_birthday_song_birthday)
 
+            # test to see happy birthday output spits out argument
+            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_happy_birthday_output 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_birthday_song_argument = {"name": "Testing that birthday song function is "
+                                                   "prints the argument (5 points)",
+                                           "pass": True,
+                                           "pass_message": "Pass.  birthday_song function prints the argument.  <br>",
+                                           "fail_message": "Fail.  birthday_song function doesn't print argument. <br>"
+                                                           "For example, if you call birthday_song('Martinez'), the"
+                                                           "function should print out 'Martinez' somewhere in there<br>"
+                                           }
+            if failures > 0:
+                test_birthday_song_argument['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_birthday_song_argument)
 
+            # Check for any input
+            cmd = 'grep "input" ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            inputs = int(c.out)
+            test_input = {"name": "Testing for an input of any type (5 points)",
+                          "pass": True,
+                          "pass_message": "Pass (for now).  You have an input statment.  <br>",
+                          "fail_message": "Fail.  You do not have an input of any sort <br>",
+                          }
+            if inputs == 0:
+                test_input['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_input)
+
+            # Find number of PEP8 errors
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            side_errors = int(c.out)
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                         "pass": True,
+                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+                         }
+            if side_errors != 0:
+                test_pep8['pass'] = False
+            score_info['score'] += max(0, int(14) - side_errors)
+            tests.append(test_pep8)
+
+            flash(score_info['score'])
+
+            # Check for help comment
+            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+            c = delegator.run(cmd)
+            help_comments = int(c.out)
+            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                         "pass": True,
+                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                         "Be sure your comment is meaningful, otherwise this can be "
+                                         "overturned on review.",
+                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                         " how somebody helped you with your code.  <br>"
+                                         "If you didn't have any problems, then ask somebody to check that your code"
+                                         " gives correct outputs, given an input.<br>"
+                                         "This translates to -5 points deduction.<br>",
+                         }
+            if help_comments == 0:
+                test_help['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_help)
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+            # found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
+            # if found:
+            #     test_birthday_song_run['pass'] = True
+            #     infile.close()
+            #
+            #
+            #
+            #
+            # # Check for function pick_card
+            # cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
+            # c = delegator.run(cmd)
+            # pick_card = int(c.out)
+            # test_pick_card = {"name": "Testing that birthday song function exists (4 points)",
+            #                   "pass": True,
+            #                   "pass_message": "Pass.  pick_card function exists.  <br>",
+            #                   "fail_message": "Fail.  pick_card function isn't in the code.  <br>",
+            # }
+            # if pick_card == 0:
+            #     test_pick_card['pass'] = False
+            # else:
+            #     score_info['score'] += 4
+            #     tests.append(test_pick_card)
+            #
+            #
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
@@ -1708,62 +1807,6 @@ def feedback_3020():
 
 
 
-        # Check for any input
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_input = {"name": "Testing for an input of any type (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have an input statment.  <br>",
-                     "fail_message": "Fail.  You do not have an input of any sort <br>",
-                     }
-        if inputs == 0:
-            test_input['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_input)
-
-        # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
-        tests.append(test_pep8)
-
-        flash(score_info['score'])
-
-        # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         test_filename['pass'] = False
         tests.append(test_filename)
