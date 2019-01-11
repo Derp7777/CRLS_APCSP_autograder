@@ -75,15 +75,15 @@ def feedback_1040():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('1.040', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_1.04.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.04.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_1.040.py <br><br>"
+                                     "2019_luismartinez_1.040.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -228,8 +228,6 @@ def feedback_1040():
             c = delegator.run(cmd)
             if c.err:
                 flash(c.err)
-            else:
-                flash(c.out)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
                          "pass": True,
@@ -287,15 +285,15 @@ def feedback_1060():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('1.060', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_1.06.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.06.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_1.060.py <br><br>"
+                                     "2019_luismartinez_1.060.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -493,15 +491,15 @@ def feedback_2020():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('2.020', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_1.06.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.06.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.020.py <br><br>"
+                                     "2019_luismartinez_2.020.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -640,15 +638,15 @@ def feedback_2032a():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('2.032a', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032a.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.032a.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.032a.py <br><br>"
+                                     "2019_luismartinez_2.032a.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -859,11 +857,11 @@ def feedback_2032b():
     find_lab = re.search('2.032b', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.032b.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.032b.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.032b.py <br><br>"
+                                     "2019_luismartinez_2.032b.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1071,15 +1069,15 @@ def feedback_2040():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('2.040', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.040.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.040.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.040.py <br><br>"
+                                     "2019_luismartinez_2.040.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1238,15 +1236,15 @@ def feedback_2050a():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('2.050a', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.050a.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.050a.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.050a.py <br><br>"
+                                     "2019_luismartinez_2.050a.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1307,7 +1305,6 @@ def feedback_2050a():
         score_info['score'] += max(0, int(7) - side_errors)
         tests.append(test_pep8)
 
-        flash(score_info['score'])
 
         # Check for help comment
         cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
@@ -1354,15 +1351,15 @@ def feedback_2050b():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('2.050b', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_2.050b.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.050b.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_2.050b.py <br><br>"
+                                     "2019_luismartinez_2.050b.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1452,15 +1449,15 @@ def feedback_3011():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2018', filename)
+    find_year = re.search('2019', filename)
     find_lab = re.search('3.011', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2018_luismartinez_3.011.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.011.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2018_luismartinez_3.011.py <br><br>"
+                                     "2019_luismartinez_3.011.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -1549,7 +1546,6 @@ def feedback_3011():
         score_info['score'] += max(0, int(14) - side_errors)
         tests.append(test_pep8)
 
-        flash(score_info['score'])
 
         # Check for help comment
         cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
@@ -1608,7 +1604,7 @@ def feedback_3020():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 57, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 61, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1714,20 +1710,150 @@ def feedback_3020():
                 score_info['score'] += 5
             tests.append(test_birthday_song_argument)
 
-            # Check for any input
-            cmd = 'grep "input" ' + filename + ' | wc -l  '
+            # Check for function pick_card
+            cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
-            inputs = int(c.out)
-            test_input = {"name": "Testing for an input of any type (5 points)",
-                          "pass": True,
-                          "pass_message": "Pass (for now).  You have an input statment.  <br>",
-                          "fail_message": "Fail.  You do not have an input of any sort <br>",
-                          }
-            if inputs == 0:
-                test_input['pass'] = False
+            pick_card = int(c.out)
+            test_pick_card = {"name": "Testing that pick_card function exists (4 points)",
+                                  "pass": True,
+                                  "pass_message": "Pass.  pick_card function exists.  <br>",
+                                  "fail_message": "Fail.  pick_card function isn't in the code. <br>"
+                                  "It may be spelled incorrectly.  The function needs to be named "
+                                  "pick_card, exactly."
+                                  "Fix code and resubmit. <br>",
+            }
+            if pick_card == 0:
+                test_pick_card['pass'] = False
+            else:
+                score_info['score'] += 4
+            tests.append(test_pick_card)
+
+            # test for 4+ items list named cards
+#            search_object = re.search(r"cards \s* = \s* \[ .* , .* , .* , .*\]", filename, re.X | re.M | re.S)
+
+            with open(filename, 'r') as myfile:
+                filename_data = myfile.read()
+
+            search_object = re.search(r"\s* cards \s* = \s* \[ .* , .* , .* \]", filename_data, re.X | re.M | re.S)
+            test_cards_list = {"name": "Testing that there is a list named cards with 4+ items (2 points)",
+                                   "pass": True,
+                                   "pass_message": "Pass! Submitted file looks like it has a list named "
+                                                   "cards with 4+ items",
+                                   "fail_message": "Submitted file does not look like it has a list named "
+                                                   "'cards' with 4+ items. <br>"
+                                                   "The list must be named exactly 'cards'",
+            }
+            
+            if not search_object:
+                test_cards_list['pass'] = False
+            else:
+                score_info['score'] += 2
+            tests.append(test_cards_list)
+
+            # test for 4+ items list named suits
+            search_object = re.search(r"\s* suits \s* = .* \[ .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
+            
+            test_suits_list = {"name": "Testing that there is a list named suits with 4+ items (2 points)",
+                                   "pass": True,
+                                   "pass_message": "Pass! Submitted file looks like it has a list named suits with 4+ items",
+                                   "fail_message": "Submitted file does not look like it has a list named 'suits' with 4 items. <br>"
+                                                   "The list must be named exactly 'suits'",
+            }
+            
+            if not search_object:
+                test_suits_list['pass'] = False
+            else:
+                score_info['score'] += 2
+            tests.append(test_suits_list)
+
+            # test to see pick_card output spits out 1 'of'
+            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_pick_card_output 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_pick_card_function =  {"name": "Testing that pick_card_output function gives 1 card ",
+                                            "pass": True,
+                                            "pass_message": "Pass.  pick_card function prints 'of' once "
+                                                            "(assume this means prints 1 card).  <br>",
+                                            "fail_message": "Fail.  pick_card function doesn't 'of' once. "
+                                                            "Expecting to see '1 of hearts' or something like that.<br>"
+                                                            "Function should print just ONE card. <br>"
+            }
+            if failures > 0:
+                test_pick_card_function['pass'] = False
             else:
                 score_info['score'] += 5
-            tests.append(test_input)
+            tests.append(test_pick_card_function)
+
+
+            # Check that pick_card function is called once
+            test_pick_card_run = {"name": "Testing that pick_card function is called at least once (4 points)",
+                                      "pass": False,
+                                      "pass_message": "Pass.  pick_card function is called.  <br>",
+                                      "fail_message": "Fail.  pick_card function isn't called in the code. <br>"
+            }
+            with open(filename) as infile:
+                for line in infile.readlines():
+                    found = re.match("(?<!def\s)pick_card" , line,  re.X | re.M | re.S)
+                    if found:
+                        test_pick_card_run['pass'] = True
+            infile.close()
+            if test_pick_card_run['pass']:
+                score_info['score'] += 4
+            tests.append(test_pick_card_run)
+
+            
+            # test 2 funs and verify they are different
+            filename_output1 = filename + '.out1'
+            filename_output2 = filename + '.out2'
+
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
+                  + filename_output1
+            c = delegator.run(cmd)
+            if c.err:
+                flash('bad! You have an error somewhere in running program check 3.020.in')
+            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
+                  + filename_output2
+            c = delegator.run(cmd)
+            if c.err:
+                flash('bad! You have an error somewhere in running program check 3.020.in')
+
+            cmd = 'diff ' + filename_output1 + ' ' + filename_output2 + ' | wc -l'
+            c = delegator.run(cmd)
+            different_lines = int(c.out)
+            test_pick_cards_different_outputs =  {"name": "Testing that pick_card shows random behavior when code is run (4 points) ",
+                                                  "pass": True,
+                                                  "pass_message": "Pass. pick_card shows random behavior when code is run. <br>",
+                                                  "fail_message": "Fail. pick_card doesn't show random behavior. <br>"
+                                                                  "Be sure that you are calling pick_card.<br>"
+                                                                  "Be sure that pick_card uses random numbers.",
+            }
+            if different_lines == 0:
+                test_pick_cards_different_outputs['pass'] = False
+            else:
+                score_info['score'] += 4
+            tests.append(test_pick_cards_different_outputs)
+
+            # check that pick_card prints out 10 cards (looks for 'of' 10x)
+            test_run_ten_cards = {
+                "name": "Testing that program draws 10 cards (4 points) ",
+                "pass": True,
+                "pass_message": "Pass. program draws 10 cards. <br>",
+                "fail_message": "Fail. program doesn't draw 10 cards. <br>",
+                }
+
+            num_ofs = 0
+            with open(filename_output2) as infile:
+                for line in infile.readlines():
+                    found = re.search(r"of", line,  re.X | re.M | re.S)
+                    if found:
+                        num_ofs += 1
+            infile.close()
+
+            if num_ofs <= 10:
+                test_run_ten_cards['pass'] = False
+            else:
+                score_info['score'] += 4
+            tests.append(test_run_ten_cards)
 
             # Find number of PEP8 errors
             cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
@@ -1745,7 +1871,6 @@ def feedback_3020():
             score_info['score'] += max(0, int(14) - side_errors)
             tests.append(test_pep8)
 
-            flash(score_info['score'])
 
             # Check for help comment
             cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
