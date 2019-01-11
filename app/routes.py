@@ -1733,7 +1733,7 @@ def feedback_3020():
             cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                          "pass": True,
                          "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
                          "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
