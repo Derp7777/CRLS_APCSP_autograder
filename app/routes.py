@@ -517,7 +517,7 @@ def feedback_2020():
             flash('bad! You have an error somewhere in running program check input1')
         with open(filename_output, 'r') as myfile:
             outfile_data = myfile.read()
-
+        flash(outfile_data)
         search_object = re.search(r"49.5", outfile_data, re.X | re.M | re.S)
         test_output_1 = {"name": "Testing that the number divides by 2 correctly and prints it out (15 points)",
                          "pass": True,
@@ -537,10 +537,9 @@ def feedback_2020():
         test_output_2 = {"name": "Testing that the number divides by 2 correctly and prints it out INTEGER (15 points)",
                          "pass": True,
                          "pass_message": "Pass!  The number divides by 2 correctly and prints it out.",
-                         "fail_message": "Fail.  Check that first 5 inputs show up in the output printout.<br>"
-                                         "Check that the number divides by 2 correctly and prints it out INTEGER.<br>"
+                         "fail_message": "Fail.  Check that the number divides by 2 correctly and prints it "
+                                         "out INTEGER.<br>"
                                          "For example, if you input 5, it should output 2 <br>"
-                                         " Other tests not run. They will be run after filename is fixed.<br>"
                                          "<br> ",
                          }
         if not search_object:
@@ -551,71 +550,75 @@ def feedback_2020():
             tests.append(test_output_2)
             score_info['score'] += 15
 
-            # check input3 is good (input / 2) AND (int(input/2)) for 3.5 number
-            filename_output = filename + '.out'
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.020-2.in > ' \
-                  + filename_output
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program check input2')
-            with open(filename_output, 'r') as myfile:
-                outfile_data = myfile.read()
+        # check input3 is good (input / 2) AND (int(input/2)) for 3.5 number
+        filename_output = filename + '2.out'
+        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.020-2.in > ' \
+              + filename_output
+        c = delegator.run(cmd)
+        if c.err:
+            flash('bad! You have an error somewhere in running program check input2')
+        with open(filename_output, 'r') as myfile:
+            outfile_data = myfile.read()
 
-            search_object1 = re.search(r"49.75", outfile_data, re.X | re.M | re.S)
-            search_object2 = re.search(r"49", outfile_data, re.X | re.M | re.S)
+        search_object1 = re.search(r"49.75", outfile_data, re.X | re.M | re.S)
+        search_object2 = re.search(r"49", outfile_data, re.X | re.M | re.S)
 
-            test_output_3 = {"name": "Testing that it works for float numbers (6 points)",
-                             "pass": True,
-                             "pass_message": "Pass!  It works for float numbers",
-                             "fail_message": "Fail.  Check that it works for float numbers.<br>"
-                                             "For example, if you typed in 3.5, it should output 1.75 and 1"
-                                             "<br> ",
-                             }
-            if search_object1 and search_object2:
-                score_info['score'] += 6
-            else:
-                test_output_2['pass'] = False
-            tests.append(test_output_3)
-
-            # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+        test_output_3 = {"name": "Testing that it works for float numbers (6 points)",
                          "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
+                         "pass_message": "Pass!  It works for float numbers",
+                         "fail_message": "Fail.  Check that it works for float numbers.<br>"
+                                         "For example, if you typed in 3.5, it should output 1.75 and 1"
+                                         "<br> ",
                          }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(14) - side_errors)
-            tests.append(test_pep8)
+        if search_object1:
+            flash("yes")
+        if search_object2:
+            flash("yes2")
+        if search_object1 and search_object2:
+            score_info['score'] += 6
+        else:
+            test_output_3['pass'] = False
+        tests.append(test_output_3)
 
-            # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_help)
+        # Find number of PEP8 errors
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                      "This translates to -" +
+                                     str(side_errors) + " point(s) deduction.<br>"
+                     }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
 
-            score_info['finished_scoring'] = True
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                     "Be sure your comment is meaningful, otherwise this can be "
+                                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                     " how somebody helped you with your code.  <br>"
+                                     "If you didn't have any problems, then ask somebody to check that your code"
+                                     " gives correct outputs, given an input.<br>"
+                                     "This translates to -5 points deduction.<br>",
+                     }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         test_filename['pass'] = False
         tests.append(test_filename)
