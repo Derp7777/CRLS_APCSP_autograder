@@ -224,7 +224,11 @@ def feedback_1040():
             tests.append(test_order_2)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+            #cmd2 = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
+            #c = delegator.run(cmd2)
+            #flash(c.out)
+            
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             if c.err:
                 flash(c.err)
@@ -429,8 +433,16 @@ def feedback_1060():
             tests.append(test_puncts)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+            #cmd2 = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename
+            #c = delegator.run(cmd2)
+            #flash(c.out)
+            
+
+            
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
+            #flash(c.out)
+            
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                          "pass": True,
@@ -523,7 +535,9 @@ def feedback_2020():
                          "pass": True,
                          "pass_message": "Pass!  The number divides by 2 correctly and prints it out.",
                          "fail_message": "Fail.  Check that the number divides by 2 correctly and prints it out.<br>"
-                                         "For example, if you input 5, it should output 2.5.<br>"
+                                         "For example, if you input 5, it should output 2.5.<br>."
+                                         "Note, the program looks at the FIRST thing that is printed.  If you think your<br>"
+                                         "program should pass, remove any extra prints in the program.<br>"
                                          "<br> ",
                          }
         if search_object:
@@ -533,14 +547,18 @@ def feedback_2020():
         tests.append(test_output_1)
 
         # Check input2 is good (int(input / 2))
-        search_object = re.search(r"49", outfile_data, re.X | re.M | re.S)
+        search_object = re.search(r"49$", outfile_data, re.X | re.M | re.S)
         test_output_2 = {"name": "Testing that the number divides by 2 correctly and prints it out INTEGER (15 points)",
                          "pass": True,
                          "pass_message": "Pass!  The number divides by 2 correctly and prints it out.",
                          "fail_message": "Fail.  Check that the number divides by 2 correctly and prints it "
                                          "out INTEGER.<br>"
                                          "For example, if you input 5, it should output 2 <br>"
-                                         "<br> ",
+                                         "<br> "
+                                         "Note, the program looks at the SECOND thing that is printed.  If you think your<br>"
+                                         "program should pass, remove any extra prints in the program.<br>"
+,
+                         
                          }
         if not search_object:
             test_output_2['pass'] = False
@@ -581,7 +599,7 @@ def feedback_2020():
         tests.append(test_output_3)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -796,7 +814,7 @@ def feedback_2032a():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1012,7 +1030,7 @@ def feedback_2032b():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1177,7 +1195,7 @@ def feedback_2040():
 
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -1293,7 +1311,7 @@ def feedback_2050a():
         tests.append(test_input)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1391,7 +1409,7 @@ def feedback_2050b():
         tests.append(test_twolist)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1534,7 +1552,7 @@ def feedback_3011():
         tests.append(test_input)
         
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1859,7 +1877,7 @@ def feedback_3020():
             tests.append(test_run_ten_cards)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
