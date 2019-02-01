@@ -51,7 +51,10 @@ def index():
                 return redirect(url_for('feedback_3011', filename=filename))
             elif request.form['lab'] == '3.020':
                 return redirect(url_for('feedback_3020', filename=filename))
+            elif request.form['lab'] == '3.026':
+                return redirect(url_for('feedback_3026', filename=filename))
 
+            
             
             
     form = UploadForm()
@@ -1958,3 +1961,410 @@ def feedback_3020():
         tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
+
+@app.route('/feedback_3026')
+def feedback_3026():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 44.5, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('3.026', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.026.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_3.026.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for function return_min
+        cmd = 'grep "def return_min(" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        return_min = int(c.out)
+        test_return_min = {"name": "Testing that return_min function exists (5 points)",
+                              "pass": True,
+                              "pass_message": "Pass.  return_min function exists.  <br>",
+                              "fail_message": "Fail.  return_min function isn't in the code. <br>"
+                                              "It may be spelled incorrectly.  The function needs to be named "
+                                              "return_min, exactly."
+                                              "Fix code and resubmit. <br>",
+        }
+        if return_min == 0:
+            test_return_min['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_return_min)
+
+        
+        # Only continue if you have a return_min_function
+        if test_return_min['pass']:
+            # Check that function is called once
+            test_return_min_run = {"name": "Testing that return_min function is called at least once (5 points)",
+                                      "pass": False,
+                                      "pass_message": "Pass.  return_min function is called.  <br>",
+                                      "fail_message": "Fail.  return_min function isn't called in the code. <br>"
+            }
+            with open(filename) as infile:
+                for line in infile.readlines():
+                    found = re.search("(?<!def\s)return_min" , line,  re.X | re.M | re.S)
+                    if found:
+                        test_return_min_run['pass'] = True
+            infile.close()
+            if test_return_min_run['pass']:
+                score_info['score'] += 5
+            tests.append(test_return_min_run)
+
+
+
+            # test that there is a 'return' anywhere in the code
+            test_return = {"name": "Testing that there is a 'return' in the code (5 points)",
+                           "pass": False,
+                           "pass_message": "Pass.  'return <something>' in the code.  <br>",
+                           "fail_message": "Fail.  'return <something> is nowhere to be round in the code. <br>"
+                           " Be sure that your function return_min returns the value of the minimum item at the end.<br>",
+            }
+
+            with open(filename) as infile:
+                for line in infile.readlines():
+                    found = re.search("return \s .+" , line,  re.X | re.M | re.S)
+                    if found:
+                        test_return['pass'] = True
+            infile.close()
+            if test_return['pass']:
+                score_info['score'] += 5
+            tests.append(test_return)
+            
+            # extract functions and create python test file
+            extract_functions(filename)
+            functions_filename = filename.replace('.py', '.functions.py')
+            cmd = ' cat ' + functions_filename + \
+                  ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
+            c = delegator.run(cmd)
+            if c.err:
+                flash("There was a problem creating the python test file")
+
+
+            # test1 for return_min
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_1 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_return_min_1 =  {"name": "Testing calling return_min with list [-1, 3, 5, 99] returns -1",
+                                  "pass": True,
+                                  "pass_message": "Pass. Calling return_min with list [-1, 3, 5, 99] returns -1.  <br>",
+                                  "fail_message": "Fail.   Calling return_min with list [-1, 3, 5, 99] doesn't return -1."
+                                                            " You should test your return_min to see what it returns <br>"
+            }
+            if failures > 0:
+                test_return_min_1['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_return_min_1)
+
+
+            # test2 for return_min
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_2 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_return_min_2 =  {"name": "Testing calling return_min with list [-1, 3, 5, -99] returns -99",
+                                  "pass": True,
+                                  "pass_message": "Pass. Calling return_min with list [-1, 3, 5, -99] returns -99.  <br>",
+                                  "fail_message": "Fail.   Calling return_min with list [-1, 3, 5, -99] doesn't return -99."
+                                                            " You should test your return_min to see what it returns <br>"
+            }
+            if failures > 0:
+                test_return_min_2['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_return_min_2)
+
+
+            # test3 for return_min
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_3 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_return_min_3 =  {"name": "Testing calling return_min with list [5] returns 5",
+                                  "pass": True,
+                                  "pass_message": "Pass. Calling return_min with list [5] returns 5.  <br>",
+                                  "fail_message": "Fail.   Calling return_min with list [5] doesn't return 5."
+                                                            " You should test your return_min to see what it returns <br>"
+            }
+            if failures > 0:
+                test_return_min_3['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_return_min_3)
+
+
+            # test4 for return_min
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_4 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_return_min_4 =  {"name": "Testing calling return_min with list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] returns -444",
+                                  "pass": True,
+                                  "pass_message": "Pass. Calling return_min with list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] returns -444.  <br>",
+                                  "fail_message": "Fail.   Calling return_min with list list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] doesn't return -444."
+                                                            " You should test your return_min to see what it returns <br>"
+            }
+            if failures > 0:
+                test_return_min_4['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_return_min_4)
+
+            
+            # Find number of PEP8 errors
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305 --max-line-length=120 ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            side_errors = int(c.out)
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                         "pass": True,
+                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+                         }
+            if side_errors != 0:
+                test_pep8['pass'] = False
+            score_info['score'] += max(0, int(7) - side_errors)
+            tests.append(test_pep8)
+
+
+            # Check for help comment
+            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+            c = delegator.run(cmd)
+            help_comments = int(c.out)
+            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                         "pass": True,
+                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                         "Be sure your comment is meaningful, otherwise this can be "
+                                         "overturned on review.",
+                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                         " how somebody helped you with your code.  <br>"
+                                         "If you didn't have any problems, then ask somebody to check that your code"
+                                         " gives correct outputs, given an input.<br>"
+                                         "This translates to -2.5 points deduction.<br>",
+                         }
+            if help_comments == 0:
+                test_help['pass'] = False
+            else:
+                score_info['score'] += 2.5
+            tests.append(test_help)
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+        else:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/feedback_4021')
+def feedback_4021():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 44.5, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('4.021', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.021.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_4.021.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for function return_min
+        cmd = 'grep "the_rock_says([a-zA-Z]\+" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        the_rock_says = int(c.out)
+        test_the_rock_says = {"name": "Testing that the_rock_says function exists with one input argument (5 points)",
+                              "pass": True,
+                              "pass_message": "Pass.   the_rock_says function exists with one input argument  <br>",
+                              "fail_message": "Fail.   the_rock_says function exists with one input argument. <br>"
+                                              "It may be spelled incorrectly.  The function needs to be named "
+                                              "the_rock_says, exactly. <br>"
+                                              "You may not have one input argument.  You need one.<br>"
+                                              "Fix code and resubmit. <br>",
+        }
+        if the_rock_says == 0:
+            test_return_min['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_the_rock_says)
+
+        
+        # Only continue if you have a the_rock_says function
+        if test_return_min['pass']:
+            # Check that function is called 3x
+            test_the_rock_says_min_run = {"name": "Testing that the_rock_says function is called at least once (5 points)",
+                                          "pass": False,
+                                          "pass_message": "Pass.  the_rock_says function is called.  <br>",
+                                          "fail_message": "Fail.  the_rock_says function isn't called in the code. <br>"
+            }
+            with open(filename) as infile:
+                for line in infile.readlines():
+                    found = re.search("(?<!def\s)the_rock_says" , line,  re.X | re.M | re.S)
+                    if found:
+                        test_the_rock_says_run['pass'] = True
+            infile.close()
+            if test_the_rock_says_run['pass']:
+                score_info['score'] += 5
+            tests.append(test_the_rock_says_run)
+
+            # extract functions and create python test file
+            extract_functions(filename)
+            functions_filename = filename.replace('.py', '.functions.py')
+            cmd = ' cat ' + functions_filename + \
+                  ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
+            c = delegator.run(cmd)
+            if c.err:
+                flash("There was a problem creating the python test file")
+
+
+            # test1 for the_rock_says
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_1 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_the_rock_says_1 =  {"name": "Testing calling the_rock_says with list ['eggs'] returns a list ['The Rock says eggs']",
+                                  "pass": True,
+                                  "pass_message": "Pass. Calling the_rock_says with list ['eggs'] returns a list ['The Rock says eggs'] <br>",
+                                  "fail_message": "Fail.   Calling the_rock_says with list ['eggs'] doesn't return a list ['The Rock says eggs']."
+                                     " You should test your the_rock_says to see what it returns <br>"
+                                     " If you think it is correct, check your capitalization. "
+            }
+            if failures > 0:
+                test_the_rock_says_1['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_the_rock_says_1)
+
+
+            # test2 for the_rock_says
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_2 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_the_rock_says_2 =  {"name": "Testing calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
+                                     "pass": True,
+                                     "pass_message": "Pass. Calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
+                                     "fail_message": "Fail.  Calling the_rock_says with list ['eggs', 'smell'] doesn't return ['The Rock says eggs', 'Do you smell what The Rock is cooking']"
+                                     " You should test your the_rock_says to see what it returns <br>"
+                                     " If you think it is correct, check your capitalization",
+            }
+            if failures > 0:
+                test_the_rock_says_2['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_the_rock_says_2)
+
+
+            # test3 for the_rock_says
+            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_3 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_the_rock_says_3 =  {"name": "Testing calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is cooking', 'Do you smellell what The Rock is cooking', 'Do you smellellellellellellell what The Rock is cooking']",
+                                     "pass": True,
+                                     "pass_message": "Pass. Calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns correct answer.  <br>",
+                                     "fail_message": "Fail.   Calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is cooking', 'Do you smellell what The Rock is cooking', 'Do you smellellellellellellell what The Rock is cooking']"
+                                                            " You should test your the_rock_says to see what it returns <br>"
+                                     " If you think it is correct, check your capitalization",
+
+            }
+            if failures > 0:
+                test_the_rock_says_3['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_the_rock_says_3)
+
+            # Find number of PEP8 errors
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305 --max-line-length=120 ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            side_errors = int(c.out)
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                         "pass": True,
+                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+                         }
+            if side_errors != 0:
+                test_pep8['pass'] = False
+            score_info['score'] += max(0, int(7) - side_errors)
+            tests.append(test_pep8)
+
+
+            # Check for help comment
+            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+            c = delegator.run(cmd)
+            help_comments = int(c.out)
+            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                         "pass": True,
+                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                         "Be sure your comment is meaningful, otherwise this can be "
+                                         "overturned on review.",
+                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                         " how somebody helped you with your code.  <br>"
+                                         "If you didn't have any problems, then ask somebody to check that your code"
+                                         " gives correct outputs, given an input.<br>"
+                                         "This translates to -2.5 points deduction.<br>",
+                         }
+            if help_comments == 0:
+                test_help['pass'] = False
+            else:
+                score_info['score'] += 2.5
+            tests.append(test_help)
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+        else:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+
+    
