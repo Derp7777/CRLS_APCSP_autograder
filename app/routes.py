@@ -1506,7 +1506,7 @@ def feedback_3011():
         if not search_object:
             test_list['pass'] = False
         else:
-            score_info['score'] += 10
+            score_info['score'] += 5
         tests.append(test_list)
 
         # test for 4+ items list
@@ -1553,7 +1553,22 @@ def feedback_3011():
         else:
             score_info['score'] += 5
         tests.append(test_input)
-        
+
+        # Check for any random at all
+        cmd = 'grep "random" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        randoms = int(c.out)
+        test_random = {"name": "Testing for an random of any type (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have an random statment.  <br>",
+                     "fail_message": "Fail.  You do not have an random of any sort <br>",
+                     }
+        if randoms == 0:
+            test_random['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_random)
+
         # Find number of PEP8 errors
         cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
@@ -1606,14 +1621,67 @@ def extract_functions(orig_file):
     import re
     outfile_name = orig_file.replace('.py', '.functions.py')
     outfile = open(outfile_name, 'w')
-    
+
     with open(orig_file) as infile:
-        for line in infile.readlines():
-            print(line)
-            keep_line = re.match("^([^a-z] | def ) \s+ .+ " , line,  re.X | re.M | re.S)
-            if keep_line:
-                print("keep this line: " + line)
+        line = True
+        while line:
+            print("starting over looking for function")
+            print('reading this ' + str(line))
+            line = infile.readline()
+            start_def = re.search("^(def) \s+ .+ " , line,  re.X | re.M | re.S)
+            if start_def:
+                print("entering function!")
+                print('writing this' + str(line))
                 outfile.write(line)
+                print("reading this" + str(line))
+                #                   line = infile.readline()
+                #                   inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+                inside_function = True
+                while inside_function:
+                    print('reading this ' + str(line))
+                    line = infile.readline()
+                    inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+                    if inside_function:
+                        print("writing this inside function " + str(line))
+                        outfile.write(line)
+                        
+
+    # with open(orig_file) as infile:
+    #        line = True
+    #        while line:
+    #            print("starting over looking for function")
+    #            line = infile.readline()
+    #            print(line)
+    #            start_def = re.search("^(def) \s+ .+ " , line,  re.X | re.M | re.S)
+    #            if start_def:
+    #                outfile.write(line)
+    #                print("this function!")
+    #                line = infile.readline()
+    #                print(line)
+    #                inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+    #                while inside_function:
+    #                    line = infile.readline()
+    #                    outfile.write(line)
+    #                    print("inside function " + line)
+    #                    inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+                                                                                                                                                                               
+#   
+    
+#    with open(orig_file) as infile:
+#        for line in infile.readlines():
+#            print(line)
+#            start_def = re.match("^(def) \s+ .+ " , line,  re.X | re.M | re.S)
+#            outfile.write(line)
+#            if start_def:
+#                 keep_line = re.match("^\s+ .+ " , line,  re.X | re.M | re.S)
+#                 if keep_line:
+#                     outfile.write(line)
+
+
+#            keep_line = re.match("^([^a-z] | def ) \s+ .+ " , line,  re.X | re.M | re.S)
+#            if keep_line:
+#                print("keep this line: " + line)
+#                outfile.write(line)
                 
 
 
@@ -1880,7 +1948,7 @@ def feedback_3020():
             tests.append(test_run_ten_cards)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305 --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
