@@ -1642,7 +1642,7 @@ def extract_functions(orig_file):
                 while inside_function:
                     print('reading this ' + str(line))
                     line = infile.readline()
-                    inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+                    inside_function = re.search("^(\s+ | \#) .+ " , line,  re.X | re.M | re.S)
                     if inside_function:
                         print("writing this inside function " + str(line))
                         outfile.write(line)
@@ -2317,7 +2317,7 @@ def feedback_4011():
             cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             loop = int(c.out)
-            test_loop = {"name": "Testing that program has a loop.",
+            test_loop = {"name": "Testing that program has a loop. (5 points)",
                          "pass": True,
                          "pass_message": "Pass.  Testing that program has a loop.  <br>",
                          "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
@@ -2334,7 +2334,7 @@ def feedback_4011():
             cmd = 'grep "if" ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             ifs = int(c.out)
-            test_ifs = {"name": "Testing that program is efficient.",
+            test_ifs = {"name": "Testing that program is efficient. (5 points)",
                         "pass": True,
                         "pass_message": "Pass.  Testing that program is efficient.  <br>",
                         "fail_message": "Fail.  Testing that program is efficient<br>"
@@ -2350,7 +2350,7 @@ def feedback_4011():
 
 
             # Check that function is called 3x
-            test_function_run = {"name": "Testing that could_it_be_a_martian_word function is called at least once (5 points)",
+            test_function_run = {"name": "Testing that could_it_be_a_martian_word function is called at least once (10 points)",
                                  "pass": False,
                                  "pass_message": "Pass.  could_it_be_a_martian_word function is called at least once <br>",
                                  "fail_message": "Fail.  could_it_be_a_martian_word function is not called at least once  <br>"
@@ -2381,16 +2381,16 @@ def feedback_4011():
             cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_1 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
-            test_could_it_be_a_martian_word_1 =  {"name": "Testing calling could_it_be_a_martian_word with 'bcdefgijmnpqrstuvwxyz' returns []",
+            test_could_it_be_a_martian_word_1 =  {"name": "Testing calling could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []",
                                                   "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word 'bcdefgijmnpqrstuvwxyz' returns [].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word  'bcdefgijmnpqrstuvwxyz' doesn't return []."
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word 'bcdefgijnpqrstuvwxyz' returns [].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word  'bcdefgijnpqrstuvwxyz' doesn't return []."
                                                   " You should test your could_it_be_a_martian_word to see what it returns <br>"
             }
             if failures > 0:
                 test_could_it_be_a_martian_word_1['pass'] = False
             else:
-                score_info['score'] += 5
+                score_info['score'] += 10
             tests.append(test_could_it_be_a_martian_word_1)
 
 
@@ -2398,16 +2398,16 @@ def feedback_4011():
             cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_2 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
-            test_could_it_be_a_martian_word_2 =  {"name": "Testing calling could_it_be_a_martian_word with list [ba] returns [b]",
+            test_could_it_be_a_martian_word_2 =  {"name": "Testing calling could_it_be_a_martian_word with string 'ba' returns ['a']",
                                                   "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with list [ba] returns [b].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with list  [-1, 3, 5, -99] returns [b]."
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with string ba returns ['a'].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with string ba returns ['a']."
                                                   " You should test your could_it_be_a_martian_word to see what it returns <br>"
             }
             if failures > 0:
                 test_could_it_be_a_martian_word_2['pass'] = False
             else:
-                score_info['score'] += 5
+                score_info['score'] += 10
             tests.append(test_could_it_be_a_martian_word_2)
 
 
@@ -2415,16 +2415,16 @@ def feedback_4011():
             cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_3 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
-            test_could_it_be_a_martian_word_3 =  {"name": "Testing calling could_it_be_a_martian_word with list [baa] returns [a]",
+            test_could_it_be_a_martian_word_3 =  {"name": "Testing calling could_it_be_a_martian_word with string 'baa' returns ['a']",
                                                   "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with list [baa] returns [a].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with list [baa] doesn't return [a]."
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with string 'baa' returns ['a'].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with string 'baa' doesn't return ['a']."
                                                   " You should test your could_it_be_a_martian_word to see what it returns <br>"
             }
             if failures > 0:
                 test_could_it_be_a_martian_word_3['pass'] = False
             else:
-                score_info['score'] += 5
+                score_info['score'] += 10
             tests.append(test_could_it_be_a_martian_word_3)
 
 
@@ -2433,7 +2433,7 @@ def feedback_4011():
             cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305 --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                          "pass": True,
                          "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
                          "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
@@ -2442,7 +2442,7 @@ def feedback_4011():
                          }
             if side_errors != 0:
                 test_pep8['pass'] = False
-            score_info['score'] += max(0, int(7) - side_errors)
+            score_info['score'] += max(0, int(14) - side_errors)
             tests.append(test_pep8)
 
 
@@ -2450,7 +2450,7 @@ def feedback_4011():
             cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
             c = delegator.run(cmd)
             help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
                          "pass": True,
                          "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
                                          "Be sure your comment is meaningful, otherwise this can be "
@@ -2464,7 +2464,7 @@ def feedback_4011():
             if help_comments == 0:
                 test_help['pass'] = False
             else:
-                score_info['score'] += 2.5
+                score_info['score'] += 5
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
