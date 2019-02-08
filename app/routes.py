@@ -51,7 +51,7 @@ def index():
                 return redirect(url_for('feedback_3011', filename=filename))
             elif request.form['lab'] == '3.020':
                 return redirect(url_for('feedback_3020', filename=filename))
-            elif request.form['lab'] == '3.026':
+            elif request.form['lab'] == '3.0206':
                 return redirect(url_for('feedback_3026', filename=filename))
 
             
@@ -1930,7 +1930,13 @@ def feedback_3020():
                 "name": "Testing that program draws 10 cards (4 points) ",
                 "pass": True,
                 "pass_message": "Pass. program draws 10 cards. <br>",
-                "fail_message": "Fail. program doesn't draw 10 cards. <br>",
+                "fail_message": "Fail. program doesn't draw 10 cards. <br>"
+                                "looking for something like this: <br>"
+                                "2 of hearts <br>"
+                                "3 of spades <br>"
+                                "K of diamonds <br>"
+                                "9 of clubs <br>"
+                                "etc... for 10 cards.  card OF suit<br>",
                 }
 
             num_ofs = 0
@@ -1940,8 +1946,8 @@ def feedback_3020():
                     if found:
                         num_ofs += 1
             infile.close()
-
-            if num_ofs <= 10:
+            flash(num_ofs)
+            if num_ofs <= 9:
                 test_run_ten_cards['pass'] = False
             else:
                 score_info['score'] += 4
