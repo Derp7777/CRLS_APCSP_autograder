@@ -51,8 +51,10 @@ def index():
                 return redirect(url_for('feedback_3011', filename=filename))
             elif request.form['lab'] == '3.020':
                 return redirect(url_for('feedback_3020', filename=filename))
-            elif request.form['lab'] == '3.0206':
+            elif request.form['lab'] == '3.026':
                 return redirect(url_for('feedback_3026', filename=filename))
+            elif request.form['lab'] == '4.011':
+                return redirect(url_for('feedback_4011', filename=filename))
 
             
             
@@ -1644,7 +1646,8 @@ def extract_functions(orig_file):
                     if inside_function:
                         print("writing this inside function " + str(line))
                         outfile.write(line)
-                        
+                outfile.write(line)
+                
 
     # with open(orig_file) as infile:
     #        line = True
@@ -2203,6 +2206,227 @@ def feedback_3026():
             else:
                 score_info['score'] += 5
             tests.append(test_return_min_4)
+
+            
+            # Find number of PEP8 errors
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305 --max-line-length=120 ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            side_errors = int(c.out)
+            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
+                         "pass": True,
+                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                                                                          "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+                         }
+            if side_errors != 0:
+                test_pep8['pass'] = False
+            score_info['score'] += max(0, int(7) - side_errors)
+            tests.append(test_pep8)
+
+
+            # Check for help comment
+            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+            c = delegator.run(cmd)
+            help_comments = int(c.out)
+            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                         "pass": True,
+                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                                         "Be sure your comment is meaningful, otherwise this can be "
+                                         "overturned on review.",
+                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                                         " how somebody helped you with your code.  <br>"
+                                         "If you didn't have any problems, then ask somebody to check that your code"
+                                         " gives correct outputs, given an input.<br>"
+                                         "This translates to -2.5 points deduction.<br>",
+                         }
+            if help_comments == 0:
+                test_help['pass'] = False
+            else:
+                score_info['score'] += 2.5
+            tests.append(test_help)
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+        else:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+@app.route('/feedback_4011')
+def feedback_4011():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('4.011', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.011.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_4.011.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        # Check for function could_it_be_a_martian_word
+        cmd = 'grep "def could_it_be_a_martian_word([[a-zA-Z]\+[^,]*)" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        function_name = int(c.out)
+        test_function_name = {"name": "Testing that could_it_be_a_martian_word function exists with one input parameter (5 points)",
+                              "pass": True,
+                              "pass_message": "Pass.   could_it_be_a_martian_word function exists with one input parameter  <br>",
+                              "fail_message": "Fail.   could_it_be_a_martian_word function exists with one input parameter isn't in the code. <br>"
+                              "It may be spelled incorrectly.  The function needs to be named exactly correctly<br>"
+                              "The function needs exactly one input parameter. <br>"
+                              "Fix code and resubmit. <br>",
+        }
+        if function_name == 0:
+            test_function_name['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_function_name)
+
+        # Only continue if you have a function_name correct
+        if test_function_name['pass']:
+
+            # Check for a loop of some sort (for or while)
+            cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            loop = int(c.out)
+            test_loop = {"name": "Testing that program has a loop.",
+                         "pass": True,
+                         "pass_message": "Pass.  Testing that program has a loop.  <br>",
+                         "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
+                         "The program needs a while or a for. <br>"
+                         "Fix code and resubmit. <br>",
+            }
+            if loop == 0:
+                test_loop['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_loop)
+
+            # Check for 3 ifs on different lines
+            cmd = 'grep "if" ' + filename + ' | wc -l  '
+            c = delegator.run(cmd)
+            ifs = int(c.out)
+            test_ifs = {"name": "Testing that program is efficient.",
+                        "pass": True,
+                        "pass_message": "Pass.  Testing that program is efficient.  <br>",
+                        "fail_message": "Fail.  Testing that program is efficient<br>"
+                        
+                        "Are you using an if/if/if/if or if/elif/elif/elif? <br>"
+                        "Check HW11.  Using if/elif/elif can get really big code with a lot of conditions <br>",
+            }
+            if ifs >= 2:
+                test_ifs['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_ifs)
+
+
+            # Check that function is called 3x
+            test_function_run = {"name": "Testing that could_it_be_a_martian_word function is called at least once (5 points)",
+                                 "pass": False,
+                                 "pass_message": "Pass.  could_it_be_a_martian_word function is called at least once <br>",
+                                 "fail_message": "Fail.  could_it_be_a_martian_word function is not called at least once  <br>"
+            }
+            count = 1
+            with open(filename) as infile:
+                for line in infile.readlines():
+                    found = re.search("(?<!def\s)could_it_be_a_martian_word" , line,  re.X | re.M | re.S)
+                    if found:
+                        count += 1
+            infile.close()
+            if count >= 2:
+                test_function_run['pass'] = True
+                score_info['score'] += 5
+            tests.append(test_function_run)
+
+            # extract functions and create python test file
+            extract_functions(filename)
+            functions_filename = filename.replace('.py', '.functions.py')
+            cmd = ' cat ' + functions_filename + \
+                  ' /home/ewu/CRLS_APCSP_autograder/var/4.011.test.py > /tmp/4.011.test.py'
+            c = delegator.run(cmd)
+            if c.err:
+                flash("There was a problem creating the python test file")
+
+
+            # test1 for could_it_be_a_martian_word
+            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_1 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_could_it_be_a_martian_word_1 =  {"name": "Testing calling could_it_be_a_martian_word with 'bcdefgijmnpqrstuvwxyz' returns []",
+                                                  "pass": True,
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word 'bcdefgijmnpqrstuvwxyz' returns [].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word  'bcdefgijmnpqrstuvwxyz' doesn't return []."
+                                                  " You should test your could_it_be_a_martian_word to see what it returns <br>"
+            }
+            if failures > 0:
+                test_could_it_be_a_martian_word_1['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_could_it_be_a_martian_word_1)
+
+
+            # test2 for could_it_be_a_martian_word
+            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_2 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_could_it_be_a_martian_word_2 =  {"name": "Testing calling could_it_be_a_martian_word with list [ba] returns [b]",
+                                                  "pass": True,
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with list [ba] returns [b].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with list  [-1, 3, 5, -99] returns [b]."
+                                                  " You should test your could_it_be_a_martian_word to see what it returns <br>"
+            }
+            if failures > 0:
+                test_could_it_be_a_martian_word_2['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_could_it_be_a_martian_word_2)
+
+
+            # test3 for could_it_be_a_martian_word
+            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_3 2>&1 |grep -i fail |wc -l'
+            c = delegator.run(cmd)
+            failures = int(c.out)
+            test_could_it_be_a_martian_word_3 =  {"name": "Testing calling could_it_be_a_martian_word with list [baa] returns [a]",
+                                                  "pass": True,
+                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with list [baa] returns [a].  <br>",
+                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with list [baa] doesn't return [a]."
+                                                  " You should test your could_it_be_a_martian_word to see what it returns <br>"
+            }
+            if failures > 0:
+                test_could_it_be_a_martian_word_3['pass'] = False
+            else:
+                score_info['score'] += 5
+            tests.append(test_could_it_be_a_martian_word_3)
+
 
             
             # Find number of PEP8 errors
