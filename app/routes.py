@@ -1882,9 +1882,13 @@ def feedback_3020():
 
             # Check that pick_card function is called once
             test_pick_card_run = {"name": "Testing that pick_card function is called at least once (4 points)",
-                                      "pass": False,
-                                      "pass_message": "Pass.  pick_card function is called.  <br>",
-                                      "fail_message": "Fail.  pick_card function isn't called in the code. <br>"
+                                  "pass": False,
+                                  "pass_message": "Pass.  pick_card function is called.  <br>",
+                                  "fail_message": "Fail.  pick_card function isn't called in the code. <br>"
+                                  "If this fails, but you think it should not, try to do this: <br>"
+                                  "pick_card()<br>"
+                                  "(do it at the beginning of the line instead in a loop)",
+                               
             }
             with open(filename) as infile:
                 for line in infile.readlines():
