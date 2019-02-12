@@ -2497,7 +2497,7 @@ def feedback_4021():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 44.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -2521,13 +2521,12 @@ def feedback_4021():
         tests.append(test_filename)
 
         # Check for function return_min
-        cmd = 'grep "^def the_rock_says([a-zA-Z]\+[^,])" ' + filename + ' | wc -l  '
+        cmd = 'grep "^def the_rock_says([a-zA-Z_]\+[^,])" ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
 
         the_rock_says = int(c.out)
-        cmd = 'grep "the_rock_says([a-zA-Z]\+[^,])" ' + filename + '   '
+        cmd = 'grep "the_rock_says([a-zA-Z_]\+[^,])" ' + filename + '   '
         c = delegator.run(cmd)
-        flash(c.out)
         test_the_rock_says = {"name": "Testing that the_rock_says function exists with one input argument (5 points)",
                               "pass": True,
                               "pass_message": "Pass.   the_rock_says function exists with one input argument  <br>",
@@ -2565,23 +2564,24 @@ def feedback_4021():
             extract_functions(filename)
             functions_filename = filename.replace('.py', '.functions.py')
             cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
+                  ' /home/ewu/CRLS_APCSP_autograder/var/4.021.test.py > /tmp/4.021.test.py'
             c = delegator.run(cmd)
             if c.err:
                 flash("There was a problem creating the python test file")
 
 
             # test1 for the_rock_says
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_1 2>&1 |grep -i fail |wc -l'
+            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_1 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
-            test_the_rock_says_1 = {"name": "Testing calling the_rock_says with list ['eggs'] returns a list "
-                                            "['The Rock says eggs']",
+            test_the_rock_says_1 = {"name": "Testing calling the_rock_says with list ['eggs', 'apple'] returns a list "
+                                            "['The Rock says eggs', 'The Rock says apple']",
                                     "pass": True,
-                                    "pass_message": "Pass. Calling the_rock_says with list ['eggs'] returns a list"
-                                                    " ['The Rock says eggs'] <br>",
-                                    "fail_message": "Fail.   Calling the_rock_says with list ['eggs'] doesn't return a list ['The Rock says eggs']."
-                                    " You should test your the_rock_says to see what it returns <br>"
+                                    "pass_message": "Pass. Calling the_rock_says with list ['eggs', 'apple'] returns a list"
+                                                    " ['The Rock says eggs', 'The Rock says apple'] <br>",
+                                    "fail_message": "Fail.   Calling the_rock_says with list ['eggs', 'apple'] doesn't return a list ['The Rock says eggs'"
+                                    ",'The Rock says apple']."
+                                    " You should test your the_rock_says function to see what it returns <br>"
                                     " If you think it is correct, check your capitalization. "
             }
             if failures > 0:
@@ -2592,14 +2592,14 @@ def feedback_4021():
 
 
             # test2 for the_rock_says
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_2 2>&1 |grep -i fail |wc -l'
+            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_2 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
             test_the_rock_says_2 =  {"name": "Testing calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
                                      "pass": True,
                                      "pass_message": "Pass. Calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
                                      "fail_message": "Fail.  Calling the_rock_says with list ['eggs', 'smell'] doesn't return ['The Rock says eggs', 'Do you smell what The Rock is cooking']"
-                                     " You should test your the_rock_says to see what it returns <br>"
+                                     " You should test your the_rock_says functionto see what it returns <br>"
                                      " If you think it is correct, check your capitalization",
             }
             if failures > 0:
@@ -2610,7 +2610,7 @@ def feedback_4021():
 
 
             # test3 for the_rock_says
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_the_rock_says_3 2>&1 |grep -i fail |wc -l'
+            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_3 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
             test_the_rock_says_3 =  {"name": "Testing calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is cooking', 'Do you smellell what The Rock is cooking', 'Do you smellellellellellellell what The Rock is cooking']",
