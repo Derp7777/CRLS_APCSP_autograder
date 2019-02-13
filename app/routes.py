@@ -2946,7 +2946,7 @@ def feedback_4025():
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_1 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_serena_1 = {"name": "Checking the game function.  Actual win percentages over 1000 tests should match the predicted win percentages. ",
+        test_serena_1 = {"name": "Checking the game function. (10 points)",
                          "pass": True,
                          "pass_message": "Pass. Actual win percentages over 1000 tests match the predicted win percentages. ",
                          "fail_message": "Fail.  Actual win percentages over 1000 tests do NOT match the predicted win percentages.<br> "
@@ -2962,7 +2962,7 @@ def feedback_4025():
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_2 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_serena_2 =  {"name": "Testing play_tournament function.  If I input 'Wimbledon', it should print 'Wimbledon' somewhere.",
+        test_serena_2 =  {"name": "Testing play_tournament function.  If I input 'Wimbledon', it should print 'Wimbledon' somewhere. (2.5 points)",
                           "pass": True,
                           "pass_message": "Pass.  If I input 'Wimbledon', it should print 'Wimbledon' somewhere."
                           "Note, this 'pass' is subject to manual review.",
@@ -2979,8 +2979,8 @@ def feedback_4025():
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_3 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_serena_3 =  {"name": "Testing play_tournament function.  If I input a high enough winning percentage, "
-                          "it should print 'Win' somewhere",
+        test_serena_3 =  {"name": "Testing play_tournament function.  If I input a high enough winning percentage,  "
+                          "it should print 'Win' somewhere (5 points)",
                           "pass": True,
                           "pass_message": "Pass.  If I input a high enough winning percentage, "
                           "it should print 'Win' somewhere.<br>"
@@ -2996,7 +2996,7 @@ def feedback_4025():
         tests.append(test_serena_3)
 
         # Test that play_tournamnet has a loop
-        test_play_tournament_loop =  {"name": "Testing play_tournament function.  Should have a loop somewhere. ",
+        test_play_tournament_loop =  {"name": "Testing play_tournament function.  Should have a loop somewhere. (2.5 points)",
                                       "pass": True,
                                       "pass_message": "Pass. play_tournament function has a loop somewhere. "
                                       "Note, this 'pass' is subject to manual review.",
@@ -3015,7 +3015,7 @@ def feedback_4025():
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_4 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_serena_4 =  {"name": "Testing data_analysis function. ",
+        test_serena_4 =  {"name": "Testing data_analysis function.(5 points) ",
                           "pass": True,
                           "pass_message": "Pass.  data_analysis prints correct numbers given an input. ",
                           "fail_message": "Fail.  data_analysis prints in correct numbers given an input.<br>"
@@ -3081,7 +3081,7 @@ def feedback_4025():
         match = re.search('([.0-9]*)%', line)
         if match:
             percent = float(match.group(1))
-            if percent > 14.0 or percent < 13.0: 
+            if percent > 14.5 or percent < 12.5: 
                 test_win_some['pass'] = False            
             else:
                 score_info['score'] += 10
