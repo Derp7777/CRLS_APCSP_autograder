@@ -1478,7 +1478,7 @@ def feedback_3011():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 49, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 54, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1516,11 +1516,11 @@ def feedback_3011():
         if not search_object:
             test_list['pass'] = False
         else:
-            score_info['score'] += 5
+            score_info['score'] += 10
         tests.append(test_list)
 
         # test for 4+ items list
-        search_object = re.search(r".+ = .* \[ .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
+        search_object = re.search(r".+ = .* \[ .* , .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
 
         test_four_item_list = {"name": "Testing that there is something looking like a 4+ items in list",
                                "pass": True,
@@ -1627,11 +1627,9 @@ def feedback_3011():
 
 
 def extract_functions(orig_file):
-
     import re
     outfile_name = orig_file.replace('.py', '.functions.py')
     outfile = open(outfile_name, 'w')
-
     with open(orig_file) as infile:
         line = True
         while line:
@@ -1650,7 +1648,7 @@ def extract_functions(orig_file):
                 while inside_function:
                     print('reading this ' + str(line))
                     line = infile.readline()
-                    inside_function = re.search("^(\s+ | \#) .+ " , line,  re.X | re.M | re.S)
+                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
                     if inside_function:
                         print("writing this inside function " + str(line))
                         outfile.write(line)
@@ -1675,7 +1673,7 @@ def extract_single_function(orig_file, function):
                 while inside_function:
                     print('reading this ' + str(line))
                     line = infile.readline()
-                    inside_function = re.search("^(\s+ | \#) .+ " , line,  re.X | re.M | re.S)
+                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
                     if inside_function:
                         print("writing this inside function " + str(line))
                         extracted_function += line
@@ -2377,7 +2375,7 @@ def feedback_4011():
                         "Are you using an if/if/if/if or if/elif/elif/elif? <br>"
                         "Check HW11.  Using if/elif/elif can get really big code with a lot of conditions <br>",
             }
-            if ifs >= 2:
+            if ifs >= 3:
                 test_ifs['pass'] = False
             else:
                 score_info['score'] += 5
@@ -3090,7 +3088,7 @@ def feedback_4025():
         tests.append(test_win_some)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504 --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
