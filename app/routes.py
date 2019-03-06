@@ -1,4 +1,4 @@
--from flask import render_template, url_for, request, redirect, flash
+from flask import render_template, url_for, request, redirect, flash
 
 from app import app
 from app.forms import UploadForm
@@ -1722,7 +1722,6 @@ def extract_single_function(orig_file, function):
 @app.route('/feedback_3020')
 def feedback_3020():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -2556,6 +2555,8 @@ def feedback_4021():
         the_rock_says = int(c.out)
         cmd = 'grep "the_rock_says([a-zA-Z_]\+[^,])" ' + filename + '   '
         c = delegator.run(cmd)
+        if c.err:
+            flash("Grepping for the_rock_says failed")
         test_the_rock_says = {"name": "Testing that the_rock_says function exists with one input argument (5 points)",
                               "pass": True,
                               "pass_message": "Pass.   the_rock_says function exists with one input argument  <br>",
@@ -2746,6 +2747,8 @@ def feedback_4022():
         bad_lossy_compression = int(c.out)
         cmd = 'grep "bad_lossy_compression([a-zA-Z_]\+[^,])" ' + filename + '   '
         c = delegator.run(cmd)
+        if c.err:
+            flash("Grepping for bad_lossy_compression failed")
         test_bad_lossy_compression = {"name": "Testing that bad_lossy_compression function exists with one input argument (5 points)",
                               "pass": True,
                               "pass_message": "Pass.   bad_lossy_compression function exists with one input argument  <br>",
@@ -2898,7 +2901,6 @@ TA!!!'",
 @app.route('/feedback_4025')
 def feedback_4025():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -3135,7 +3137,6 @@ def feedback_4025():
 @app.route('/feedback_6_011')
 def feedback_6011():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -3143,7 +3144,7 @@ def feedback_6011():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 55, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -3152,11 +3153,11 @@ def feedback_6011():
     find_lab = re.search('6.011', filename)
     test_filename = {"name": "Testing that file is named correctly",
                      "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.025.py)",
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.011.py)",
                      "fail_message": "File name of submitted file does not follow required convention. "
                                      " Rename and resubmit.<br>"
                                      "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.025.py <br><br>"
+                                     "2019_luismartinez_6.011.py <br><br>"
                                      "File must be python file (ends in .py), not a Google doc with Python code"
                                      " copy+pasted in. <br>"
                                      " Other tests not run. They will be run after filename is fixed.<br>"
@@ -3173,8 +3174,10 @@ def feedback_6011():
         search_object = re.search(r"{ .+ : .+ , .+ : .+ , .+ : .+ }", filename_data, re.X | re.M | re.S)
         test_dictionary = {"name": "Testing that there is a dictionary with 3+ key/value pairs(10 points)",
                            "pass": True,
-                           "pass_message": "Pass! Submitted file looks like it has a dictionary with 3+ key/value pairs. "
-                           "fail_message": "Submitted file does not look like it has a dictionary with 3+ key/value pairs. "
+                           "pass_message": "Pass! "
+                                           "Submitted file looks like it has a dictionary with 3+ key/value pairs. ",
+                           "fail_message": "Fail. Submitted file does not look like it has a dictionary with 3+ "
+                                           "key/value pairs. ",
         }
         
         if not search_object:
@@ -3209,13 +3212,15 @@ def feedback_6011():
 
 
         # test1 for bob
-        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_1 2>&1 |grep -i fail |wc -l'
+        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_1 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
         test_bob_1 = {"name": "Checking bob_kraft_translator 1 (10 points)",
                       "pass": True,
-                      "pass_message": "Pass. Sent in dictionary  {'wth', 'What the heck'}, asked for wth, got correct answer.  ",
-                      "fail_message": "Fail.   Sent in dictionary  {'wth', 'What the heck'}, asked for wth, didn't get correct <br> "
+                      "pass_message": "Pass. Sent in dictionary  {'wth': 'What the heck'},"
+                                      " asked for wth, got correct answer.  ",
+                      "fail_message": "Fail.   Sent in dictionary  {'wth': 'What the heck'}, "
+                                      "asked for wth, didn't get correct <br> "
                       " Check out your code and try again.",
         }
         if failures > 0:
@@ -3225,16 +3230,16 @@ def feedback_6011():
         tests.append(test_bob_1)
             
         # test2 for bob play_tournament prints tournmaent
-        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_2 2>&1 |grep -i fail |wc -l'
+        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_2 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_bob_2 =  {"name": "Testing bob_kraft_translator 2.  Sending in bob_dict = {'wth', 'What the heck',<br>"
-                       "'aymm', 'Ay yo my man',}, looking for aymm, should receive 'Ay yo my man'",
+        test_bob_2 =  {"name": "Testing bob_kraft_translator 2.  Sending in bob_dict = {'wth': 'What the heck',"
+                       "'aymm': 'Ay yo my man',}, looking for aymm, should receive 'Ay yo my man'",
                        "pass": True,
-                       "pass_message": "Pass.  Sent in bob_dict = {'wth', 'What the heck',<br>"
-                       "'aymm', 'Ay yo my man',}, looked for aymm, received 'Ay yo my man'",
-                       "fail_message": "Fail.    Sent in bob_dict = {'wth', 'What the heck',<br>"
-                       "'aymm', 'Ay yo my man',}, looked for aymm, received 'Ay yo my man' but did not receive it"
+                       "pass_message": "Pass.  Sent in bob_dict = {'wth', 'What the heck',"
+                       "'aymm': 'Ay yo my man',}, looked for aymm, received 'Ay yo my man'",
+                       "fail_message": "Fail.    Sent in bob_dict = {'wth', 'What the heck',"
+                       "'aymm': 'Ay yo my man',}, looked for aymm, received 'Ay yo my man' but did not receive it"
                        "Please check code and try again.<br>",
         }
         if failures > 0:
@@ -3244,43 +3249,51 @@ def feedback_6011():
         tests.append(test_bob_2)
 
         # test3 for bob play tournament prints win
-        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_3 2>&1 |grep -i fail |wc -l'
+        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_3 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test_bob_3 =  {"name": "Testing play_tournament function.  If I input a high enough winning percentage,  "
-                          "it should print 'Win' somewhere (5 points)",
-                          "pass": True,
-                          "pass_message": "Pass.  If I input a high enough winning percentage, "
-                          "it should print 'Win' somewhere.<br>"
-                          "Note, this 'pass' is subject to manual review.",
-                          "fail_message": "Fail.  If I input a high enough winning percentage, "
-                          "it should print 'Win' somewhere<br>"
-                          "Please check the play_tournament function prints.<br>",
+        test_bob_3 =  {"name":  "Testing bob_kraft_translator 3.  Sending in bob_dict = {'wth': 'What the heck',"
+                       "'aymm': 'Ay yo my man',}, looking for asdfasdf, should receive something with"
+                                "'do not know' (10 points)",
+                       "pass": True,
+                       "pass_message": "Pass.  Sent in bob_dict = {'wth': 'What the heck',"
+                                       "'aymm': 'Ay yo my man',}, looked for asdfasdf, received something with"
+                                       " 'do not know' (10 points)",
+                       "fail_message": "Fail.  Sent in bob_dict = {'wth': 'What the heck',"
+                                       "'aymm': 'Ay yo my man',}, looked for asdfasdf, received something without"
+                                       " 'do not know' (10 points)<br>"
+                                       "Please check your code",
         }
         if failures > 0:
             test_bob_3['pass'] = False
         else:
-            score_info['score'] += 5
+            score_info['score'] += 10
         tests.append(test_bob_3)
 
-        # Test that play_tournamnet has a loop
-        test_play_tournament_loop =  {"name": "Testing play_tournament function.  Should have a loop somewhere. (2.5 points)",
-                                      "pass": True,
-                                      "pass_message": "Pass. play_tournament function has a loop somewhere. "
-                                      "Note, this 'pass' is subject to manual review.",
-                                      "fail_message": "Fail.   play_tournament function does not have loop somewhere."
-                                      "It needs a loop to play multiple games in case of win",
-        }
-        play_tournament = extract_single_function(filename, 'play_tournament')
-        match = re.search('(for|while)', play_tournament)
-        if match:
-            score_info['score'] += 2.5
+
+
+        # Check for 3 ifs on different lines
+        cmd = 'grep "if" ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        ifs = int(c.out)
+        test_ifs = {"name": "Testing that program is efficient. (5 points)",
+                    "pass": True,
+                    "pass_message": "Pass.  Testing that program is efficient.  <br>",
+                    "fail_message": "Fail.  Testing that program is efficient<br>"
+
+                                    "Are you using an if/if/if/if or if/elif/elif/elif? <br>"
+                                    "Check HW11.  Using if/elif/elif can get really big code with a lot of conditions <br>",
+                    }
+        if ifs >= 3:
+            test_ifs['pass'] = False
         else:
-            test_play_tournament_loop['pass'] = False            
-        tests.append(test_play_tournament_loop)
+            score_info['score'] += 5
+        tests.append(test_ifs)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504 --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = \
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504,W293 --max-line-length=120 '\
+            + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
