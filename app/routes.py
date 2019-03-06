@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, flash
+-from flask import render_template, url_for, request, redirect, flash
 
 from app import app
 from app.forms import UploadForm
@@ -61,7 +61,7 @@ def index():
                 return redirect(url_for('feedback_4022', filename=filename))
             elif request.form['lab'] == '4.025':
                 return redirect(url_for('feedback_4025', filename=filename))
-            elif request.form['lab'] == '6.010':
+            elif request.form['lab'] == '6.011':
                 return redirect(url_for('feedback_6011', filename=filename))
 
             
@@ -3132,10 +3132,206 @@ def feedback_4025():
         tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
+@app.route('/feedback_6_011')
+def feedback_6011():
+    import re
+    import subprocess
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 55, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('6.011', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.025.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_4.025.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+            
+        # Test for dictionary with 3+ items
+        with open(filename, 'r', encoding='utf8') as myfile:
+            filename_data = myfile.read()
+            
+        search_object = re.search(r"{ .+ : .+ , .+ : .+ , .+ : .+ }", filename_data, re.X | re.M | re.S)
+        test_dictionary = {"name": "Testing that there is a dictionary with 3+ key/value pairs(10 points)",
+                           "pass": True,
+                           "pass_message": "Pass! Submitted file looks like it has a dictionary with 3+ key/value pairs. "
+                           "fail_message": "Submitted file does not look like it has a dictionary with 3+ key/value pairs. "
+        }
+        
+        if not search_object:
+            test_dictionary['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_dictionary)
+        
+
+        # Check for function bob_kraft_translator
+        search_object = re.search(r"^def \s bob_kraft_translator\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
+        test_bob_kraft_translator = {"name": "Testing that bob_kraft_translator function exists with two input arguments (5 points)",
+                                     "pass": True,
+                                     "pass_message": "Pass.  bob_kraft_translator function exists with two input arguments (5 points)",
+                                     "fail_message": "Fail.  bob_kraft_translator function does exist with two input arguments (5 points)",
+        }
+        if not search_object:
+            test_bob_kraft_translator['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_bob_kraft_translator)
+
+        
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/6.011.test.py > /tmp/6.011.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+
+        # test1 for bob
+        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_bob_1 = {"name": "Checking bob_kraft_translator 1 (10 points)",
+                      "pass": True,
+                      "pass_message": "Pass. Sent in dictionary  {'wth', 'What the heck'}, asked for wth, got correct answer.  ",
+                      "fail_message": "Fail.   Sent in dictionary  {'wth', 'What the heck'}, asked for wth, didn't get correct <br> "
+                      " Check out your code and try again.",
+        }
+        if failures > 0:
+            test_bob_1['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_bob_1)
+            
+        # test2 for bob play_tournament prints tournmaent
+        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_bob_2 =  {"name": "Testing bob_kraft_translator 2.  Sending in bob_dict = {'wth', 'What the heck',<br>"
+                       "'aymm', 'Ay yo my man',}, looking for aymm, should receive 'Ay yo my man'",
+                       "pass": True,
+                       "pass_message": "Pass.  Sent in bob_dict = {'wth', 'What the heck',<br>"
+                       "'aymm', 'Ay yo my man',}, looked for aymm, received 'Ay yo my man'",
+                       "fail_message": "Fail.    Sent in bob_dict = {'wth', 'What the heck',<br>"
+                       "'aymm', 'Ay yo my man',}, looked for aymm, received 'Ay yo my man' but did not receive it"
+                       "Please check code and try again.<br>",
+        }
+        if failures > 0:
+            test_bob_2['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_bob_2)
+
+        # test3 for bob play tournament prints win
+        cmd = 'python3 /tmp/4.025.test.py testAutograde.test_bob_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_bob_3 =  {"name": "Testing play_tournament function.  If I input a high enough winning percentage,  "
+                          "it should print 'Win' somewhere (5 points)",
+                          "pass": True,
+                          "pass_message": "Pass.  If I input a high enough winning percentage, "
+                          "it should print 'Win' somewhere.<br>"
+                          "Note, this 'pass' is subject to manual review.",
+                          "fail_message": "Fail.  If I input a high enough winning percentage, "
+                          "it should print 'Win' somewhere<br>"
+                          "Please check the play_tournament function prints.<br>",
+        }
+        if failures > 0:
+            test_bob_3['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_bob_3)
+
+        # Test that play_tournamnet has a loop
+        test_play_tournament_loop =  {"name": "Testing play_tournament function.  Should have a loop somewhere. (2.5 points)",
+                                      "pass": True,
+                                      "pass_message": "Pass. play_tournament function has a loop somewhere. "
+                                      "Note, this 'pass' is subject to manual review.",
+                                      "fail_message": "Fail.   play_tournament function does not have loop somewhere."
+                                      "It needs a loop to play multiple games in case of win",
+        }
+        play_tournament = extract_single_function(filename, 'play_tournament')
+        match = re.search('(for|while)', play_tournament)
+        if match:
+            score_info['score'] += 2.5
+        else:
+            test_play_tournament_loop['pass'] = False            
+        tests.append(test_play_tournament_loop)
+
+        # Find number of PEP8 errors
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504 --max-line-length=120 ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+            
+            
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -5.0 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 
 
     
+
+
+    
+
 
 
     
