@@ -3039,7 +3039,7 @@ def feedback_4025():
         line = c.out
         test_win_all = {"name": "Testing that Wimbledon win % is correct, given win% of 1.0 (10 points)",
                         "pass": True,
-                        "pass_message": "Pass!  Wimbledon win % is correct, given win% of 1.0.",
+                        "pass_message": "Pass!  Wimbledon win % is correct, givyen win% of 1.0.",
                         "fail_message": "Fail.   Wimbledon win % is NOT correct, given win% of 1.0.<br>"
                         "Looking for the word 'Wimbledon' and a '%'.  Looks for the percent of times times she wins.<br>"
                         "check your run to verify that the output is correct and she wins the correct % of times, <br>"
