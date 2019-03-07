@@ -63,6 +63,8 @@ def index():
                 return redirect(url_for('feedback_4025', filename=filename))
             elif request.form['lab'] == '6.011':
                 return redirect(url_for('feedback_6011', filename=filename))
+            elif request.form['lab'] == '6.021':
+                return redirect(url_for('feedback_6021', filename=filename))
 
             
             
@@ -2766,7 +2768,7 @@ def feedback_4022():
 
         # Only continue if you have a bad_lossy_compression function
         if test_bad_lossy_compression['pass']:
-            # Check that function is called 3x
+            # Check that function is called 
             test_bad_lossy_compression_run = {"name": "Testing that bad_lossy_compression function is called at least once (5 points)",
                                           "pass": False,
                                           "pass_message": "Pass.  bad_lossy_compression function is called.  <br>",
@@ -3336,6 +3338,242 @@ def feedback_6011():
         test_filename['pass'] = False
         tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+@app.route('/feedback_6_021')
+def feedback_6021():
+    import re
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('6.021', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.021.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_6.021.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        with open(filename, 'r', encoding='utf8') as myfile:
+            filename_data = myfile.read()
+        
+        # Check for function martinez_dictionary
+        search_object = re.search(r"^def \s martinez_dictionary\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
+        test_martinez_dictionary = {"name": "Testing that martinez_dictionary function exists with two input arguments (5 points)",
+                                    "pass": True,
+                                    "pass_message": "Pass.  martinez_dictionary function exists with two input arguments (5 points)",
+                                    "fail_message": "Fail.  martinez_dictionary function does exist with two input arguments (5 points)",
+        }
+        if not search_object:
+            test_martinez_dictionary['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_martinez_dictionary)
+
+        # Check that function martinez_dictionary is called 
+        test_martinez_dictionary_run = {"name": "Testing that martinez_dictionary function is called at least once (5 points)",
+                                        "pass": False,
+                                        "pass_message": "Pass.  martinez_dictionary function is called.  <br>",
+                                        "fail_message": "Fail.  martinez_dictionary function isn't called in the code. <br>"
+        }
+        with open(filename) as infile:
+            for line in infile.readlines():
+                found = re.search("(?<!def\s)martinez_dictionary" , line,  re.X | re.M | re.S)
+                if found:
+                    test_martinez_dictionary_run['pass'] = True
+        infile.close()
+        if test_martinez_dictionary_run['pass']:
+            score_info['score'] += 5
+        tests.append(test_martinez_dictionary_run)
+
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/6.021.test.py > /tmp/6.021.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+            
+        # extract martinez_dictionary functions and look for dictionary
+        test_martinez_dictionary_dictionary = {"name": "Testing that martinez_dictionary function has a blank dictionary to initialize(5 points)",
+                                               "pass": False,
+                                               "pass_message": "Pass.  martinez_dictionary function has a blank dictionary to initialize.  <br>",
+                                               "fail_message": "Fail.  martinez_dictionary function does not have a blank dictionary in it to initialize. <br>"
+        }
+        martinez_function = extract_single_function(filename, 'martinez_dictionary')
+        search_object = re.search(r"{  }", martinez_function, re.X| re.M | re.S)
+        if search_object:
+            score_info['score'] += 5
+        else:
+            test_martinez_dictionary_dictionary['pass'] = False
+        tests.append(test_martinez_dictionary_dictionary)
+
+
+        # test1 for martinez
+        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_martinez_1 = {"name": "Checking martinez_dictionary 1 (10 points)",
+                           "pass": True,
+                           "pass_message": "Pass. Sent in list ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], got back {'Goku':500}",
+                           "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], didn't get back {'Goku':500}"
+                                           " Check out your code and try again.",
+        }
+        if failures > 0:
+            test_martinez_1['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_martinez_1)
+            
+        # test2 for martinez play_tournament prints tournmaent
+        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_martinez_2 = { "name": "Checking martinez_dictionary 2 (10 points)",
+                            "pass": True,
+                            "pass_message": "Pass. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
+                                            " got back  {'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100}",
+                            "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
+                            " didn't get back  {'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100} <br>"
+                            "Please check your code and try again.",
+
+        }
+        if failures > 0:
+            test_martinez_2['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_martinez_2)
+
+        # Check for function data_generator
+        search_object = re.search(r"^def \s data_generator\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
+        test_data_generator = {"name": "Testing that data_generator function exists with two input arguments (5 points)",
+                                     "pass": True,
+                                     "pass_message": "Pass.  data_generator function exists with two input arguments (5 points)",
+                                     "fail_message": "Fail.  data_generator function does exist with two input arguments (5 points)",
+        }
+        if not search_object:
+            test_data_generator['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_data_generator)
+
+        
+        # test3 for martinez, checks that 2 lists are different
+        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_martinez_3 = { "name": "Checking data_generator, send in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, "
+                                    " The two lists should be different (test of random) (5 points)",
+                            "pass": True,
+                            "pass_message": "Pass. Sent in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, "
+                                            " The two lists are different (test of random)",
+                            "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
+                                            " they are not different. <br>"
+                                            "Please check your code and try again.",
+
+        }
+        if failures > 0:
+            test_martinez_3['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_martinez_3)
+
+        # test4 for martinez, checks that list generated has everything that's supposed to be there
+        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_4 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test_martinez_4 = { "name": "Checking data_generator, send in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]  "
+                                    " n=100, they should all show up once at least) (5 points)",
+                            "pass": True,
+                            "pass_message": "Pass. Sent in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]"
+                                            " n=100, they all show up once at least)",
+                            "fail_message": "Fail. Sent in list ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]"
+                                            " n=100, they do not all show up once at least) "
+                                            "Please check your code and try again.",
+
+        }
+        if failures > 0:
+            test_martinez_4['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_martinez_4)
+
+        # Find number of PEP8 errors
+        cmd = \
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504,W293 --max-line-length=120 '\
+            + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+            
+            
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -5.0 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+
+    
+
+
+    
 
 
 
