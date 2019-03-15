@@ -61,6 +61,8 @@ def index():
                 return redirect(url_for('feedback_4022', filename=filename))
             elif request.form['lab'] == '4.025':
                 return redirect(url_for('feedback_4025', filename=filename))
+            elif request.form['lab'] == '4.031':
+                return redirect(url_for('feedback_4031', filename=filename))
             elif request.form['lab'] == '6.011':
                 return redirect(url_for('feedback_6011', filename=filename))
             elif request.form['lab'] == '6.021':
@@ -71,10 +73,10 @@ def index():
                 return redirect(url_for('feedback_6041', filename=filename))
             elif request.form['lab'] == '7.021':
                 return redirect(url_for('feedback_7021', filename=filename))
-
-            
-            
-            
+            elif request.form['lab'] == '7.031':
+                return redirect(url_for('feedback_7031', filename=filename))
+            elif request.form['lab'] == '7.034':
+                return redirect(url_for('feedback_7034', filename=filename))
     form = UploadForm()
     user = {'username': 'CRLS Scholar!!!'}
     return render_template('index.html', title='Home', user=user, form=form)
@@ -1634,11 +1636,39 @@ def feedback_3011():
 
 
 
+# def extract_functions(orig_file):
+#     import re
+#     outfile_name = orig_file.replace('.py', '.functions.py')
+#     outfile = open(outfile_name, 'w')
+#     with open(orig_file) as infile:
+#         line = True
+#         while line:
+#             print("starting over looking for function")
+#             print('reading this ' + str(line))
+#             line = infile.readline()
+#             start_def = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
+#             if start_def:
+#                 print("entering function!")
+#                 print('writing this' + str(line))
+#                 outfile.write(line)
+#                 print("reading this" + str(line))
+#                 #                   line = infile.readline()
+#                 #                   inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
+#                 inside_function = True
+#                 while inside_function:
+#                     print('reading this ' + str(line))
+#                     line = infile.readline()
+#                     inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
+#                     if inside_function:
+#                         print("writing this inside function " + str(line))
+#                         outfile.write(line)
+#                 outfile.write(line)
+
 def extract_functions(orig_file):
     import re
     outfile_name = orig_file.replace('.py', '.functions.py')
     outfile = open(outfile_name, 'w')
-    with open(orig_file) as infile:
+    with open(orig_file, 'r', encoding='utf8') as infile:
         line = True
         while line:
             print("starting over looking for function")
@@ -1646,27 +1676,35 @@ def extract_functions(orig_file):
             line = infile.readline()
             start_def = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
             if start_def:
-                print("entering function!")
-                print('writing this' + str(line))
+                print("starting function because found this " + line)
                 outfile.write(line)
-                print("reading this" + str(line))
-                #                   line = infile.readline()
-                #                   inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
-                inside_function = True
-                while inside_function:
-                    print('reading this ' + str(line))
+                in_function = True
+                while in_function:
                     line = infile.readline()
-                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
-                    if inside_function:
-                        print("writing this inside function " + str(line))
+                    print('reading this line ' + line)
+
+                    end_of_function = re.search("^[a-zA-Z]", line, re.X | re.M | re.S)
+                    new_function = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
+
+                    if end_of_function and not new_function:
+                        in_function = False
+                        start_def = False
+                    elif end_of_function and new_function:
+                        in_function = True
+                        start_def = True
+                        print("found new function witht his line " + line)
                         outfile.write(line)
-                outfile.write(line)
-                
+
+                    else:
+                        outfile.write(line)
+                        print('wrote this line ' + line)
+
+
 def extract_single_function(orig_file, function):
     import re
     function_file = orig_file.replace('.py', '.functions.py')
     extracted_function = ''
-    with open(function_file) as infile:
+    with open(function_file, 'r', encoding='utf8') as infile:
         line = True
         while line:
             print("looking for this function : " + function)
@@ -2775,7 +2813,7 @@ def feedback_4022():
         # Only continue if you have a bad_lossy_compression function
         if test_bad_lossy_compression['pass']:
             # Check that function is called 
-            test_bad_lossy_compression_run = {"name": "Testing that bad_lossy_compression function is called at least once (5 points)",
+            test_bad_lossy_compression_run = {"name": "Testing that bad_lossy_compression function is called at least 3x (5 points)",
                                           "pass": False,
                                           "pass_message": "Pass.  bad_lossy_compression function is called.  <br>",
                                           "fail_message": "Fail.  bad_lossy_compression function isn't called in the code. <br>"
@@ -4171,6 +4209,375 @@ def feedback_7021():
         test_filename['pass'] = False
         tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+@app.route('/feedback_7_031')
+def feedback_7031():
+    import re
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('7.031', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_7.031.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_7.031.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        with open(filename, 'r', encoding='utf8') as myfile:
+            filename_data = myfile.read()            
+
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/7.031.test.py > /tmp/7.031.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+        
+        # test1 for flaherty
+        cmd = 'python3 /tmp/7.031.test.py testAutograde.test_flaherty_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = 'Check that init works.  Create object, verify that attribues singles, fives, tens, twenties, hundreds can be accessed.'
+        test_flaherty_1 = {"name": "Checking init method in Collectible class. " + test + " (15 points).",
+                         "pass": True,
+                         "pass_message": "Pass. This test worked: " + test,
+                         "fail_message": "Fail. This test failed: " + test + " <br> Please check your code and try again.",
+        }
+        if failures > 0:
+            test_flaherty_1['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_flaherty_1)
+
+        # test2 for flaherty
+        cmd = 'python3 /tmp/7.031.test.py testAutograde.test_flaherty_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call __add__ magic method with no overflow.  Verify that I can add  stack1 = MoneyStack(1, 1, 1, 2, 3) " \
+               " to stack2 = MoneyStack(2, 0, 0, 1, 5)  and get stack3 = MoneyStack(3, 1, 1, 3, 8)"
+        test_flaherty_2 = {"name": "Checking Flaherty test 2. " + test + " (10 points)",
+                       "pass": True,
+                       "pass_message": "Pass.  " + test,
+                       "fail_message": "Fail.  " + test + "\n" 
+                                       "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_flaherty_2['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_flaherty_2)
+
+        # test3 for flaherty
+        cmd = 'python3 /tmp/7.031.test.py testAutograde.test_flaherty_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call __add__ magic method with overflow.  Verify that I can add  stack1 = MoneyStack(4, 1, 1, 2, 3) " \
+               " to stack2 = MoneyStack(9, 2, 2, 5, 9)  and get stack3 = MoneyStack(3, 1, 1, 4, 13)"
+        test_flaherty_3 = {"name": "Checking flaherty test 3. " + test + " (10 points)",
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n" 
+                                         "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_flaherty_3['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_flaherty_3)
+
+        # Find number of PEP8 errors
+        cmd = \
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293 --max-line-length=120 '\
+            + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(7) - side_errors)
+        tests.append(test_pep8)
+                        
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -2.5.0 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
+
+
+@app.route('/feedback_4031')
+def feedback_4031():
+    import re
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 54, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('4.031', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.031.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_4.031.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+ 
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/4.031.test.py > /tmp/4.031.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+
+        # test to see if loop 1 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop1 looks correct.  Expect '* * * * * *'"
+        test_loop_1 =  {"name": test + " (2.5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_1['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_loop_1)
+        
+        # test to see if loop 2 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop2 looks correct.  Expect '4 5 6 7 8 9 10 11'"
+        test_loop_2 =  {"name": test + " (2.5 points)",
+                                        "pass": True,
+                                        "pass_message": "Pass. " + test,
+                                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_2['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_loop_2)
+                
+        # test to see if loop 3 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop3 looks correct.  Expect '1 * 3 * 5 * 7 * 9 * 11'"
+        test_loop_3 =  {"name": test + " (2.5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_3['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_loop_3)
+
+        # test to see if loop 4 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_4 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop4 looks correct.  Expect a 6x6 square of *'s (see problem set)"
+        test_loop_4 =  {"name": test + " (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_4['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_loop_4)
+
+        # test to see if loop 5 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_5 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop5 looks correct.  (See problem set)"
+        test_loop_5 =  {"name": test + " (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_5['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_loop_5)
+
+        # test to see if loop 6 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_6 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop6 looks correct.  (See problem set)"
+        test_loop_6 =  {"name": test + " (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_6['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_loop_6)
+
+        # test to see if loop 7 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_7 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop7 looks correct.  (See problem set)"
+        test_loop_7 =  {"name": test + " (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_7['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_loop_7)
+
+        # test to see if loop 8 is correct
+        cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_8 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that loop8 looks correct.  (See problem set)"
+        test_loop_8 =  {"name": test + " (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_loop_8['pass'] = False
+        else:
+            score_info['score'] += 7.5
+        tests.append(test_loop_8)
+
+        # Find number of PEP8 errors
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                         side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -5 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        
+    
+
+
+    
+
+
+
+
 
 
 
