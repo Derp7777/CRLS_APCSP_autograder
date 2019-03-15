@@ -31,6 +31,7 @@ def index():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
+            """
             if request.form['lab'] == '1.040':
                 return redirect(url_for('feedback_1040', filename=filename))
             elif request.form['lab'] == '1.060':
@@ -71,8 +72,10 @@ def index():
                 return redirect(url_for('feedback_6041', filename=filename))
             elif request.form['lab'] == '7.021':
                 return redirect(url_for('feedback_7021', filename=filename))
-
-            
+            """
+            if request.form['lab'] in ['1.040', '1.060', '2.020', '2.032a', '2.032b', '2.040', '2.050a', '2.050b', '3.011', '3.020',
+                                       '3.026', '4.011', '4.021', '4.022', '4.025', '6.011', '6.021', '6.031', '6.041', '7.021']:
+                return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
             
             
     form = UploadForm()
