@@ -11,7 +11,7 @@ class testAutograde(unittest.TestCase):
             self.assertEqual(add(mcglathery_dict, 'fire', 'charmander'), {'fire':['charmander']})
 
       def test_mcglathery_2(self):
-            mcglathery_dict = {'fire':'charmander', 'ice','iceperson'}
+            mcglathery_dict = {'fire':'charmander', 'ice':'iceperson'}
             self.assertEqual(add(mcglathery_dict, 'ice', 'iceperson2'), {'fire':['charmander'], 'ice':['iceperson','iceperson2']})
             
       def test_mcglathery_3(self):

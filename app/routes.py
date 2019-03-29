@@ -63,6 +63,8 @@ def index():
                 return redirect(url_for('feedback_4025', filename=filename))
             elif request.form['lab'] == '4.031':
                 return redirect(url_for('feedback_4031', filename=filename))
+            elif request.form['lab'] == '4.036':
+                return redirect(url_for('feedback_4036', filename=filename))
             elif request.form['lab'] == '6.011':
                 return redirect(url_for('feedback_6011', filename=filename))
             elif request.form['lab'] == '6.021':
@@ -622,7 +624,7 @@ def feedback_2020():
         tests.append(test_output_3)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120  --ignore=E305,E226 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120  --ignore=E305,E226,E241,W504,W293,E126  ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -1432,7 +1434,7 @@ def feedback_2050b():
         tests.append(test_twolist)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226  --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126    --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -1590,7 +1592,7 @@ def feedback_3011():
         tests.append(test_random)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226  --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126   --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -2037,7 +2039,7 @@ def feedback_3020():
             tests.append(test_run_ten_cards)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -2289,7 +2291,7 @@ def feedback_3026():
             tests.append(test_return_min_4)
             
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -2512,7 +2514,7 @@ def feedback_4011():
 
             
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -2704,7 +2706,7 @@ def feedback_4021():
             tests.append(test_the_rock_says_3)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -2900,7 +2902,7 @@ TA!!!'",
             tests.append(test_bad_lossy_compression_3)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
@@ -3141,7 +3143,7 @@ def feedback_4025():
         tests.append(test_win_some)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504 --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -3343,7 +3345,7 @@ def feedback_6011():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -3425,11 +3427,11 @@ def feedback_6021():
             filename_data = myfile.read()
         
         # Check for function martinez_dictionary
-        search_object = re.search(r"^def \s martinez_dictionary\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
-        test_martinez_dictionary = {"name": "Testing that martinez_dictionary function exists with two input arguments (5 points)",
+        search_object = re.search(r"^def \s martinez_dictionary\(.+\)", filename_data, re.X| re.M | re.S)
+        test_martinez_dictionary = {"name": "Testing that martinez_dictionary function exists with one input argument (5 points)",
                                     "pass": True,
-                                    "pass_message": "Pass.  martinez_dictionary function exists with two input arguments (5 points)",
-                                    "fail_message": "Fail.  martinez_dictionary function does exist with two input arguments (5 points)",
+                                    "pass_message": "Pass.  martinez_dictionary function exists with one input argument (5 points)",
+                                    "fail_message": "Fail.  martinez_dictionary function does exist with one input argument (5 points)",
         }
         if not search_object:
             test_martinez_dictionary['pass'] = False
@@ -3569,7 +3571,7 @@ def feedback_6021():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -3788,7 +3790,7 @@ def feedback_6031():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -3962,7 +3964,7 @@ def feedback_6041():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -4134,7 +4136,7 @@ def feedback_7021():
         tests.append(test_atwood_3)
 
         # Check for all objects
-        cmd = 'grep "[a-zA-Z]\s*=\s*Collectible" ' + filename + ' | wc -l '
+        cmd = 'grep "[a-zA-Z0-9]\s*=\s*Collectible" ' + filename + ' | wc -l '
         c = delegator.run(cmd)
         objects = int(c.out)        
         test_collectibles = {"name": "Testing for at least 3 objects of type Collectible (5 points)",
@@ -4166,7 +4168,7 @@ def feedback_7021():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -4310,7 +4312,7 @@ def feedback_7031():
 
         # Find number of PEP8 errors
         cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293 --max-line-length=120 '\
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
             + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
@@ -4355,8 +4357,185 @@ def feedback_7031():
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
+@app.route('/feedback_7_034')
+def feedback_7034():
+    import re
+    import delegator
 
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
 
+    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('7.034', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_7.034.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_7.034.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+
+        with open(filename, 'r', encoding='utf8') as myfile:
+            filename_data = myfile.read()            
+
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/7.034.test.py > /tmp/7.034.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+        
+        # test1 for disney
+        cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = 'Check that init works.  Create object, verify that attributes name and pocket can be accessed.'
+        test_disney_1 = {"name": "Checking init method in DisneyBody class. " + test + " (5 points).",
+                         "pass": True,
+                         "pass_message": "Pass. This test worked: " + test,
+                         "fail_message": "Fail. This test failed: " + test + " <br> Please check your code and try again.",
+        }
+        if failures > 0:
+            test_disney_1['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_disney_1)
+
+        # test2 for disney
+        cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call add_content magic method, adding 'meatball' to a Goofy with  ['wallet', 'paper', 'rock', 'scissors']" \
+               "Should get Goofy with   ['wallet', 'paper', 'rock', 'scissors', 'meatball']"
+        test_disney_2 = {"name": "Checking Disney test 2. " + test + " (5 points)",
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n" 
+                         "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_disney_2['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_disney_2)
+
+        # test3 for disney
+        cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call add_content magic method, adding 'Dr Wu' with ['strawberries'] to a Goofy with  ['wallet', 'paper', 'rock', 'scissors']" \
+               "Should get Goofy with   ['wallet', 'paper', 'rock', 'scissors']"
+        test_disney_3 = {"name": "Checking disney test 3. " + test + " (5 points)",
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n" 
+                                         "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_disney_3['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_disney_3)
+
+        # test4 for disney
+        cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_4 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call add_content magic method, adding 'Dr Wu' with ['liver','pancreas','heart','strawberries'] to a Goofy with  ['wallet', 'paper', 'rock', 'scissors']" \
+               "Should get Goofy with   ['wallet', 'paper', 'rock', 'scissors', 'liver','pancreas','heart']"
+        test_disney_4 = {"name": "Checking disney test 4. " + test + " (5 points)",
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n" 
+                                         "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_disney_4['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_disney_4)
+
+        # test5 for disney
+        cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_5 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Call print on Goofy with  ['wallet', 'paper', 'rock', 'scissors']" \
+               "Printout should include all of these things"
+        test_disney_5 = {"name": "Checking disney test 5. " + test + " (5 points)",
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n" 
+                                         "Check out your code and try again.",
+        }
+        if failures > 0:
+            test_disney_5['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_disney_5)
+
+        # Find number of PEP8 errors
+        cmd = \
+            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
+            + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                             side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(7) - side_errors)
+        tests.append(test_pep8)
+                        
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -2.5.0 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 2.5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+    else:
+        test_filename['pass'] = False
+        tests.append(test_filename)
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 @app.route('/feedback_4031')
 def feedback_4031():
@@ -4531,7 +4710,7 @@ def feedback_4031():
         tests.append(test_loop_8)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226 --max-line-length=120 ' + filename + ' | wc -l  '
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
         side_errors = int(c.out)
         test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
@@ -4570,6 +4749,231 @@ def feedback_4031():
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         
+    
+@app.route('/feedback_4036')
+def feedback_4036():
+    import re
+    import delegator
+
+    # have same feedback for all
+    # different template
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    find_year = re.search('2019', filename)
+    find_lab = re.search('4.036', filename)
+    test_filename = {"name": "Testing that file is named correctly",
+                     "pass": True,
+                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.036.py)",
+                     "fail_message": "File name of submitted file does not follow required convention. "
+                                     " Rename and resubmit.<br>"
+                                     "File name should be like this: <br> <br>"
+                                     "2019_luismartinez_4.036.py <br><br>"
+                                     "File must be python file (ends in .py), not a Google doc with Python code"
+                                     " copy+pasted in. <br>"
+                                     " Other tests not run. They will be run after filename is fixed.<br>"
+                     }
+
+    if find_year and find_lab:
+        test_filename['pass'] = True
+        tests.append(test_filename)
+        
+        with open(filename, 'r', encoding='utf8') as myfile:
+            filename_data = myfile.read()            
+
+        
+        # Check for function with 2 inputs
+        search_object = re.search(r"^def \s fried_chicken_problem_1\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
+        test_get = {"name": "Testing that fried_chicken_problem_1 function exists with two input arguments (5 points)",
+                                    "pass": True,
+                                    "pass_message": "Pass.  get function exists with two input arguments (5 points)",
+                                    "fail_message": "Fail.  get function does exist with two input arguments (5 points)",
+        }
+        if not search_object:
+            test_get['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_get)
+
+
+        
+        # extract functions and create python test file
+        extract_functions(filename)
+        functions_filename = filename.replace('.py', '.functions.py')
+        cmd = ' cat ' + functions_filename + \
+              ' /home/ewu/CRLS_APCSP_autograder/var/4.036.test.py > /tmp/4.036.test.py'
+        c = delegator.run(cmd)
+        if c.err:
+            flash("There was a problem creating the python test file")
+
+
+        # test to see if test 1 is correct
+        cmd = 'python3 /tmp/4.036.test.py testAutograde.test_fried_chicken_1 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test = "Test that test1 looks correct.  hunger = 100, hunger_increase_per_day = 0, should give 25 pieces for function 1"
+        test_chicken_1 =  {"name": test + " (10 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_chicken_1['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_chicken_1)
+        
+        # test to see if test 2 is correct
+        cmd = 'python3 /tmp/4.036.test.py testAutograde.test_fried_chicken_2 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test =  "Test that test2 looks correct.  hunger = 10000, hunger_increase_per_day = 0.25, should give ~2903 pieces for function 1"
+        test_chicken_2 =  {"name": test + " (10 points)",
+                                        "pass": True,
+                                        "pass_message": "Pass. " + test,
+                                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_chicken_2['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_chicken_2)
+                
+        # Check for function with 2 inputs
+        search_object = re.search(r"^def \s fried_chicken_problem_2\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
+        test_get = {"name": "Testing that fried_chicken_problem_2 function exists with two input arguments (5 points)",
+                                    "pass": True,
+                                    "pass_message": "Pass.  get function exists with two input arguments (5 points)",
+                                    "fail_message": "Fail.  get function does exist with two input arguments (5 points)",
+        }
+        if not search_object:
+            test_get['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_get)
+
+        # test to see if test 3 is correct
+        cmd = 'python3 /tmp/4.036.test.py testAutograde.test_fried_chicken_3 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test =  "Test that test3 looks correct.  hunger = 100, hunger_increase_per_day = 0, should give between 24.8 and 25.2 pieces for function 2"
+        test_chicken_3 =  {"name": test + " (10 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_chicken_3['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_chicken_3)
+
+        # test to see if test 4 is correct
+        cmd = 'python3 /tmp/4.036.test.py testAutograde.test_fried_chicken_4 2>&1 |grep -i fail |wc -l'
+        c = delegator.run(cmd)
+        failures = int(c.out)
+        test =  "Test that test4 looks correct.  hunger = 10000, hunger_increase_per_day = 0.25, should give between 2902.2 and 2902.7 pieces for function 2"
+        test_chicken_4 =  {"name": test + " (10 points)",
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+        }
+        if failures > 0:
+            test_chicken_4['pass'] = False
+        else:
+            score_info['score'] += 10
+        tests.append(test_chicken_4)
+
+        # Find number of PEP8 errors
+        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
+        c = delegator.run(cmd)
+        side_errors = int(c.out)
+        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
+                     "pass": True,
+                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
+                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
+                     "This translates to -" + str(
+                         side_errors) + " point(s) deduction.<br>"
+        }
+        if side_errors != 0:
+            test_pep8['pass'] = False
+        score_info['score'] += max(0, int(14) - side_errors)
+        tests.append(test_pep8)
+
+        # Check for help comment
+        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
+        c = delegator.run(cmd)
+        help_comments = int(c.out)
+        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
+                     "pass": True,
+                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
+                     "Be sure your comment is meaningful, otherwise this can be "
+                     "overturned on review.",
+                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
+                     " how somebody helped you with your code.  <br>"
+                     "If you didn't have any problems, then ask somebody to check that your code"
+                     " gives correct outputs, given an input.<br>"
+                     "This translates to -5 points deduction.<br>",
+        }
+        if help_comments == 0:
+            test_help['pass'] = False
+        else:
+            score_info['score'] += 5
+        tests.append(test_help)
+        
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        
+    
+
+
+    
+
+
+
+
+
+
+
+
+    
+
+
+    
+
+
+
+
+
+
+
+    
+
+
+    
+
+
+
+
+    
+
+
+    
+
+
+
+    
+
+
+
+    
+
+
     
 
 
