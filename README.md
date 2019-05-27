@@ -5,7 +5,9 @@ written in python with flask framework
 
 Deployment on Ubuntu 16.04 or 18.04
 
-$ apt-get install python3
+$ sudo apt-get install python3 python3-pip
+$ pip3 install virtualenv
+
 
 $ python3 -m venv venv1 
 
