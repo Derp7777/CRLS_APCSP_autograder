@@ -89,6 +89,8 @@ def feedback_1040():
     import re
     import subprocess
     import delegator
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
 
     # have same feedback for all
     # different template
@@ -141,6 +143,7 @@ def feedback_1040():
             filename_output = filename + '.out'
             cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
                   + filename_output
+
             c = delegator.run(cmd)
             if c.err:
                 flash('bad! You have an error somewhere in running program correct order 1.040')
@@ -160,7 +163,8 @@ def feedback_1040():
                             "pass": True,
                             "pass_message": "Pass!  Genie appears to answer your wishes in correct order",
                             "fail_message": "Fail.  Double check that the Genie is answering in correct order. <br>"
-                                            "Genie needs to reply back with the 3 wishes you asked for in a particular order. <br>"
+                                            "Genie needs to reply back with the 3 wishes you asked for "
+                                            "in a particular order. <br>"
                                             "Note: you must have a comma, period, space, or something between wishes."
                                             "Review the sample run if this isn't clear. <br>"
                             }
@@ -180,7 +184,8 @@ def feedback_1040():
                              "pass_message": "Pass!  Genie asks at least 6 questions (first + second part of lab)",
                              "fail_message": "Fail. Code does not have at least 6 inputs (first + second part of lab)."
                                              "<br>"
-                                             "The Genie needs to ask for 3 wishes for the first part and 3 for the second part",
+                                             "The Genie needs to ask for 3 wishes for the first part and 3 for the"
+                                             " second part",
                              }
             if inputs < 6:
                 test_inputs_2['pass'] = False
@@ -204,7 +209,8 @@ def feedback_1040():
                                                    " per instructions AND there are at least 6 inputs",
                                    "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
                                                    "<br>"
-                                                   "Please recheck the instructions about putting repeated strings into variables. "
+                                                   "Please recheck the instructions about putting repeated strings"
+                                                   " into variables. "
                                                    "This translates to -10 points deduction.<br>",
                                    }
             if inputs_variable > 4:
@@ -248,46 +254,17 @@ def feedback_1040():
                 score_info['score'] += 5
             tests.append(test_order_2)
 
-            # Find number of PEP8 errors
-            #cmd2 = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-            #c = delegator.run(cmd2)
-            #flash(c.out)
-            
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            if c.err:
-                flash(c.err)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(7) - side_errors)
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+               score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 2.5
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
@@ -301,7 +278,6 @@ def feedback_1040():
 @app.route('/feedback_1060')
 def feedback_1060():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -457,17 +433,10 @@ def feedback_1060():
 
             tests.append(test_puncts)
 
-            # Find number of PEP8 errors
-            #cmd2 = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename
-            #c = delegator.run(cmd2)
-            #flash(c.out)
-            
-
             
             cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
-            #flash(c.out)
-            
+
             side_errors = int(c.out)
             test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                          "pass": True,
@@ -886,7 +855,6 @@ def feedback_2032a():
 @app.route('/feedback_2032b')
 def feedback_2032b():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -1727,44 +1695,6 @@ def extract_single_function(orig_file, function):
                         extracted_function += line
                 extracted_function += line
     return extracted_function
-                  
-    # with open(orig_file) as infile:
-    #        line = True
-    #        while line:
-    #            print("starting over looking for function")
-    #            line = infile.readline()
-    #            print(line)
-    #            start_def = re.search("^(def) \s+ .+ " , line,  re.X | re.M | re.S)
-    #            if start_def:
-    #                outfile.write(line)
-    #                print("this function!")
-    #                line = infile.readline()
-    #                print(line)
-    #                inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
-    #                while inside_function:
-    #                    line = infile.readline()
-    #                    outfile.write(line)
-    #                    print("inside function " + line)
-    #                    inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
-                                                                                                                                                                               
-#   
-    
-#    with open(orig_file) as infile:
-#        for line in infile.readlines():
-#            print(line)
-#            start_def = re.match("^(def) \s+ .+ " , line,  re.X | re.M | re.S)
-#            outfile.write(line)
-#            if start_def:
-#                 keep_line = re.match("^\s+ .+ " , line,  re.X | re.M | re.S)
-#                 if keep_line:
-#                     outfile.write(line)
-
-
-#            keep_line = re.match("^([^a-z] | def ) \s+ .+ " , line,  re.X | re.M | re.S)
-#            if keep_line:
-#                print("keep this line: " + line)
-#                outfile.write(line)
-                
 
 
 @app.route('/feedback_3020')
@@ -2341,7 +2271,6 @@ def feedback_3026():
 @app.route('/feedback_4011')
 def feedback_4011():
     import re
-    import subprocess
     import delegator
 
     # have same feedback for all
@@ -4928,95 +4857,3 @@ def feedback_4036():
         
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        
-    
-
-
-    
-
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-    
-
-
-    
-
-
-
-    
-
-
-
-    
-
-
-    
-
-
-    
-
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-    
-
-
-    
-
-
-
-    
-
-
-
-    
-
-
-    
