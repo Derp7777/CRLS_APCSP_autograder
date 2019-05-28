@@ -1576,6 +1576,8 @@ def feedback_3026():
     import re
     import delegator
 
+    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.find_function import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1593,25 +1595,13 @@ def feedback_3026():
     if test_filename['pass'] is True:
 
         # Check for function return_min
-        cmd = 'grep "def return_min(" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        return_min = int(c.out)
-        test_return_min = {"name": "Testing that return_min function exists (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass.  return_min function exists.  <br>",
-                              "fail_message": "Fail.  return_min function isn't in the code. <br>"
-                                              "It may be spelled incorrectly.  The function needs to be named "
-                                              "return_min, exactly."
-                                              "Fix code and resubmit. <br>",
-        }
-        if return_min == 0:
-            test_return_min['pass'] = False
-        else:
+        test_find_function = find_function(filename, 'retrun_min', 1)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_return_min)
+        tests.append(test_find_function)
 
         # Only continue if you have a return_min_function
-        if test_return_min['pass']:
+        if test_find_function['pass']:
             # Check that function is called once
             test_return_min_run = {"name": "Testing that return_min function is called at least once (5 points)",
                                    "pass": False,
@@ -1648,7 +1638,7 @@ def feedback_3026():
             tests.append(test_return)
             
             # extract functions and create python test file
-            extract_functions(filename)
+            extract_all_functions(filename)
             functions_filename = filename.replace('.py', '.functions.py')
             cmd = ' cat ' + functions_filename + \
                   ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
