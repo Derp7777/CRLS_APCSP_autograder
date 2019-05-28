@@ -1576,6 +1576,7 @@ def feedback_3026():
     import re
     import delegator
 
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.extract_all_functions import extract_all_functions
     from app.python_labs.find_function import find_function
     from app.python_labs.pep8 import pep8
@@ -3691,7 +3692,6 @@ def feedback_4036():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
