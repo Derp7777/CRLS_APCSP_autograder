@@ -1259,41 +1259,6 @@ def feedback_3011():
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
-def extract_functions(orig_file):
-    import re
-    outfile_name = orig_file.replace('.py', '.functions.py')
-    outfile = open(outfile_name, 'w')
-    with open(orig_file, 'r', encoding='utf8') as infile:
-        line = True
-        while line:
-            print("starting over looking for function")
-            print('reading this ' + str(line))
-            line = infile.readline()
-            start_def = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
-            if start_def:
-                print("starting function because found this " + line)
-                outfile.write(line)
-                in_function = True
-                while in_function:
-                    line = infile.readline()
-                    print('reading this line ' + line)
-
-                    end_of_function = re.search("^[a-zA-Z]", line, re.X | re.M | re.S)
-                    new_function = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
-
-                    if end_of_function and not new_function:
-                        in_function = False
-                        start_def = False
-                    elif end_of_function and new_function:
-                        in_function = True
-                        start_def = True
-                        print("found new function witht his line " + line)
-                        outfile.write(line)
-
-                    else:
-                        outfile.write(line)
-                        print('wrote this line ' + line)
-
 
 def extract_single_function(orig_file, function):
     import re
