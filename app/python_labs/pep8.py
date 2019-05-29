@@ -29,7 +29,7 @@ def pep8(p_filename, p_max_points):
         cmd = pycodestyle_file + ' --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 ' + p_filename
         c = delegator.run(cmd)
         error_msg = c.out
-        error_msg = error_msg.replace(p_filename, '<br>' + p_filename )
+        error_msg = error_msg.replace(p_filename, '<br>' + p_filename)
     test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
                  "pass": True,
                  "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
