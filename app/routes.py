@@ -91,187 +91,170 @@ def feedback_1040():
     import delegator
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
+    from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
-    filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('1.040', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.04.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_1.040.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '1.040')
+    tests.append(test_filename)
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for part 1 asks 3 questions
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_inputs_1 = {"name": "Testing for at genie asking at least 3 questions (first part of lab) ( 5 points )",
-                         "pass": True,
-                         "pass_message": "Pass!  Genie asks at least 3 questions (first part of lab)",
-                         "fail_message": "Fail.  Code does not have at least 3 inputs (first part of lab).<br>"
-                                         "The Genie needs to ask for 3 wishes for the first part"
-                                         "Please fix error and resubmit (other tests not run). <br>",
-                         }
-        if inputs < 3:
-            test_inputs_1['pass'] = False
-            tests.append(test_inputs_1)
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        else:
-            score_info['score'] += 5
-            tests.append(test_inputs_1)
+        # cmd = 'grep "input" ' + filename + ' | wc -l  '
+        # c = delegator.run(cmd)
+        # inputs = int(c.out)
+        # test_inputs_1 = {"name": "Testing for at genie asking at least 3 questions (first part of lab) ( 5 points )",
+        #                  "pass": True,
+        #                  "pass_message": "Pass!  Genie asks at least 3 questions (first part of lab)",
+        #                  "fail_message": "Fail.  Code does not have at least 3 inputs (first part of lab).<br>"
+        #                                  "The Genie needs to ask for 3 wishes for the first part"
+        #                                  "Please fix error and resubmit (other tests not run). <br>",
+        #                  }
+        # if inputs < 3:
+        #     test_inputs_1['pass'] = False
+        #     tests.append(test_inputs_1)
+        #     return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        # else:
+        #     score_info['score'] += 5
+        #     tests.append(test_inputs_1)
+        #
+        #     # Check that things are in correct order (a, b, c)
+        #     filename_output = filename + '.out'
+        #     cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
+        #           + filename_output
+        #
+        #     c = delegator.run(cmd)
+        #     if c.err:
+        #         flash('bad! You have an error somewhere in running program correct order 1.040')
+        #         flash(c.err)
+        #     with open(filename_output, 'r') as myfile:
+        #         outfile_data = myfile.read()
+        #
+        #     search_object = re.search(r".+ "
+        #                               r"a1 "
+        #                               r".+ "
+        #                               r"a2 "
+        #                               r".+ "
+        #                               r"a3 "
+        #                               r".+ ",
+        #                               outfile_data, re.X | re.M | re.S)
+        #     test_order_1 = {"name": "Testing that Genie answers in correct order for part 1 (5 points)",
+        #                     "pass": True,
+        #                     "pass_message": "Pass!  Genie appears to answer your wishes in correct order",
+        #                     "fail_message": "Fail.  Double check that the Genie is answering in correct order. <br>"
+        #                                     "Genie needs to reply back with the 3 wishes you asked for "
+        #                                     "in a particular order. <br>"
+        #                                     "Note: you must have a comma, period, space, or something between wishes."
+        #                                     "Review the sample run if this isn't clear. <br>"
+        #                     }
+        #     if not search_object or c.err:
+        #         test_order_1['pass'] = False
+        #     else:
+        #         score_info['score'] += 5
+        #     tests.append(test_order_1)
+        #
+        #     # Check for part 2 asks 3 more questions, 6 total
+        #     cmd = 'grep "input" ' + filename + ' | wc -l  '
+        #     c = delegator.run(cmd)
+        #     inputs = int(c.out)
+        #     test_inputs_2 = {"name": "Testing for at genie asking at least 6 questions (first + second part of lab) "
+        #                              "(5 points)",
+        #                      "pass": True,
+        #                      "pass_message": "Pass!  Genie asks at least 6 questions (first + second part of lab)",
+        #                      "fail_message": "Fail. Code does not have at least 6 inputs (first + second part of lab)."
+        #                                      "<br>"
+        #                                      "The Genie needs to ask for 3 wishes for the first part and 3 for the"
+        #                                      " second part",
+        #                      }
+        #     if inputs < 6:
+        #         test_inputs_2['pass'] = False
+        #         tests.append(test_inputs_2)
+        #     else:
+        #         score_info['score'] += 5
+        #         tests.append(test_inputs_2)
+        #
+        #     # Check for asing variable questions
+        #     process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
+        #     process_wc = subprocess.Popen(['wc', '-l'], stdin=process_grep1.stdout, stdout=subprocess.PIPE)
+        #     process_grep1.wait()
+        #     process_grep1.stdout.close()
+        #     output_string = str(process_wc.communicate()[0])
+        #     match_object = re.search(r"([0-9]+)", output_string)
+        #     inputs_variable = int(match_object.group())
+        #     test_input_variable = {"name": "Testing for use of variable to sub for repeated strings in asking questions"
+        #                                    "(5 points)",
+        #                            "pass": True,
+        #                            "pass_message": "Pass!  Genie appears to have stuck repeated strings into variables,"
+        #                                            " per instructions AND there are at least 6 inputs",
+        #                            "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
+        #                                            "<br>"
+        #                                            "Please recheck the instructions about putting repeated strings"
+        #                                            " into variables. "
+        #                                            "This translates to -10 points deduction.<br>",
+        #                            }
+        #     if inputs_variable > 4:
+        #         test_input_variable['pass'] = False
+        #     else:
+        #         score_info['score'] += 5
+        #     tests.append(test_input_variable)
+        #
+        #     # Check that things are in correct order (a, b, c, then b, c, a)
+        #
+        #     cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
+        #           + filename_output
+        #     c = delegator.run(cmd)
+        #
+        #     search_object = re.search(r".+ "
+        #                               r"a1 "
+        #                               r".+ "
+        #                               r"a2 "
+        #                               r".+ "
+        #                               r"a3 "
+        #                               r".+ "
+        #                               r"b2 "
+        #                               r".+ "
+        #                               r"b3 "
+        #                               r".+ "
+        #                               r"b1",
+        #                               outfile_data, re.X | re.M | re.S)
+        #     test_order_2 = {"name": "Testing that Genie answers in correct order for part 1 and part 2 (5 points)",
+        #                     "pass": True,
+        #                     "pass_message": "Pass!  Genie appears to answer your wishes in correct order for part 1 "
+        #                                     "and part 2",
+        #                     "fail_message": "Fail.  Double check that the Genie is answering in correct order for both "
+        #                                     "part 1 and part 2. <br>"
+        #                                     "wish1, wish2, and wish3 responses need to go in a particular order. <br>"
+        #                                     "Note: you must have a comma, period, space, or something between wishes."
+        #                                     "Review the instructions if this isn't clear. <br>"
+        #                     }
+        #     if not search_object or c.err:
+        #         test_order_2['pass'] = False
+        #     else:
+        #         score_info['score'] += 5
+        #     tests.append(test_order_2)
 
-            # Check that things are in correct order (a, b, c)
-            filename_output = filename + '.out'
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
-                  + filename_output
+        # Pep8
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+           score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        tests.append(test_pep8)
 
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program correct order 1.040')
-                flash(c.err)
-            with open(filename_output, 'r') as myfile:
-                outfile_data = myfile.read()
+        # Check for help comment
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
+        tests.append(test_help)
 
-            search_object = re.search(r".+ "
-                                      r"a1 "
-                                      r".+ "
-                                      r"a2 "
-                                      r".+ "
-                                      r"a3 "
-                                      r".+ ",
-                                      outfile_data, re.X | re.M | re.S)
-            test_order_1 = {"name": "Testing that Genie answers in correct order for part 1 (5 points)",
-                            "pass": True,
-                            "pass_message": "Pass!  Genie appears to answer your wishes in correct order",
-                            "fail_message": "Fail.  Double check that the Genie is answering in correct order. <br>"
-                                            "Genie needs to reply back with the 3 wishes you asked for "
-                                            "in a particular order. <br>"
-                                            "Note: you must have a comma, period, space, or something between wishes."
-                                            "Review the sample run if this isn't clear. <br>"
-                            }
-            if not search_object or c.err:
-                test_order_1['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_order_1)
-
-            # Check for part 2 asks 3 more questions, 6 total
-            cmd = 'grep "input" ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            inputs = int(c.out)
-            test_inputs_2 = {"name": "Testing for at genie asking at least 6 questions (first + second part of lab) "
-                                     "(5 points)",
-                             "pass": True,
-                             "pass_message": "Pass!  Genie asks at least 6 questions (first + second part of lab)",
-                             "fail_message": "Fail. Code does not have at least 6 inputs (first + second part of lab)."
-                                             "<br>"
-                                             "The Genie needs to ask for 3 wishes for the first part and 3 for the"
-                                             " second part",
-                             }
-            if inputs < 6:
-                test_inputs_2['pass'] = False
-                tests.append(test_inputs_2)
-            else:
-                score_info['score'] += 5
-                tests.append(test_inputs_2)
-
-            # Check for asing variable questions
-            process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
-            process_wc = subprocess.Popen(['wc', '-l'], stdin=process_grep1.stdout, stdout=subprocess.PIPE)
-            process_grep1.wait()
-            process_grep1.stdout.close()
-            output_string = str(process_wc.communicate()[0])
-            match_object = re.search(r"([0-9]+)", output_string)
-            inputs_variable = int(match_object.group())
-            test_input_variable = {"name": "Testing for use of variable to sub for repeated strings in asking questions"
-                                           "(5 points)",
-                                   "pass": True,
-                                   "pass_message": "Pass!  Genie appears to have stuck repeated strings into variables,"
-                                                   " per instructions AND there are at least 6 inputs",
-                                   "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
-                                                   "<br>"
-                                                   "Please recheck the instructions about putting repeated strings"
-                                                   " into variables. "
-                                                   "This translates to -10 points deduction.<br>",
-                                   }
-            if inputs_variable > 4:
-                test_input_variable['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_input_variable)
-
-            # Check that things are in correct order (a, b, c, then b, c, a)
-
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
-                  + filename_output
-            c = delegator.run(cmd)
-
-            search_object = re.search(r".+ "
-                                      r"a1 "
-                                      r".+ "
-                                      r"a2 "
-                                      r".+ "
-                                      r"a3 "
-                                      r".+ "
-                                      r"b2 "
-                                      r".+ "
-                                      r"b3 "
-                                      r".+ "
-                                      r"b1",
-                                      outfile_data, re.X | re.M | re.S)
-            test_order_2 = {"name": "Testing that Genie answers in correct order for part 1 and part 2 (5 points)",
-                            "pass": True,
-                            "pass_message": "Pass!  Genie appears to answer your wishes in correct order for part 1 "
-                                            "and part 2",
-                            "fail_message": "Fail.  Double check that the Genie is answering in correct order for both "
-                                            "part 1 and part 2. <br>"
-                                            "wish1, wish2, and wish3 responses need to go in a particular order. <br>"
-                                            "Note: you must have a comma, period, space, or something between wishes."
-                                            "Review the instructions if this isn't clear. <br>"
-                            }
-            if not search_object or c.err:
-                test_order_2['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_order_2)
-
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-               score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-            tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
-            tests.append(test_help)
-
-            score_info['finished_scoring'] = True
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -433,7 +416,6 @@ def feedback_1060():
 
             tests.append(test_puncts)
 
-            
             cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
             c = delegator.run(cmd)
 
