@@ -92,6 +92,7 @@ def feedback_1040():
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.python_1_040 import three_questions
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -99,30 +100,19 @@ def feedback_1040():
 
     # Test 1: file name
     filename = request.args['filename']
+    filename = '/tmp/' + filename
     test_filename = filename_test(filename, '1.040')
     tests.append(test_filename)
 
     if test_filename['pass'] is True:
 
-        # Check for part 1 asks 3 questions
-        # cmd = 'grep "input" ' + filename + ' | wc -l  '
-        # c = delegator.run(cmd)
-        # inputs = int(c.out)
-        # test_inputs_1 = {"name": "Testing for at genie asking at least 3 questions (first part of lab) ( 5 points )",
-        #                  "pass": True,
-        #                  "pass_message": "Pass!  Genie asks at least 3 questions (first part of lab)",
-        #                  "fail_message": "Fail.  Code does not have at least 3 inputs (first part of lab).<br>"
-        #                                  "The Genie needs to ask for 3 wishes for the first part"
-        #                                  "Please fix error and resubmit (other tests not run). <br>",
-        #                  }
-        # if inputs < 3:
-        #     test_inputs_1['pass'] = False
-        #     tests.append(test_inputs_1)
-        #     return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        # else:
-        #     score_info['score'] += 5
-        #     tests.append(test_inputs_1)
-        #
+        test_three_questions = three_questions(filename)
+        tests.append(test_three_questions)
+        if test_three_questions['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            score_info['score'] += 5
+
         #     # Check that things are in correct order (a, b, c)
         #     filename_output = filename + '.out'
         #     cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
@@ -238,22 +228,22 @@ def feedback_1040():
         #         score_info['score'] += 5
         #     tests.append(test_order_2)
 
-        # Pep8
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-           score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
+            # Pep8
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            tests.append(test_pep8)
 
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
+            # Check for help comment
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
+            tests.append(test_help)
 
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
