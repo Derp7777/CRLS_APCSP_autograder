@@ -9,7 +9,6 @@ def filename_test(p_filename, p_lab):
     import re
     from app.python_labs import YEAR
 
-    p_filename = '/tmp/' + p_filename
     find_year = re.search(YEAR, p_filename)
     find_lab = re.search(p_lab, p_filename)
     find_all = re.search(YEAR + r"_ .+ _ " + p_lab + r".py", p_filename, re.X | re.M | re.S)
