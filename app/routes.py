@@ -86,9 +86,7 @@ def index():
 
 @app.route('/feedback_1040')
 def feedback_1040():
-    import re
-    import subprocess
-    import delegator
+
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
     from app.python_labs.filename_test import filename_test
@@ -106,6 +104,7 @@ def feedback_1040():
 
     if test_filename['pass'] is True:
 
+        # Check that there are 3 input questions
         test_three_questions = three_questions(filename)
         tests.append(test_three_questions)
         if test_three_questions['pass'] is False:
@@ -228,7 +227,7 @@ def feedback_1040():
         #         score_info['score'] += 5
         #     tests.append(test_order_2)
 
-            # Pep8
+            # Find number of PEP8 errors
             pep8_max_points = 7
             test_pep8 = pep8(filename, pep8_max_points)
             if test_pep8['pass'] is False:
@@ -253,6 +252,10 @@ def feedback_1060():
     import re
     import delegator
 
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     # have same feedback for all
     # different template
     user = {'username': 'CRLS Scholar'}
@@ -263,23 +266,10 @@ def feedback_1060():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('1.060', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.06.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_1.060.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '1.060')
+    tests.append(test_filename)
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check that asks at least 5 questions
         cmd = 'grep "input" ' + filename + ' | wc -l  '
@@ -406,58 +396,34 @@ def feedback_1060():
 
             tests.append(test_puncts)
 
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if c.err:
-                flash(c.err)
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(14) - side_errors)
+            # Find number of PEP8 errors
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 5
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2020')
 def feedback_2020():
     import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -469,23 +435,10 @@ def feedback_2020():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.020', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_1.06.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.020.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '2.020')
+    tests.append(test_filename)
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check that input1 is good (input / 2)
         filename_output = filename + '.out'
@@ -565,55 +518,33 @@ def feedback_2020():
         tests.append(test_output_3)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120  --ignore=E305,E226,E241,W504,W293,E126  ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" +
-                                     str(side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2032a')
 def feedback_2032a():
     import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -625,23 +556,9 @@ def feedback_2032a():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.032a', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.032a.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.032a.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '2.032a')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for ifs
         cmd = 'grep "if" ' + filename + ' | wc -l  '
@@ -780,47 +697,22 @@ def feedback_2032a():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -828,6 +720,10 @@ def feedback_2032a():
 def feedback_2032b():
     import re
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -839,24 +735,9 @@ def feedback_2032b():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.032b', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.032b.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.032b.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
-
+    test_filename = filename_test(filename, '2.032b')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
         # Check for ifs
         cmd = 'grep "if" ' + filename + ' | wc -l  '
         c = delegator.run(cmd)
@@ -995,55 +876,32 @@ def feedback_2032b():
         tests.append(test_eight_tests)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2040')
 def feedback_2040():
-    import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -1055,23 +913,9 @@ def feedback_2040():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.040', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.040.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.040.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '2.040')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for equals, aka variable assignment
         cmd = 'grep "=" ' + filename + ' | grep -v "==" | wc -l  '
@@ -1157,177 +1001,92 @@ def feedback_2040():
             test_elifs['pass'] = False
         tests.append(test_elifs)
 
-
-
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
 
 
 @app.route('/feedback_2050a')
 def feedback_2050a():
-    import re
-    import subprocess
-    import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.find_input import find_input
+    from app.python_labs.find_list import list_created
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 15.5, 'finished_scoring': False}
 
-    # Test 1: file name
+    # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.050a', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.050a.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.050a.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '2.050a')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
-        # test for a list
-        with open(filename, 'r') as myfile:
-            filename_data = myfile.read()
-
-        search_object = re.search(r".+ = .* \[ .* \]", filename_data, re.X | re.M | re.S)
-
-        test_list = {"name": "Testing that there is something looking like a list",
-                     "pass": True,
-                     "pass_message": "Pass! Submitted file looks like it has a list",
-                     "fail_message": "Submitted file does not look like it has a list.",
-                     }
-
-        if not search_object:
-            test_list['pass'] = False
-        else:
+        # test for a list being created
+        test_list = list_created(filename_data)
+        if test_list['pass'] is True:
             score_info['score'] += 3
         tests.append(test_list)
 
-
-        # Check for uinput 
-        cmd = 'grep "input" ' + filename + '  | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_input = {"name": "Testing that you ask the user for an input (3 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have ask the user for an input.  <br>",
-                     "fail_message": "Fail.  You need to ask the user for an input<br>"
-                                     "This translates to -3 points deduction.<br>",
-                     }
-        if inputs == 0:
-            test_input['pass'] = False
-        else:
-            score_info['score'] += 3
-        tests.append(test_input)
+        # Check for input
+        points = 3
+        test_find_input = find_input(filename_data, 1, points)
+        if test_find_input['pass'] is True:
+            score_info['score'] += points
+        tests.append(test_find_input)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
-
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2050b')
 def feedback_2050b():
     import re
-    import subprocess
     import delegator
 
-    # have same feedback for all
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -1337,23 +1096,9 @@ def feedback_2050b():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('2.050b', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_2.050b.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_2.050b.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '2.050b')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # test for a 2 lists
         with open(filename, 'r') as myfile:
@@ -1374,56 +1119,33 @@ def feedback_2050b():
         tests.append(test_twolist)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126    --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
-    
 @app.route('/feedback_3011')
 def feedback_3011():
     import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -1435,23 +1157,9 @@ def feedback_3011():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('3.011', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.011.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_3.011.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '3.011')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # test for a list
         with open(filename, 'r') as myfile:
@@ -1532,79 +1240,24 @@ def feedback_3011():
         tests.append(test_random)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126   --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                      "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-                     }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
-
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                     "Be sure your comment is meaningful, otherwise this can be "
-                                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                     " how somebody helped you with your code.  <br>"
-                                     "If you didn't have any problems, then ask somebody to check that your code"
-                                     " gives correct outputs, given an input.<br>"
-                                     "This translates to -5 points deduction.<br>",
-                     }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-
-
-# def extract_functions(orig_file):
-#     import re
-#     outfile_name = orig_file.replace('.py', '.functions.py')
-#     outfile = open(outfile_name, 'w')
-#     with open(orig_file) as infile:
-#         line = True
-#         while line:
-#             print("starting over looking for function")
-#             print('reading this ' + str(line))
-#             line = infile.readline()
-#             start_def = re.search("^(def|class) \s+ .+ " , line,  re.X | re.M | re.S)
-#             if start_def:
-#                 print("entering function!")
-#                 print('writing this' + str(line))
-#                 outfile.write(line)
-#                 print("reading this" + str(line))
-#                 #                   line = infile.readline()
-#                 #                   inside_function = re.search("^\s+ .+ " , line,  re.X | re.M | re.S)
-#                 inside_function = True
-#                 while inside_function:
-#                     print('reading this ' + str(line))
-#                     line = infile.readline()
-#                     inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
-#                     if inside_function:
-#                         print("writing this inside function " + str(line))
-#                         outfile.write(line)
-#                 outfile.write(line)
 
 def extract_functions(orig_file):
     import re
@@ -1674,6 +1327,10 @@ def feedback_3020():
     import re
     import delegator
 
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     # have same feedback for all
     # different template
     user = {'username': 'CRLS Scholar'}
@@ -1684,23 +1341,9 @@ def feedback_3020():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('3.020', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.020.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_3.020.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '3.020')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for function birthday_song
         cmd = 'grep "def birthday_song(" ' + filename + ' | wc -l  '
@@ -1941,96 +1584,37 @@ def feedback_3020():
             tests.append(test_run_ten_cards)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(14) - side_errors)
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
-
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 5
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-            # found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
-            # if found:
-            #     test_birthday_song_run['pass'] = True
-            #     infile.close()
-            #
-            #
-            #
-            #
-            # # Check for function pick_card
-            # cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
-            # c = delegator.run(cmd)
-            # pick_card = int(c.out)
-            # test_pick_card = {"name": "Testing that birthday song function exists (4 points)",
-            #                   "pass": True,
-            #                   "pass_message": "Pass.  pick_card function exists.  <br>",
-            #                   "fail_message": "Fail.  pick_card function isn't in the code.  <br>",
-            # }
-            # if pick_card == 0:
-            #     test_pick_card['pass'] = False
-            # else:
-            #     score_info['score'] += 4
-            #     tests.append(test_pick_card)
-            #
-            #
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
-
-
-
-
-
-
-
-
-
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_3026')
 def feedback_3026():
     import re
-    import subprocess
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -2039,23 +1623,9 @@ def feedback_3026():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('3.026', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_3.026.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_3.026.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '3.026')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for function return_min
         cmd = 'grep "def return_min(" ' + filename + ' | wc -l  '
@@ -2193,40 +1763,17 @@ def feedback_3026():
             tests.append(test_return_min_4)
             
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(7) - side_errors)
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -2.5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 2.5
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
@@ -2235,8 +1782,6 @@ def feedback_3026():
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -2244,6 +1789,10 @@ def feedback_3026():
 def feedback_4011():
     import re
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -2255,23 +1804,9 @@ def feedback_4011():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.011', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.011.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.011.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '4.011')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for function could_it_be_a_martian_word
         cmd = 'grep "def could_it_be_a_martian_word([[a-zA-Z]\+[^,]*)" ' + filename + ' | wc -l  '
@@ -2411,63 +1946,37 @@ def feedback_4011():
             else:
                 score_info['score'] += 10
             tests.append(test_could_it_be_a_martian_word_3)
-
-
             
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(14) - side_errors)
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
-
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -2.5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 5
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4021')
 def feedback_4021():
     import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -2479,23 +1988,9 @@ def feedback_4021():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.021', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.021.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.021.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '4.021')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for function return_min
         cmd = 'grep "^def the_rock_says([a-zA-Z_]\+[^,])" ' + filename + ' | wc -l  '
@@ -2607,41 +2102,17 @@ def feedback_4021():
             tests.append(test_the_rock_says_3)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(7) - side_errors)
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
-
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -2.5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 2.5
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
@@ -2650,16 +2121,17 @@ def feedback_4021():
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4022')
 def feedback_4022():
     import re
-    import subprocess
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -2671,23 +2143,9 @@ def feedback_4022():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.022', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.022.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.022.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '4.022')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         # Check for function bad_lossy_compression
         cmd = 'grep "^def bad_lossy_compression([a-zA-Z_]\+[^,])" ' + filename + ' | wc -l  '
@@ -2803,51 +2261,24 @@ TA!!!'",
             tests.append(test_bad_lossy_compression_3)
 
             # Find number of PEP8 errors
-            cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            side_errors = int(c.out)
-            test_pep8 = {"name": "Testing for PEP8 warnings and errors (7 points)",
-                         "pass": True,
-                         "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                         "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                                                                          "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-                         }
-            if side_errors != 0:
-                test_pep8['pass'] = False
-            score_info['score'] += max(0, int(7) - side_errors)
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
-
             # Check for help comment
-            cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-            c = delegator.run(cmd)
-            help_comments = int(c.out)
-            test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                         "pass": True,
-                         "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                                         "Be sure your comment is meaningful, otherwise this can be "
-                                         "overturned on review.",
-                         "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                                         " how somebody helped you with your code.  <br>"
-                                         "If you didn't have any problems, then ask somebody to check that your code"
-                                         " gives correct outputs, given an input.<br>"
-                                         "This translates to -2.5 points deduction.<br>",
-                         }
-            if help_comments == 0:
-                test_help['pass'] = False
-            else:
-                score_info['score'] += 2.5
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
         else:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
     
@@ -2856,8 +2287,10 @@ def feedback_4025():
     import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -2866,25 +2299,10 @@ def feedback_4025():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.025', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.025.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.025.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '4.025')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
-            
-        
         # extract functions and create python test file
         extract_functions(filename)
         functions_filename = filename.replace('.py', '.functions.py')
@@ -3044,57 +2462,34 @@ def feedback_4025():
         tests.append(test_win_some)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
-            
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_6_011')
 def feedback_6011():
     import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -3103,24 +2498,10 @@ def feedback_6011():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('6.011', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.011.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_6.011.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '6.011')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
-            
         # Test for dictionary with 3+ items
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()
@@ -3245,56 +2626,33 @@ def feedback_6011():
         tests.append(test_ifs)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
-            
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_6_021')
 def feedback_6021():
     import re
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -3306,23 +2664,9 @@ def feedback_6021():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('6.021', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.021.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_6.021.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '6.021')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()
@@ -3471,59 +2815,34 @@ def feedback_6021():
         tests.append(test_martinez_4)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
-            
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_6_031')
 def feedback_6031():
     import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -3532,23 +2851,9 @@ def feedback_6031():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('6.031', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.031.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_6.031.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '6.031')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()
@@ -3690,59 +2995,34 @@ def feedback_6031():
         tests.append(test_loop)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
-            
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
         score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
-    else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
+
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_6_041')
 def feedback_6041():
     import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -3751,23 +3031,9 @@ def feedback_6041():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('6.041', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_6.041.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_6.041.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '6.041')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()            
@@ -3864,56 +3130,34 @@ def feedback_6041():
         tests.append(test_get)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-            
-            
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
-    else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
+
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_7_021')
 def feedback_7021():
     import re
     import delegator
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
 
     # have same feedback for all
     # different template
@@ -3925,23 +3169,9 @@ def feedback_7021():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('7.021', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_7.021.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_7.021.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '7.021')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()            
@@ -4068,58 +3298,34 @@ def feedback_7021():
         tests.append(test_collectible_printer_run)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-                        
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
-    else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
+
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_7_031')
 def feedback_7031():
-    import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -4128,23 +3334,9 @@ def feedback_7031():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('7.031', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_7.031.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_7.031.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '7.031')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()            
@@ -4212,59 +3404,33 @@ def feedback_7031():
         tests.append(test_flaherty_3)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-                        
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -2.5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_7_034')
 def feedback_7034():
-    import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -4273,23 +3439,9 @@ def feedback_7034():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('7.034', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_7.034.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_7.034.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
-
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
+    test_filename = filename_test(filename, '7.034')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()            
@@ -4393,58 +3545,33 @@ def feedback_7034():
         tests.append(test_disney_5)
 
         # Find number of PEP8 errors
-        cmd = \
-            '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle --ignore=E305,E226,E241,W504,W293,E126 --max-line-length=120 '\
-            + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                             side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(7) - side_errors)
+        pep8_max_points = 7
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-                        
+
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (2.5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -2.5.0 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 2.5
+        help_points = 2.5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
     else:
-        test_filename['pass'] = False
-        tests.append(test_filename)
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
 
 @app.route('/feedback_4031')
 def feedback_4031():
-    import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -4453,25 +3580,10 @@ def feedback_4031():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.031', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.031.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.031.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '7.034')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
-
- 
         # extract functions and create python test file
         extract_functions(filename)
         functions_filename = filename.replace('.py', '.functions.py')
@@ -4611,53 +3723,34 @@ def feedback_4031():
         tests.append(test_loop_8)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        
+    else:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
     
 @app.route('/feedback_4036')
 def feedback_4036():
     import re
     import delegator
 
-    # have same feedback for all
-    # different template
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -4666,24 +3759,10 @@ def feedback_4036():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    find_year = re.search('2019', filename)
-    find_lab = re.search('4.036', filename)
-    test_filename = {"name": "Testing that file is named correctly",
-                     "pass": True,
-                     "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_4.036.py)",
-                     "fail_message": "File name of submitted file does not follow required convention. "
-                                     " Rename and resubmit.<br>"
-                                     "File name should be like this: <br> <br>"
-                                     "2019_luismartinez_4.036.py <br><br>"
-                                     "File must be python file (ends in .py), not a Google doc with Python code"
-                                     " copy+pasted in. <br>"
-                                     " Other tests not run. They will be run after filename is fixed.<br>"
-                     }
+    test_filename = filename_test(filename, '7.034')
+    tests.append(test_filename)
+    if test_filename['pass'] is True:
 
-    if find_year and find_lab:
-        test_filename['pass'] = True
-        tests.append(test_filename)
-        
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()            
 
@@ -4791,41 +3870,20 @@ def feedback_4036():
         tests.append(test_chicken_4)
 
         # Find number of PEP8 errors
-        cmd = '/home/ewu/CRLS_APCSP_autograder/venv1/bin/pycodestyle  --ignore=E305,E226,E241,W504,W293,E126  --max-line-length=120 ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        side_errors = int(c.out)
-        test_pep8 = {"name": "Testing for PEP8 warnings and errors (14 points)",
-                     "pass": True,
-                     "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                     "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>"
-                     "This translates to -" + str(
-                         side_errors) + " point(s) deduction.<br>"
-        }
-        if side_errors != 0:
-            test_pep8['pass'] = False
-        score_info['score'] += max(0, int(14) - side_errors)
+        pep8_max_points = 14
+        test_pep8 = pep8(filename, pep8_max_points)
+        if test_pep8['pass'] is False:
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
-        cmd = 'grep "#" ' + filename + ' | grep help | wc -l  '
-        c = delegator.run(cmd)
-        help_comments = int(c.out)
-        test_help = {"name": "Testing that you got a help and documented it as a comment (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have a comment with 'help' in it.  <br>"
-                     "Be sure your comment is meaningful, otherwise this can be "
-                     "overturned on review.",
-                     "fail_message": "Fail.  Did not find a comment in your code with the word 'help' describing"
-                     " how somebody helped you with your code.  <br>"
-                     "If you didn't have any problems, then ask somebody to check that your code"
-                     " gives correct outputs, given an input.<br>"
-                     "This translates to -5 points deduction.<br>",
-        }
-        if help_comments == 0:
-            test_help['pass'] = False
-        else:
-            score_info['score'] += 5
+        help_points = 5
+        test_help = helps(filename, help_points)
+        if test_help['pass'] is True:
+            score_info['score'] += help_points
         tests.append(test_help)
-        
+
         score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
