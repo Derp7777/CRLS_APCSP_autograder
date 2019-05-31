@@ -25,7 +25,7 @@ def create_testing_file(p_filename):
     p_var_filename = re.sub(YEAR + '_', '', p_var_filename)
     p_var_filename = re.sub('.py', '.test.py', p_var_filename)
     p_var_filename = re.sub('.+_', '', p_var_filename)
-    cmd = ' cat ' + var_dir + "/" + p_var_filename + " " + p_functions_filename + "  > /tmp/" + p_var_filename
+    cmd = ' cat ' + var_dir + "/" +  p_functions_filename + " " + p_var_filename + "  > /tmp/" + p_var_filename
     c = delegator.run(cmd)
     if c.err:
         flash("There was a problem creating the python test file")

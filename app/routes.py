@@ -1634,12 +1634,7 @@ def feedback_3026():
 
             raise Exception(test_return['pass'])
             functions_filename = filename.replace('.py', '.functions.py')
-            cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
-            c = delegator.run(cmd)
-            if c.err:
-                flash("There was a problem creating the python test file")
-
+            
             # test1 for return_min
             cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_1 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
