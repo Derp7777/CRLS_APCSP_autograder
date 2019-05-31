@@ -17,8 +17,16 @@ $ (venv)  pip install  delegator.py flask flask-bootstrap flask-WTF python-doten
 
 
 edit $HOME/.config/pycodestyle
+
 [pycodestyle]
+
 max-line-length=120
+
+edit a file
+$HOME/CRLS_APCSP_autograder/.flaskenv
+
+add this line:
+FLASK_APP=app.py
 
 Test:
 

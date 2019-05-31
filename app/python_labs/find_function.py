@@ -44,13 +44,9 @@ def find_function(p_filename, p_function_name, p_num_parameters):
         cmd = 'grep "def" ' + p_filename
         c = delegator.run(cmd)
         p_test_function_exists['fail_message'] += "The file " + p_filename + " has these functions: <br> " +\
-                                                c.out + "<br>" + " but not " + p_function_name + ". <br>"
-
-    print(p_test_function_exists['pass'])
-
-    print(p_test_function_exists['pass_message'])
-
-    print(p_test_function_exists['fail_message'])
+                                                c.out + "<br>" + " but not " + p_function_name + " with" +\
+                                                " exactly " + str(p_num_parameters) + " input parameter(s). <br>"
+    return p_test_function_exists
 
 if __name__ == "__main__":
     print("yes")

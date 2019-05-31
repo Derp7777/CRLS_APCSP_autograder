@@ -1596,13 +1596,17 @@ def feedback_3026():
     if test_filename['pass'] is True:
 
         # Check for function return_min
-        test_find_function = find_function(filename, 'retrun_min', 1)
+        test_find_function = find_function(filename, 'return_min', 1)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)
 
+        flash(test_find_function)
+        print(test_find_function)
         # Only continue if you have a return_min_function
         if test_find_function['pass']:
+            raise Exception("blah")
+
             # Check that function is called once
             test_return_min_run = {"name": "Testing that return_min function is called at least once (5 points)",
                                    "pass": False,
