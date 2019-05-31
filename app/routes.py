@@ -1576,6 +1576,7 @@ def feedback_3026():
     import re
     import delegator
 
+    from app.python_labs.create_testing_file import create_testing_file
     from app.python_labs.find_string import find_string
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.extract_all_functions import extract_all_functions
@@ -1626,10 +1627,12 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_return)
 
-            raise Exception(test_return['pass'])
 
             # extract functions and create python test file
             extract_all_functions(filename)
+            create_testing_file(filename)
+
+            raise Exception(test_return['pass'])
             functions_filename = filename.replace('.py', '.functions.py')
             cmd = ' cat ' + functions_filename + \
                   ' /home/ewu/CRLS_APCSP_autograder/var/3.026.test.py > /tmp/3.026.test.py'
@@ -1653,7 +1656,6 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_return_min_1)
 
-
             # test2 for return_min
             cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_2 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
@@ -1670,7 +1672,6 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_return_min_2)
 
-
             # test3 for return_min
             cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_3 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
@@ -1686,7 +1687,6 @@ def feedback_3026():
             else:
                 score_info['score'] += 5
             tests.append(test_return_min_3)
-
 
             # test4 for return_min
             cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_4 2>&1 |grep -i fail |wc -l'
