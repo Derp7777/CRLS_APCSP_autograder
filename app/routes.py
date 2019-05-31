@@ -1573,7 +1573,6 @@ def feedback_3020():
 
 @app.route('/feedback_3026')
 def feedback_3026():
-
     from app.python_labs.function_test import function_test
     from app.python_labs.create_testing_file import create_testing_file
     from app.python_labs.find_string import find_string
@@ -1586,7 +1585,6 @@ def feedback_3026():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 44.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -1608,6 +1606,7 @@ def feedback_3026():
         # Only continue if you have a return_min_function
         if test_find_function['pass']:
 
+            # find string 'return min' i.e. ran function
             test_return_min_run = find_string(filename_data, '(?<!def\s)return_min')
             extra_string =  " (return_min function is called at least once)"
             test_return_min_run["name"] += extra_string
@@ -1617,8 +1616,9 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_return_min_run)
 
+            # find string return (return in the function)
             test_return = find_string(filename_data, 'return \s .+')
-            extra_string =  " (There is a return in the code)"
+            extra_string = " (There is a return in the code)"
             test_return["name"] += extra_string
             test_return["pass_message"] += extra_string
             test_return["fail_message"] += extra_string
