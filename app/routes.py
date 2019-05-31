@@ -1573,9 +1573,8 @@ def feedback_3020():
 
 @app.route('/feedback_3026')
 def feedback_3026():
-    import re
-    import delegator
 
+    from app.python_labs.function_test import function_test
     from app.python_labs.create_testing_file import create_testing_file
     from app.python_labs.find_string import find_string
     from app.python_labs.read_file_contents import read_file_contents
@@ -1627,81 +1626,39 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_return)
 
-
             # extract functions and create python test file
             extract_all_functions(filename)
             create_testing_file(filename)
 
-            raise Exception(test_return['pass'])
-            functions_filename = filename.replace('.py', '.functions.py')
-            
-            # test1 for return_min
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_1 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_return_min_1 =  {"name": "Testing calling return_min with list [-1, 3, 5, 99] returns -1",
-                                  "pass": True,
-                                  "pass_message": "Pass. Calling return_min with list [-1, 3, 5, 99] returns -1.  <br>",
-                                  "fail_message": "Fail.   Calling return_min with list [-1, 3, 5, 99] doesn't return -1."
-                                                            " You should test your return_min to see what it returns <br>"
-            }
-            if failures > 0:
-                test_return_min_1['pass'] = False
-            else:
+            # function test 1
+            test_function_1 = function_test('3.026', 1)
+            test_function_1['name'] +=  " (return_min with list [-1, 3, 5, 99] returns -1) "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_return_min_1)
+            tests.append(test_function_1)
 
-            # test2 for return_min
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_2 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_return_min_2 =  {"name": "Testing calling return_min with list [-1, 3, 5, -99] returns -99",
-                                  "pass": True,
-                                  "pass_message": "Pass. Calling return_min with list [-1, 3, 5, -99] returns -99.  <br>",
-                                  "fail_message": "Fail.   Calling return_min with list [-1, 3, 5, -99] doesn't return -99."
-                                                            " You should test your return_min to see what it returns <br>"
-            }
-            if failures > 0:
-                test_return_min_2['pass'] = False
-            else:
+            # function test 2
+            test_function_2 = function_test('3.026', 2)
+            test_function_2['name'] += " (return_min with list [-1, 3, 5, -99] returns -99) "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_return_min_2)
+            tests.append(test_function_2)
 
-            # test3 for return_min
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_3 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_return_min_3 =  {"name": "Testing calling return_min with list [5] returns 5",
-                                  "pass": True,
-                                  "pass_message": "Pass. Calling return_min with list [5] returns 5.  <br>",
-                                  "fail_message": "Fail.   Calling return_min with list [5] doesn't return 5."
-                                                            " You should test your return_min to see what it returns <br>"
-            }
-            if failures > 0:
-                test_return_min_3['pass'] = False
-            else:
+            # function test 3
+            test_function_3 = function_test('3.026', 3)
+            test_function_3['name'] += " (return_min with list [5] returns 5) "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_return_min_3)
+            tests.append(test_function_3)
 
-            # test4 for return_min
-            cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_4 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_return_min_4 =  {"name": "Testing calling return_min with list "
-                                          "[5, 4, 99, -11, 44, -241, -444, -999, 888, -2] returns -444",
-                                  "pass": True,
-                                  "pass_message": "Pass. Calling return_min with list "
-                                                  "[5, 4, 99, -11, 44, -241, -444, -999, 888, -2] returns -444.  <br>",
-                                  "fail_message": "Fail.   Calling return_min with list list "
-                                                  "[5, 4, 99, -11, 44, -241, -444, -999, 888, -2] doesn't return -444."
-                                                  " You should test your return_min to see what it returns <br>"
-            }
-            if failures > 0:
-                test_return_min_4['pass'] = False
-            else:
+            # function test 4
+            test_function_4 = function_test('3.026', 4)
+            test_function_4['name'] += " (return_min with list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] " \
+                                       "returns -444) "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_return_min_4)
-            
+            tests.append(test_function_4)
+
             # Find number of PEP8 errors
             pep8_max_points = 7
             test_pep8 = pep8(filename, pep8_max_points)
@@ -1814,7 +1771,7 @@ def feedback_4011():
             count = 1
             with open(filename) as infile:
                 for line in infile.readlines():
-                    found = re.search("(?<!def\s)could_it_be_a_martian_word" , line,  re.X | re.M | re.S)
+                    found = re.search("(?<!def\s)could_it_be_a_martian_word" , line, re.X | re.M | re.S)
                     if found:
                         count += 1
             infile.close()
