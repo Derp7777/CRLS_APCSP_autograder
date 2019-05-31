@@ -1576,6 +1576,7 @@ def feedback_3026():
     import re
     import delegator
 
+    from app.python_labs.find_string import find_string
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.extract_all_functions import extract_all_functions
     from app.python_labs.find_function import find_function
@@ -1595,53 +1596,38 @@ def feedback_3026():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
         # Check for function return_min
         test_find_function = find_function(filename, 'return_min', 1)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)
 
-        flash(test_find_function)
-        print(test_find_function)
         # Only continue if you have a return_min_function
         if test_find_function['pass']:
-            raise Exception("blah")
 
-            # Check that function is called once
-            test_return_min_run = {"name": "Testing that return_min function is called at least once (5 points)",
-                                   "pass": False,
-                                   "pass_message": "Pass.  return_min function is called.  <br>",
-                                   "fail_message": "Fail.  return_min function isn't called in the code. <br>"
-            }
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.search("(?<!def\s)return_min" , line,  re.X | re.M | re.S)
-                    if found:
-                        test_return_min_run['pass'] = True
-            infile.close()
-            if test_return_min_run['pass']:
+            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min')
+            extra_string =  " (return_min function is called at least once)"
+            test_return_min_run["name"] += extra_string
+            test_return_min_run["pass_message"] += extra_string
+            test_return_min_run["fail_message"] += extra_string
+            if test_return_min_run['pass'] is True:
                 score_info['score'] += 5
             tests.append(test_return_min_run)
 
-            # test that there is a 'return' anywhere in the code
-            test_return = {"name": "Testing that there is a 'return' in the code (5 points)",
-                           "pass": False,
-                           "pass_message": "Pass.  'return <something>' in the code.  <br>",
-                           "fail_message": "Fail.  'return <something> is nowhere to be round in the code. <br>"
-                           " Be sure that your function return_min returns the value of the minimum item at the "
-                                           "end.<br>",
-            }
-
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.search("return \s .+" , line,  re.X | re.M | re.S)
-                    if found:
-                        test_return['pass'] = True
-            infile.close()
-            if test_return['pass']:
+            test_return = find_string(filename_data, 'return \s .+')
+            extra_string =  " (There is a return in the code)"
+            test_return["name"] += extra_string
+            test_return["pass_message"] += extra_string
+            test_return["fail_message"] += extra_string
+            if test_return['pass'] is True:
                 score_info['score'] += 5
             tests.append(test_return)
-            
+
+            raise Exception(test_return['pass'])
+
             # extract functions and create python test file
             extract_all_functions(filename)
             functions_filename = filename.replace('.py', '.functions.py')
@@ -1650,7 +1636,6 @@ def feedback_3026():
             c = delegator.run(cmd)
             if c.err:
                 flash("There was a problem creating the python test file")
-
 
             # test1 for return_min
             cmd = 'python3 /tmp/3.026.test.py testAutograde.test_return_min_1 2>&1 |grep -i fail |wc -l'
