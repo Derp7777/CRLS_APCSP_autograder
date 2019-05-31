@@ -1974,6 +1974,7 @@ def feedback_4021():
     import re
     import delegator
 
+    from app.python_labs.find_function import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1992,32 +1993,14 @@ def feedback_4021():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-        # Check for function return_min
-        cmd = 'grep "^def the_rock_says([a-zA-Z_]\+[^,])" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-
-        the_rock_says = int(c.out)
-        cmd = 'grep "the_rock_says([a-zA-Z_]\+[^,])" ' + filename + '   '
-        c = delegator.run(cmd)
-        if c.err:
-            flash("Grepping for the_rock_says failed")
-        test_the_rock_says = {"name": "Testing that the_rock_says function exists with one input argument (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass.   the_rock_says function exists with one input argument  <br>",
-                              "fail_message": "Fail.   the_rock_says function exists with one input argument. <br>"
-                                              "It may be spelled incorrectly.  The function needs to be named "
-                                              "the_rock_says, exactly. <br>"
-                                              "You may not have one input argument.  You need one.<br>"
-                                              "Fix code and resubmit. <br>",
-        }
-        if the_rock_says == 0:
-            test_the_rock_says['pass'] = False
-        else:
+        # Check for function the_rock_says
+        test_find_function = find_function(filename, 'the_rock_says', 1)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_the_rock_says)
+        tests.append(test_find_function)
 
         # Only continue if you have a the_rock_says function
-        if test_the_rock_says['pass']:
+        if test_find_function['pass']:
             # Check that function is called 3x
             test_the_rock_says_run = {"name": "Testing that the_rock_says function is called at least once (5 points)",
                                           "pass": False,
