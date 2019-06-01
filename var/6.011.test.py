@@ -6,17 +6,17 @@ import re
 
 
 class testAutograde(unittest.TestCase):
-      def test_bob_1(self):
+      def test_1(self):
             bob_dict = {'wth': 'What the heck'}
             self.assertEqual(bob_kraft_translator(bob_dict, 'wth'), 'What the heck')
             
-      def test_bob_2(self):
+      def test_2(self):
             bob_dict = {'wth': 'What the heck',
                         'aymm': 'Ay yo my man',
             }
             self.assertEqual(bob_kraft_translator(bob_dict, 'aymm'), 'Ay yo my man')
            
-      def test_bob_3(self):
+      def test_3(self):
             bob_dict = {'wth': 'What the heck',
                         'aymm': 'Ay yo my man',
             }

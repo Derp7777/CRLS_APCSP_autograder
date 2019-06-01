@@ -1025,7 +1025,7 @@ def feedback_2040():
 def feedback_2050a():
 
     from app.python_labs.find_input import find_input
-    from app.python_labs.find_list import list_created
+    from app.python_labs.find_items import find_list
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -1046,7 +1046,7 @@ def feedback_2050a():
         filename_data = read_file_contents(filename)
 
         # test for a list being created
-        test_list = list_created(filename_data)
+        test_list = find_list(filename_data)
         if test_list['pass'] is True:
             score_info['score'] += 3
         tests.append(test_list)
@@ -1573,12 +1573,11 @@ def feedback_3020():
 
 @app.route('/feedback_3026')
 def feedback_3026():
+    from app.python_labs.find_items import find_string, find_function
     from app.python_labs.function_test import function_test
     from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.find_string import find_string
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.extract_all_functions import extract_all_functions
-    from app.python_labs.find_function import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1607,7 +1606,7 @@ def feedback_3026():
         if test_find_function['pass']:
 
             # find string 'return min' i.e. ran function
-            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min')
+            test_return_min_run = (filename_data, '(?<!def\s)return_min')
             extra_string =  " (return_min function is called at least once)"
             test_return_min_run["name"] += extra_string
             test_return_min_run["pass_message"] += extra_string
@@ -1617,7 +1616,7 @@ def feedback_3026():
             tests.append(test_return_min_run)
 
             # find string return (return in the function)
-            test_return = find_string(filename_data, 'return \s .+')
+            test_return = (filename_data, 'return \s .+')
             extra_string = " (There is a return in the code)"
             test_return["name"] += extra_string
             test_return["pass_message"] += extra_string
@@ -1687,6 +1686,11 @@ def feedback_4011():
     import re
     import delegator
 
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import function_test
+    from app.python_labs.find_items import find_function
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1705,26 +1709,17 @@ def feedback_4011():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-        # Check for function could_it_be_a_martian_word
-        cmd = 'grep "def could_it_be_a_martian_word([[a-zA-Z]\+[^,]*)" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        function_name = int(c.out)
-        test_function_name = {"name": "Testing that could_it_be_a_martian_word function exists with one input parameter (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass.   could_it_be_a_martian_word function exists with one input parameter  <br>",
-                              "fail_message": "Fail.   could_it_be_a_martian_word function exists with one input parameter isn't in the code. <br>"
-                              "It may be spelled incorrectly.  The function needs to be named exactly correctly<br>"
-                              "The function needs exactly one input parameter. <br>"
-                              "Fix code and resubmit. <br>",
-        }
-        if function_name == 0:
-            test_function_name['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_function_name)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
-        # Only continue if you have a function_name correct
-        if test_function_name['pass']:
+        # Check for function return_min
+        test_find_function = find_function(filename, 'could_it_be_a_martian_word', 1)
+        if test_find_function['pass']:
+            score_info['score'] += 5
+        tests.append(test_find_function)
+
+        if test_find_function['pass']:
+
 
             # Check for a loop of some sort (for or while)
             cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
@@ -1761,7 +1756,6 @@ def feedback_4011():
                 score_info['score'] += 5
             tests.append(test_ifs)
 
-
             # Check that function is called 3x
             test_function_run = {"name": "Testing that could_it_be_a_martian_word function is called at least once (10 points)",
                                  "pass": False,
@@ -1781,69 +1775,27 @@ def feedback_4011():
             tests.append(test_function_run)
 
             # extract functions and create python test file
-            extract_functions(filename)
-            functions_filename = filename.replace('.py', '.functions.py')
-            cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/4.011.test.py > /tmp/4.011.test.py'
-            c = delegator.run(cmd)
-            if c.err:
-                flash("There was a problem creating the python test file")
+            extract_all_functions(filename)
+            create_testing_file(filename)
 
-
-            # test1 for could_it_be_a_martian_word
-            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_1 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_could_it_be_a_martian_word_1 =  {"name": "Testing calling could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []",
-                                                  "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word 'bcdefgijnpqrstuvwxyz' returns [].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word  'bcdefgijnpqrstuvwxyz' doesn't return []."
-                                                  " You should test your could_it_be_a_martian_word to see what it returns <br>"
-            }
-            if failures > 0:
-                test_could_it_be_a_martian_word_1['pass'] = False
-            else:
+            test_function_1 = function_test('4.011', 1)
+            test_function_1['name'] += " (could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []) "
+            if test_function_1['pass']:
                 score_info['score'] += 10
-            tests.append(test_could_it_be_a_martian_word_1)
+            tests.append(test_function_1)
 
-
-            # test2 for could_it_be_a_martian_word
-            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_2 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_could_it_be_a_martian_word_2 =  {"name": "Testing calling could_it_be_a_martian_word with string 'ba' returns ['a']",
-                                                  "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with string ba returns ['a'].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with string ba returns ['a']."
-                                                  " You should test your could_it_be_a_martian_word to see what it returns <br>"
-            }
-            if failures > 0:
-                test_could_it_be_a_martian_word_2['pass'] = False
-            else:
+            test_function_2 = function_test('4.011', 2)
+            test_function_2['name'] += " (could_it_be_a_martian_word with 'ba' returns ['a']) "
+            if test_function_2['pass']:
                 score_info['score'] += 10
-            tests.append(test_could_it_be_a_martian_word_2)
+            tests.append(test_function_2)
 
-
-            # test3 for could_it_be_a_martian_word
-            cmd = 'python3 /tmp/4.011.test.py testAutograde.test_could_it_be_a_martian_word_3 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_could_it_be_a_martian_word_3 = {"name": "Testing calling could_it_be_a_martian_word with string "
-                                                          "'baa' returns ['a']",
-                                                  "pass": True,
-                                                  "pass_message": "Pass. Calling could_it_be_a_martian_word with string"
-                                                                  " 'baa' returns ['a'].  <br>",
-                                                  "fail_message": "Fail.   Calling could_it_be_a_martian_word with "
-                                                                  "string 'baa' doesn't return ['a']."
-                                                  " You should test your could_it_be_a_martian_word to see what it "
-                                                                  "returns <br>"
-            }
-            if failures > 0:
-                test_could_it_be_a_martian_word_3['pass'] = False
-            else:
+            test_function_3 = function_test('4.011', 3)
+            test_function_3['name'] += " (could_it_be_a_martian_word with 'baa' returns ['a']) "
+            if test_function_3['pass']:
                 score_info['score'] += 10
-            tests.append(test_could_it_be_a_martian_word_3)
-            
+            tests.append(test_function_3)
+
             # Find number of PEP8 errors
             pep8_max_points = 14
             test_pep8 = pep8(filename, pep8_max_points)
@@ -1871,16 +1823,13 @@ def feedback_4021():
     import re
     import delegator
 
-    from app.python_labs.find_function import find_function
+    from app.python_labs.find_items import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2013,11 +1962,8 @@ def feedback_4022():
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2173,7 +2119,6 @@ def feedback_4025():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 64, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2366,13 +2311,16 @@ def feedback_6011():
     import re
     import delegator
 
+    from app.python_labs.function_test import function_test
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.find_items import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2401,67 +2349,28 @@ def feedback_6011():
             score_info['score'] += 10
         tests.append(test_dictionary)
         
-
-        # Check for function bob_kraft_translator
-        search_object = re.search(r"^def \s bob_kraft_translator\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
-        test_bob_kraft_translator = {"name": "Testing that bob_kraft_translator function exists with two input arguments (5 points)",
-                                     "pass": True,
-                                     "pass_message": "Pass.  bob_kraft_translator function exists with two input arguments (5 points)",
-                                     "fail_message": "Fail.  bob_kraft_translator function does exist with two input arguments (5 points)",
-        }
-        if not search_object:
-            test_bob_kraft_translator['pass'] = False
-        else:
+        test_find_function = find_function(filename, 'bob_kraft_translator', 2)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_bob_kraft_translator)
+        tests.append(test_find_function)
 
-        
         # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/6.011.test.py > /tmp/6.011.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
+        extract_all_functions(filename)
+        create_testing_file(filename)
 
+        test_function_1 = function_test('6.011', 1)
+        test_function_1['name'] += " (Sent in dictionary  {'wth': 'What the heck'}, searcg for 'wth', " \
+                                   "returned 'what the heck') <br>"
+        if test_function_1['pass']:
+            score_info['score'] += 10
+        tests.append(test_function_1)
 
-        # test1 for bob
-        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_1 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_bob_1 = {"name": "Checking bob_kraft_translator 1 (10 points)",
-                      "pass": True,
-                      "pass_message": "Pass. Sent in dictionary  {'wth': 'What the heck'},"
-                                      " asked for wth, got correct answer.  ",
-                      "fail_message": "Fail.   Sent in dictionary  {'wth': 'What the heck'}, "
-                                      "asked for wth, didn't get correct <br> "
-                      " Check out your code and try again.",
-        }
-        if failures > 0:
-            test_bob_1['pass'] = False
-        else:
+        test_function_2 = function_test('6.011', 2)
+        test_function_2['name'] += " (Sent in dictionary  {'wth': 'What the heck', 'aymm': 'Ay yo my man',}, " \
+                                   "looking for aymm, should receive 'Ay yo my man'. <br>"
+        if test_function_2['pass']:
             score_info['score'] += 10
-        tests.append(test_bob_1)
-            
-        # test2 for bob play_tournament prints tournmaent
-        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_2 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_bob_2 =  {"name": "Testing bob_kraft_translator 2.  Sending in bob_dict = {'wth': 'What the heck',"
-                       "'aymm': 'Ay yo my man',}, looking for aymm, should receive 'Ay yo my man'",
-                       "pass": True,
-                       "pass_message": "Pass.  Sent in bob_dict = {'wth', 'What the heck',"
-                       "'aymm': 'Ay yo my man',}, looked for aymm, received 'Ay yo my man'",
-                       "fail_message": "Fail.    Sent in bob_dict = {'wth', 'What the heck',"
-                       "'aymm': 'Ay yo my man',}, looked for aymm, received 'Ay yo my man' but did not receive it"
-                       "Please check code and try again.<br>",
-        }
-        if failures > 0:
-            test_bob_2['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_bob_2)
+        tests.append(test_function_2)
 
         # test3 for bob play tournament prints win
         cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_3 2>&1 |grep -i fail |wc -l'
@@ -2530,15 +2439,14 @@ def feedback_6021():
     import re
     import delegator
 
+    from app.python_labs.find_items import find_function
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2548,21 +2456,13 @@ def feedback_6021():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()
-        
-        # Check for function martinez_dictionary
-        search_object = re.search(r"^def \s martinez_dictionary\(.+\)", filename_data, re.X| re.M | re.S)
-        test_martinez_dictionary = {"name": "Testing that martinez_dictionary function exists with one input argument (5 points)",
-                                    "pass": True,
-                                    "pass_message": "Pass.  martinez_dictionary function exists with one input argument (5 points)",
-                                    "fail_message": "Fail.  martinez_dictionary function does exist with one input argument (5 points)",
-        }
-        if not search_object:
-            test_martinez_dictionary['pass'] = False
-        else:
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
+        test_find_function = find_function(filename, 'martinez_dictionary', 1)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_martinez_dictionary)
+        tests.append(test_find_function)
 
         # Check that function martinez_dictionary is called 
         test_martinez_dictionary_run = {"name": "Testing that martinez_dictionary function is called at least once (5 points)",
@@ -2719,13 +2619,13 @@ def feedback_6031():
     import re
     import delegator
 
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
@@ -2905,7 +2805,6 @@ def feedback_6041():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 64, 'finished_scoring': False}
 
     # Test 1: file name
@@ -3039,11 +2938,8 @@ def feedback_7021():
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
@@ -3202,13 +3098,15 @@ def feedback_7021():
 def feedback_7031():
     import delegator
 
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -3218,18 +3116,12 @@ def feedback_7031():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()            
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
         # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/7.031.test.py > /tmp/7.031.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
-
+        extract_all_functions(filename)
+        create_testing_file(filename)
         
         # test1 for flaherty
         cmd = 'python3 /tmp/7.031.test.py testAutograde.test_flaherty_1 2>&1 |grep -i fail |wc -l'
@@ -3307,13 +3199,15 @@ def feedback_7031():
 def feedback_7034():
     import delegator
 
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -3323,19 +3217,13 @@ def feedback_7034():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()            
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
         # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/7.034.test.py > /tmp/7.034.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
+        extract_all_functions(filename)
+        create_testing_file(filename)
 
-        
         # test1 for disney
         cmd = 'python3 /tmp/7.034.test.py testAutograde.test_disney_1 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
@@ -3448,13 +3336,14 @@ def feedback_7034():
 def feedback_4031():
     import delegator
 
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 54, 'finished_scoring': False}
 
     # Test 1: file name
@@ -3465,14 +3354,8 @@ def feedback_4031():
     if test_filename['pass'] is True:
 
         # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/4.031.test.py > /tmp/4.031.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
-
+        extract_all_functions(filename)
+        create_testing_file(filename)
 
         # test to see if loop 1 is correct
         cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_1 2>&1 |grep -i fail |wc -l'
@@ -3627,6 +3510,8 @@ def feedback_4036():
     import re
     import delegator
 
+    from app.python_labs.create_testing_file import create_testing_file
+    from app.python_labs.extract_all_functions import extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -3659,10 +3544,10 @@ def feedback_4036():
             score_info['score'] += 5
         tests.append(test_get)
 
-
-        
         # extract functions and create python test file
-        extract_functions(filename)
+        extract_all_functions(filename)
+        create_testing_file(filename)
+
         functions_filename = filename.replace('.py', '.functions.py')
         cmd = ' cat ' + functions_filename + \
               ' /home/ewu/CRLS_APCSP_autograder/var/4.036.test.py > /tmp/4.036.test.py'
