@@ -87,10 +87,12 @@ def index():
 @app.route('/feedback_1040')
 def feedback_1040():
 
-    from app.python_labs.helps import helps
-    from app.python_labs.pep8 import pep8
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.find_items import find_questions
     from app.python_labs.python_1_040 import three_questions
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -102,12 +104,18 @@ def feedback_1040():
     test_filename = filename_test(filename, '1.040')
     tests.append(test_filename)
 
-    if test_filename['pass'] is True:
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
         # Check that there are 3 input questions
-        test_three_questions = three_questions(filename)
-        tests.append(test_three_questions)
-        if test_three_questions['pass'] is False:
+        test_find_three_questions = find_questions(filename_data, 5)
+        test_find_three_questions['name'] += " Checking that Genie asks at least 3 questions. <br>" + \
+                                             " Autograder will not continue if this test fails. <br>"
+        tests.append(test_find_three_questions)
+        if test_find_three_questions['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             score_info['score'] += 5
@@ -147,26 +155,20 @@ def feedback_1040():
         #         score_info['score'] += 5
         #     tests.append(test_order_1)
         #
-        #     # Check for part 2 asks 3 more questions, 6 total
-        #     cmd = 'grep "input" ' + filename + ' | wc -l  '
-        #     c = delegator.run(cmd)
-        #     inputs = int(c.out)
-        #     test_inputs_2 = {"name": "Testing for at genie asking at least 6 questions (first + second part of lab) "
-        #                              "(5 points)",
-        #                      "pass": True,
-        #                      "pass_message": "Pass!  Genie asks at least 6 questions (first + second part of lab)",
-        #                      "fail_message": "Fail. Code does not have at least 6 inputs (first + second part of lab)."
-        #                                      "<br>"
-        #                                      "The Genie needs to ask for 3 wishes for the first part and 3 for the"
-        #                                      " second part",
-        #                      }
-        #     if inputs < 6:
-        #         test_inputs_2['pass'] = False
-        #         tests.append(test_inputs_2)
-        #     else:
-        #         score_info['score'] += 5
-        #         tests.append(test_inputs_2)
-        #
+            # Check that there are 6 total questions (3 part 1, 3 part 2)
+            test_find_six_questions = find_questions(filename_data, 6, 5)
+            test_find_six_questions['name'] += " Checking that Genie asks at least 6 questions (you need 3 for" \
+                                               "part 1 and 3 for part 2). <br>"
+            tests.append(test_find_six_questions)
+            if test_find_three_questions['pass'] is True:
+                score_info['score'] += 5
+
+            test_input_variable = find_string(filename_data, "input([\"']")
+            test_input_variable['name'] += " Check that Genie put repeated strings into variables"
+            tests.append(test_im)
+            if test_find_three_questions['pass'] is True:
+                score_info['score'] += 5
+            #
         #     # Check for asing variable questions
         #     process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
         #     process_wc = subprocess.Popen(['wc', '-l'], stdin=process_grep1.stdout, stdout=subprocess.PIPE)
@@ -243,8 +245,6 @@ def feedback_1040():
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_1060')
@@ -1573,14 +1573,13 @@ def feedback_3020():
 
 @app.route('/feedback_3026')
 def feedback_3026():
-    from app.python_labs.find_items import find_string, find_function
-    from app.python_labs.function_test import function_test
-    from app.python_labs.create_testing_file import create_testing_file
+
+    from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.find_items import find_string, find_function
+    from app.python_labs.function_test import function_test, create_testing_file, extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
-    from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -1606,8 +1605,8 @@ def feedback_3026():
         if test_find_function['pass']:
 
             # find string 'return min' i.e. ran function
-            test_return_min_run = (filename_data, '(?<!def\s)return_min')
-            extra_string =  " (return_min function is called at least once)"
+            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min')
+            extra_string = " (return_min function is called at least once)"
             test_return_min_run["name"] += extra_string
             test_return_min_run["pass_message"] += extra_string
             test_return_min_run["fail_message"] += extra_string
@@ -1616,7 +1615,7 @@ def feedback_3026():
             tests.append(test_return_min_run)
 
             # find string return (return in the function)
-            test_return = (filename_data, 'return \s .+')
+            test_return = find_string(filename_data, 'return \s .+')
             extra_string = " (There is a return in the code)"
             test_return["name"] += extra_string
             test_return["pass_message"] += extra_string
@@ -1631,7 +1630,7 @@ def feedback_3026():
 
             # function test 1
             test_function_1 = function_test('3.026', 1)
-            test_function_1['name'] +=  " (return_min with list [-1, 3, 5, 99] returns -1) "
+            test_function_1['name'] += " (return_min with list [-1, 3, 5, 99] returns -1) "
             if test_function_1['pass']:
                 score_info['score'] += 5
             tests.append(test_function_1)
