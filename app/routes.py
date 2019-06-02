@@ -89,8 +89,8 @@ def feedback_1040():
 
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_questions
-    from app.python_labs.python_1_040 import three_questions
+    from app.python_labs.find_items import find_questions, find_string
+    from app.python_labs.io_test import io_test
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
 
@@ -111,8 +111,8 @@ def feedback_1040():
         filename_data = read_file_contents(filename)
 
         # Check that there are 3 input questions
-        test_find_three_questions = find_questions(filename_data, 5)
-        test_find_three_questions['name'] += " Checking that Genie asks at least 3 questions. <br>" + \
+        test_find_three_questions = find_questions(filename_data, 3, 5)
+        test_find_three_questions['name'] += " Checking that Genie asks at least 3 questions. <br> " + \
                                              " Autograder will not continue if this test fails. <br>"
         tests.append(test_find_three_questions)
         if test_find_three_questions['pass'] is False:
@@ -120,54 +120,27 @@ def feedback_1040():
         else:
             score_info['score'] += 5
 
-        #     # Check that things are in correct order (a, b, c)
-        #     filename_output = filename + '.out'
-        #     cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
-        #           + filename_output
-        #
-        #     c = delegator.run(cmd)
-        #     if c.err:
-        #         flash('bad! You have an error somewhere in running program correct order 1.040')
-        #         flash(c.err)
-        #     with open(filename_output, 'r') as myfile:
-        #         outfile_data = myfile.read()
-        #
-        #     search_object = re.search(r".+ "
-        #                               r"a1 "
-        #                               r".+ "
-        #                               r"a2 "
-        #                               r".+ "
-        #                               r"a3 "
-        #                               r".+ ",
-        #                               outfile_data, re.X | re.M | re.S)
-        #     test_order_1 = {"name": "Testing that Genie answers in correct order for part 1 (5 points)",
-        #                     "pass": True,
-        #                     "pass_message": "Pass!  Genie appears to answer your wishes in correct order",
-        #                     "fail_message": "Fail.  Double check that the Genie is answering in correct order. <br>"
-        #                                     "Genie needs to reply back with the 3 wishes you asked for "
-        #                                     "in a particular order. <br>"
-        #                                     "Note: you must have a comma, period, space, or something between wishes."
-        #                                     "Review the sample run if this isn't clear. <br>"
-        #                     }
-        #     if not search_object or c.err:
-        #         test_order_1['pass'] = False
-        #     else:
-        #         score_info['score'] += 5
-        #     tests.append(test_order_1)
-        #
+            test_io_1 = io_test(filename, '.+ a1 .+ a2 .+ a3 ', 1, 5)
+            test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " +\
+                                 " should print 'your wishes are a, b, and c' <br>"
+            tests.append(test_io_1)
+            if test_io_1['pass']:
+                score_info['score'] += 5
+
             # Check that there are 6 total questions (3 part 1, 3 part 2)
             test_find_six_questions = find_questions(filename_data, 6, 5)
             test_find_six_questions['name'] += " Checking that Genie asks at least 6 questions (you need 3 for" \
-                                               "part 1 and 3 for part 2). <br>"
+                                               " part 1 and 3 for part 2). <br>"
             tests.append(test_find_six_questions)
             if test_find_three_questions['pass'] is True:
                 score_info['score'] += 5
 
-            test_input_variable = find_string(filename_data, "input([\"']")
-            test_input_variable['name'] += " Check that Genie put repeated strings into variables"
-            tests.append(test_im)
-            if test_find_three_questions['pass'] is True:
-                score_info['score'] += 5
+
+            # Check that repeated questions put into variables.
+            test_input_variable = find_string(filename_data, "input \( (\"') ", 4)
+            test_input_variable['name'] += " Check that Genie put repeated strings into variables - see question 3 <br>"
+            tests.append(test_input_variable)
+
             #
         #     # Check for asing variable questions
         #     process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
@@ -177,10 +150,12 @@ def feedback_1040():
         #     output_string = str(process_wc.communicate()[0])
         #     match_object = re.search(r"([0-9]+)", output_string)
         #     inputs_variable = int(match_object.group())
-        #     test_input_variable = {"name": "Testing for use of variable to sub for repeated strings in asking questions"
+        #     test_input_variable = {"name": "Testing for use of variable to sub for repeated strings
+            #  in asking questions"
         #                                    "(5 points)",
         #                            "pass": True,
-        #                            "pass_message": "Pass!  Genie appears to have stuck repeated strings into variables,"
+        #                            "pass_message": "Pass!  Genie appears to have stuck repeated strings
+            #  into variables,"
         #                                            " per instructions AND there are at least 6 inputs",
         #                            "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
         #                                            "<br>"
@@ -195,45 +170,19 @@ def feedback_1040():
         #     tests.append(test_input_variable)
         #
         #     # Check that things are in correct order (a, b, c, then b, c, a)
-        #
-        #     cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.040.in > ' \
-        #           + filename_output
-        #     c = delegator.run(cmd)
-        #
-        #     search_object = re.search(r".+ "
-        #                               r"a1 "
-        #                               r".+ "
-        #                               r"a2 "
-        #                               r".+ "
-        #                               r"a3 "
-        #                               r".+ "
-        #                               r"b2 "
-        #                               r".+ "
-        #                               r"b3 "
-        #                               r".+ "
-        #                               r"b1",
-        #                               outfile_data, re.X | re.M | re.S)
-        #     test_order_2 = {"name": "Testing that Genie answers in correct order for part 1 and part 2 (5 points)",
-        #                     "pass": True,
-        #                     "pass_message": "Pass!  Genie appears to answer your wishes in correct order for part 1 "
-        #                                     "and part 2",
-        #                     "fail_message": "Fail.  Double check that the Genie is answering in correct order for both "
-        #                                     "part 1 and part 2. <br>"
-        #                                     "wish1, wish2, and wish3 responses need to go in a particular order. <br>"
-        #                                     "Note: you must have a comma, period, space, or something between wishes."
-        #                                     "Review the instructions if this isn't clear. <br>"
-        #                     }
-        #     if not search_object or c.err:
-        #         test_order_2['pass'] = False
-        #     else:
-        #         score_info['score'] += 5
-        #     tests.append(test_order_2)
+
+            test_io_2 = io_test(filename, '.+ a1 .+ a2 .+ a3 .+ b2 .+ b3 .+ b1 ', 1, 5)
+            test_io_2['name'] += "Check things are in correct order - wishing for a, b, c, d, e, f " + \
+                                 " should print 'your wishes are a, b, and c' <br>" +\
+                                 " and 'your wishes are e, f, and d' <br>"
+            tests.append(test_io_2)
+            if test_io_2['pass']:
+                score_info['score'] += 5
 
             # Find number of PEP8 errors
             pep8_max_points = 7
             test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
             # Check for help comment

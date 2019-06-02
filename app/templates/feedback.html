@@ -12,10 +12,11 @@
     {% endif %}
 
     {% for test in tests %}
+        {% autoescape false %}
+
         <h3> {{ test.name }} </h3>
     
 	     
-        {% autoescape false %}
             {% if test.pass == True %}
                 <ul>
                     <li>{{ test.pass_message }}</li>

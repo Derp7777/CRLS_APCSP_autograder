@@ -22,25 +22,29 @@ def find_list(p_filename_data):
 
 # Inputs: p_filename_data, contents of the file (string).
 #         p_search_string, what you are looking for, literally (string)
+#         p_num, number of times you need to find the string
 # Output: Dictionary of test_find_string
 # This module finds if there is a list
 
 
-def find_string(p_filename_data, p_search_string):
+def find_string(p_filename_data, p_search_string, p_num):
     import re
 
     # test for a list that is created (i.e. abc = [asdf]
-    p_search_object = re.search(p_search_string, p_filename_data, re.X | re.M | re.S)
+    p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
 
-    p_test_find_string = {"name": "Testing that this string is there: " + p_search_string,
+    p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + " (" + str(p_num) +
+                                  ") points <br>",
                           "pass": True,
                           "pass_message": "Pass! Found this string: " + p_search_string,
                           "fail_message": "Fail.  Didn't find this string:" + p_search_string,
                           }
-    if p_search_object:
+
+    if p_matches >= p_num:
+        print("yes!!")
         p_test_find_string['pass'] = True
     else:
-        p_test_find_string['pass'] = False
+        print("no")
     return p_test_find_string
 
 # Inputs: p_filename_data, contents of the file (string).
@@ -101,11 +105,11 @@ def find_questions(p_filename_data, p_num, p_points):
     import re
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
-    p_test_find_questions = {"name": "Testing that genie asks at least " + p_num + " questions (" + p_points +
-                                     " points )",
+    p_test_find_questions = {"name": "Testing that genie asks at least " + str(p_num) + " questions (" + str(p_points) +
+                                     " points)<br>",
                              "pass": True,
-                             "pass_message": "Pass!  Genie asks at least " + p_num + " questions ",
-                             "fail_message": "Fail.  Code does not ask at least " + p_num + " questions .<br>",
+                             "pass_message": "Pass!  Genie asks at least " + str(p_num) + " questions ",
+                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>",
                              }
     if matches < p_num:
         p_test_find_questions['pass'] = False
@@ -117,5 +121,8 @@ def find_questions(p_filename_data, p_num, p_points):
 # Output: p_tests, list of various tests.  Each test is a dictionary
 # This module runs tests required for Python 1.040
 if __name__ == "__main__":
-    print("yes")
     find_function('/tmp/abc.py', 'hello', 3)
+    asdf = "input \( (\"') "
+    filename_data = '# print("yes") wish1 = input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
+  #  asdf = 'print'
+    find_string(filename_data, asdf, 1)
