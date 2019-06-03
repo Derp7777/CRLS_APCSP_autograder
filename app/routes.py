@@ -382,8 +382,7 @@ def feedback_2020():
         # Find number of PEP8 errors
         pep8_max_points = 14
         test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
 
         # Check for help comment
