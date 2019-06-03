@@ -89,14 +89,15 @@ def feedback_1040():
 
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_questions, find_string
+    from app.python_labs.find_items import find_questions
     from app.python_labs.io_test import io_test
+    from app.python_labs.python_1_040 import statement_variables
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5 , 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -135,41 +136,11 @@ def feedback_1040():
             if test_find_three_questions['pass'] is True:
                 score_info['score'] += 5
 
-
             # Check that repeated questions put into variables.
-            test_input_variable = find_string(filename_data, "input \( (\"') ", 4)
-            test_input_variable['name'] += " Check that Genie put repeated strings into variables - see question 3 <br>"
+            test_input_variable = statement_variables(filename_data)
+            if test_input_variable['pass'] is True:
+                score_info['score'] += 5
             tests.append(test_input_variable)
-
-            #
-        #     # Check for asing variable questions
-        #     process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
-        #     process_wc = subprocess.Popen(['wc', '-l'], stdin=process_grep1.stdout, stdout=subprocess.PIPE)
-        #     process_grep1.wait()
-        #     process_grep1.stdout.close()
-        #     output_string = str(process_wc.communicate()[0])
-        #     match_object = re.search(r"([0-9]+)", output_string)
-        #     inputs_variable = int(match_object.group())
-        #     test_input_variable = {"name": "Testing for use of variable to sub for repeated strings
-            #  in asking questions"
-        #                                    "(5 points)",
-        #                            "pass": True,
-        #                            "pass_message": "Pass!  Genie appears to have stuck repeated strings
-            #  into variables,"
-        #                                            " per instructions AND there are at least 6 inputs",
-        #                            "fail_message": "Fail.  There are over 3 inputs with single or double quotations. "
-        #                                            "<br>"
-        #                                            "Please recheck the instructions about putting repeated strings"
-        #                                            " into variables. "
-        #                                            "This translates to -10 points deduction.<br>",
-        #                            }
-        #     if inputs_variable > 4:
-        #         test_input_variable['pass'] = False
-        #     else:
-        #         score_info['score'] += 5
-        #     tests.append(test_input_variable)
-        #
-        #     # Check that things are in correct order (a, b, c, then b, c, a)
 
             test_io_2 = io_test(filename, '.+ a1 .+ a2 .+ a3 .+ b2 .+ b3 .+ b1 ', 1, 5)
             test_io_2['name'] += "Check things are in correct order - wishing for a, b, c, d, e, f " + \
@@ -348,8 +319,7 @@ def feedback_1060():
             # Find number of PEP8 errors
             pep8_max_points = 14
             test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
             tests.append(test_pep8)
 
             # Check for help comment
@@ -1178,10 +1148,10 @@ def feedback_3011():
         c = delegator.run(cmd)
         randoms = int(c.out)
         test_random = {"name": "Testing for an random of any type (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass (for now).  You have an random statment.  <br>",
-                     "fail_message": "Fail.  You do not have an random of any sort <br>",
-                     }
+                       "pass": True,
+                       "pass_message": "Pass (for now).  You have an random statment.  <br>",
+                       "fail_message": "Fail.  You do not have an random of any sort <br>",
+                       }
         if randoms == 0:
             test_random['pass'] = False
         else:
@@ -1306,12 +1276,11 @@ def feedback_3020():
             if c.err:
                 flash("There was a problem creating the python test file")
 
-
             # test to see happy birthday output spits out 'birthday'
             cmd = 'python3 /tmp/3.020.test.py testAutograde.test_happy_birthday 2>&1 |grep -i fail |wc -l'
             c = delegator.run(cmd)
             failures = int(c.out)
-            test_birthday_song_birthday =  {"name": "Testing that birthday song function is "
+            test_birthday_song_birthday = {"name": "Testing that birthday song function is "
                                                     "prints 'birthday' (4 points)",
                                             "pass": True,
                                             "pass_message": "Pass.  birthday_song function prints 'birthday'.  <br>",

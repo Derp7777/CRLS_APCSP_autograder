@@ -32,21 +32,24 @@ def io_test(p_filename, p_string, p_test_num, p_points):
     p_var_filename = re.sub('\.in', '-' + str(p_test_num) + '.in', p_var_filename)
     p_filename_output = p_filename + '.out'
 
-    p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
-                         "In output, looking for " + str(p_string) + "<br>",
-                 "pass": True,
-                 "pass_message": "Pass! Input/output gave expected result. <br>",
-                 "fail_message": "Fail. Input/output gave unexpected result. <br>",
-                 }
 
     cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
     c = delegator.run(cmd)
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
 
-    print(cmd)
     outfile_data = read_file_contents(p_filename_output)
-    print("passed read")
+
+    p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
+                         "In output, looking for " + str(p_string) + "<br>",
+                 "pass": True,
+                 "pass_message": "Pass! Input/output gave expected result. <br>",
+                 "fail_message": "Fail. Input/output gave unexpected result. <br>" +
+                                 "Looked for this: " + str(p_string) + "<br>" +
+                                 " in this: " + str(outfile_data) + "<br>",
+                 }
+
+
     search_object = re.search(p_string, outfile_data, re.X | re.M | re.S)
     if not search_object:
         p_test_io['pass'] = False

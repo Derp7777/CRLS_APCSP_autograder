@@ -27,25 +27,54 @@ def find_list(p_filename_data):
 # This module finds if there is a list
 
 
-def find_string(p_filename_data, p_search_string, p_num):
+def find_string(p_filename_data, p_search_string, p_num, p_points):
+    import re
+
+    print(p_search_string)
+    print(p_filename_data)
+    p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
+    print(p_matches)
+    p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + "at least " +
+                                  str(p_num) + " times (" + str(p_points) +
+                                  " points) <br>",
+                          "pass": True,
+                          "pass_message": "Pass! Found this string: " + p_search_string + " at least " +
+                                           str(p_num) + " times.<br>",
+                          "fail_message": "Fail.  Didn't find this string:" + p_search_string + " at least" +
+                                           str(p_num) + " times.<br>",
+                          }
+
+    if p_matches < p_num:
+        p_test_find_string['pass'] = False
+
+    return p_test_find_string
+
+# Inputs: p_filename_data, contents of the file (string).
+#         p_search_string, what you are looking for, literally (string)
+#         p_num_max, MAX number of times you can find the string
+# Output: Dictionary of test_find_string
+# This module finds if there is a string, maximum number of times
+
+
+def find_string_max(p_filename_data, p_search_string, p_num_max, p_points):
     import re
 
     # test for a list that is created (i.e. abc = [asdf]
     p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
-
-    p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + " (" + str(p_num) +
-                                  ") points <br>",
+    p_test_find_string = {"name": "Testing that this string is there maximum times: " +
+                                  p_search_string + " (" + str(p_points) +
+                                  " points) <br>",
                           "pass": True,
-                          "pass_message": "Pass! Found this string: " + p_search_string,
-                          "fail_message": "Fail.  Didn't find this string:" + p_search_string,
+                          "pass_message": "Pass! Found this string: " + p_search_string + " no more than " +
+                                          str(p_num_max) + " times. <br>",
+                          "fail_message": "Fail.  Found this string " + p_search_string + " more than " +
+                                          str(p_num_max) + "times. <br>",
                           }
 
-    if p_matches >= p_num:
-        print("yes!!")
-        p_test_find_string['pass'] = True
-    else:
-        print("no")
+    if p_matches > p_num_max:
+        p_test_find_string['pass'] = False
     return p_test_find_string
+
 
 # Inputs: p_filename_data, contents of the file (string).
 #         p_function_name, function name I am looking for (string)
@@ -105,7 +134,7 @@ def find_questions(p_filename_data, p_num, p_points):
     import re
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
-    p_test_find_questions = {"name": "Testing that genie asks at least " + str(p_num) + " questions (" + str(p_points) +
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " questions (" + str(p_points) +
                                      " points)<br>",
                              "pass": True,
                              "pass_message": "Pass!  Genie asks at least " + str(p_num) + " questions ",
@@ -122,7 +151,9 @@ def find_questions(p_filename_data, p_num, p_points):
 # This module runs tests required for Python 1.040
 if __name__ == "__main__":
     find_function('/tmp/abc.py', 'hello', 3)
-    asdf = "input \( (\"') "
-    filename_data = '# print("yes") wish1 = input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
+    asdf = "[a-z]{1,2} \s* = \s* input \( [^']+ \) "
+    filename_data = '# print("yes") abc  = input(asdf) input(asdf) wish1 = input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
   #  asdf = 'print'
-    find_string(filename_data, asdf, 1)
+
+    abc = find_string(filename_data, asdf, 1, 0)
+    print(abc)
