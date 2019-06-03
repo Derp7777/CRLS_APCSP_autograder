@@ -23,13 +23,13 @@ def python_2_032a(p_filename, p_filename_data):
 
     pass_count = 0
     test_1 = io_test(p_filename, 'False', 1, 0)
-    test_2 = io_test(p_filename, 'False', 1, 0)
-    test_3 = io_test(p_filename, 'True', 1, 0)
-    test_4 = io_test(p_filename, 'False', 1, 0)
-    test_5 = io_test(p_filename, 'False', 1, 0)
-    test_6 = io_test(p_filename, 'False', 1, 0)
-    test_7 = io_test(p_filename, 'False', 1, 0)
-    test_8 = io_test(p_filename, 'False', 1, 0)
+    test_2 = io_test(p_filename, 'False', 2, 0)
+    test_3 = io_test(p_filename, 'True', 3, 0)
+    test_4 = io_test(p_filename, 'False', 4, 0)
+    test_5 = io_test(p_filename, 'False', 5, 0)
+    test_6 = io_test(p_filename, 'False', 6, 0)
+    test_7 = io_test(p_filename, 'False', 7, 0)
+    test_8 = io_test(p_filename, 'False', 8, 0)
 
     if test_1['pass']:
         pass_count += 1
