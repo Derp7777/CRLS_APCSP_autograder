@@ -97,7 +97,7 @@ def feedback_1040():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5 , 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -169,9 +169,10 @@ def feedback_1040():
 
 @app.route('/feedback_1060')
 def feedback_1060():
-    import re
-    import delegator
 
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.find_items import find_questions, find_string, find_string_max
+    from app.python_labs.io_test import io_test_find_all, io_test_find_string
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -181,7 +182,7 @@ def feedback_1060():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 59, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -191,130 +192,72 @@ def feedback_1060():
 
     if test_filename['pass'] is True:
 
-        # Check that asks at least 5 questions
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_inputs_1 = {"name": "Testing for at least 5 input questions (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass!  Asks at least 5 inputs questions",
-                         "fail_message": "Fail.  Code does not have at least 5 input questions.<br>"
-                                         "The program needs to ask for 5 inputs of parts of speech"
-                                         "Please fix error and resubmit (other tests not run). <br>",
-                         }
-        if inputs < 5:
-            test_inputs_1['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_inputs_1)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
-        # Check that inputs are named after part of speech
-        cmd = 'grep -E "verb|noun|adjective|adverb|preposition" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        parts_of_speech = int(c.out)
-        test_parts_of_speech = {"name": "Testing that variables named after parts of speech (5 points)",
-                                "pass": True,
-                                "pass_message": "Pass!  Code asks at least 5 parts of speech in code",
-                                "fail_message": "Fail.  Variables should be named after parts of speech. "
-                                                "(noun, verb1, adjective, noun3, adverb10, etc...)<br>"
-                                                "The program needs to ask for 5 inputs of parts of speech.<br>"
-                                                "Please fix error and resubmit (other tests not run). <br>",
-                                }
-
-        if parts_of_speech < 5:
-            test_parts_of_speech['pass'] = False
-            tests.append(test_parts_of_speech)
+        # Check that there are 5 input questions
+        test_find_five_questions = find_questions(filename_data, 5, 5)
+        test_find_five_questions['name'] += " Checking for at least 5 questions. <br> " + \
+                                            " Autograder will not continue if this test fails. <br>"
+        tests.append(test_find_five_questions)
+        if test_find_five_questions['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             score_info['score'] += 5
-            tests.append(test_parts_of_speech)
+
+            # Check that inputs are named after part of speech
+            test_find_parts_of_speech = find_string(filename_data,
+                                                    '(verb|noun|adjective|adverb|preposition) .{1,3} \s* = \s* input\(',
+                                                    5, 5)
+            test_find_parts_of_speech['name'] += "Testing that variables are named after parts of speech. <br>"\
+                                                 "If this test fails, rename variables to parts of speech " \
+                                                 "per instructions.<br>"
+            if test_find_parts_of_speech['pass']:
+                score_info['score'] += 5
+            tests.append(test_find_parts_of_speech)
 
             # Check for at least 1 print statement
-            cmd = 'grep "print" ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            prints = int(c.out)
-            test_one_print = {"name": "Testing for at least 1 print statement (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass!  Asks at least 1 print statement.",
-                              "fail_message": "Fail.  Code does not have at least 1 print statement.<br>"
-                                              "The program needs to have print statements"
-                              }
-            if prints < 1:
-                test_one_print['pass'] = False
-            else:
+            test_find_print = find_string(filename_data, 'print \s* \(', 1, 5)
+            test_find_print['name'] += "Testing for at least one print statement. <br>"
+            if test_find_print['pass']:
                 score_info['score'] += 5
-            tests.append(test_one_print)
+            tests.append(test_find_print)
 
-            # Check for less than 3 print statement
-            test_three_print = {"name": "Testing for  less than 3 print statements (5 points)",
-                                "pass": True,
-                                "pass_message": "Pass!  Fewer than 3 print statements.",
-                                "fail_message": "Fail.  Code has more than 3 print statements.<br>"
-                                                "The program should have max 3 prints"
-                                }
-            if prints > 3:
-                test_three_print['pass'] = False
-            else:
+            # Check for less than 3 print statements
+            test_find_three_print = find_string_max(filename_data, 'print \s \(', 3, 5)
+            test_find_three_print['name'] += "Testing for at maximum of three print statements. <br>"
+            if test_find_three_print['pass']:
                 score_info['score'] += 5
-            tests.append(test_three_print)
+            tests.append(test_find_three_print)
 
-            # Check that things are in correct order.  First 5 inputs show up in output)
-            filename_output = filename + '.out'
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.060.in > ' \
-                  + filename_output
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program first 5 inputs show up')
-            with open(filename_output, 'r') as myfile:
-                outfile_data = myfile.read()
-
-            search_object_1 = re.search(r"a1", outfile_data, re.X | re.M | re.S)
-            search_object_2 = re.search(r"a2", outfile_data, re.X | re.M | re.S)
-            search_object_3 = re.search(r"a3", outfile_data, re.X | re.M | re.S)
-            search_object_4 = re.search(r"b1", outfile_data, re.X | re.M | re.S)
-            search_object_5 = re.search(r"b2", outfile_data, re.X | re.M | re.S)
-
-            test_show_5 = {"name": "Testing that first 5 inputs show up in the output printout (5 points)",
-                           "pass": True,
-                           "pass_message": "Pass!  First 5 inputs show up in the output printout",
-                           "fail_message": "Fail.  Check that first 5 inputs show up in the output printout.<br>"
-                                           "For example, if you typed in noun1, verb1, noun2, verb2, and adjective<br>"
-                                           "noun1, verb1, noun2, verb2, and adjective should all appear in the prinout."
-                                           "<br> ",
-                           }
-            if search_object_1 and search_object_2 and search_object_3 and search_object_4 and search_object_5:
+            # answer 5 questions, they should all show up in printout
+            test_io_five_inputs = io_test_find_all(filename, ['a1', 'a2', 'a3', 'b1', 'b2'], 1, 15)
+            test_io_five_inputs['name'] += 'Testing for first 5 things you answered questions to show in output.<br>' \
+                                           'For example, if you typed in noun1, verb1, noun2, verb2, and adjective' \
+                                           '<br> noun1, verb1, noun2, verb2, and adjective should all appear ' \
+                                           'in the printout. <br>'
+            if test_io_five_inputs['pass']:
                 score_info['score'] += 15
-            else:
-                test_show_5['pass'] = False
-            tests.append(test_show_5)
+            tests.append(test_io_five_inputs)
 
             # Check for 3 punctuations
-            filename_output = filename + '.out'
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/1.060.in > ' \
-                  + filename_output
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program check 3 punctuations')
-            with open(filename_output, 'r') as myfile:
-                outfile_data = myfile.read()
-
-            num_periods = outfile_data.count('.')
-            num_questions = outfile_data.count('?')
-            num_exclamations = outfile_data.count('!')
-            num_punctuations = num_periods + num_questions + num_exclamations
-            test_puncts = {"name": "Testing that there are at least 3 punctuations (5 points)",
-                           "pass": True,
-                           "pass_message": "Pass!  There are at least 3 punctuations.",
-                           "fail_message": "Fail.  Check that there are at least 3 punctuations.<br>"
-                                           "Looking for at least 3 periods, questions marks, or exclamations "
-                                           "<br> ",
-                           }
-            if num_punctuations < 3:
-                test_puncts['pass'] = False
-            else:
+            test_puncts = io_test_find_string(filename, '(\? | ! | \.) ', 1, 3, 5)
+            test_puncts['name'] += "Testing for at least 3 punctuations.<br>"
+            if test_puncts['pass']:
                 score_info['score'] += 5
-
             tests.append(test_puncts)
+
+            # Test second 4 inputs for correct spacing
+            test_io_spacing = io_test_find_all(filename, ['(\^ | \s+ ) a2 (\s+ | \? | \. | , | !)',
+                                                          '(\^ | \s+ ) a3 (\s+ | \? | \. | , | !)',
+                                                          '(\^ | \s+ ) b1 (\s+ | \? | \. | , | !)',
+                                                          '(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'],
+                                               1, 10)
+            test_io_spacing['name'] += 'Testing for spacing.  Things you enter should have spaces or punctuations<br>' \
+                                       'after them and spaces before them in the printout. <br>'
+            if test_io_spacing['pass']:
+                score_info['score'] += 10
+            tests.append(test_io_spacing)
 
             # Find number of PEP8 errors
             pep8_max_points = 14

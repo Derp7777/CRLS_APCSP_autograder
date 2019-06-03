@@ -30,6 +30,8 @@ def find_list(p_filename_data):
 def find_string(p_filename_data, p_search_string, p_num, p_points):
     import re
 
+    print(p_search_string)
+    print(p_filename_data)
     p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
     p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + "at least " +
                                   str(p_num) + " times (" + str(p_points) +
@@ -37,13 +39,13 @@ def find_string(p_filename_data, p_search_string, p_num, p_points):
                           "pass": True,
                           "pass_message": "Pass! Found this string: " + p_search_string + " at least " +
                                            str(p_num) + " times.<br>",
-                          "fail_message": "Fail.  Didn't find this string:" + p_search_string + " at least" +
+                          "fail_message": "Fail.  Didn't find this string:" + p_search_string + " at least " +
                                            str(p_num) + " times.<br>",
                           }
 
     if p_matches < p_num:
         p_test_find_string['pass'] = False
-
+        p_test_find_string['fail_message'] += "Found match " + str(p_matches) + " times. <br>"
     return p_test_find_string
 
 # Inputs: p_filename_data, contents of the file (string).
@@ -134,7 +136,7 @@ def find_questions(p_filename_data, p_num, p_points):
     p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " questions (" + str(p_points) +
                                      " points)<br>",
                              "pass": True,
-                             "pass_message": "Pass!  Genie asks at least " + str(p_num) + " questions ",
+                             "pass_message": "Pass!  Code asks at least " + str(p_num) + " questions ",
                              "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>",
                              }
     if matches < p_num:
@@ -153,4 +155,8 @@ if __name__ == "__main__":
   #  asdf = 'print'
 
     abc = find_string(filename_data, asdf, 1, 0)
+    print(abc)
+    asdf = '(verb|noun|adjective|adverb|preposition) .+ \s* = \s* input\('
+    filename_data = 'print("asdf") verb = input("yes") noun = input("yes") adjective = input("yes") noun3 = input("yes") adjective10 = input("yes") print(verb + " " + noun + " .?! " + adjective + " noun" + noun3 + " " + adjective10) # joe helped me '
+    abc = find_string(filename_data, asdf, 5, 0)
     print(abc)
