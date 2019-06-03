@@ -16,7 +16,8 @@ def statement_variables(p_filename_data):
                                              str(p_test_find_six_questions['pass']) +
                                              "<br> Result of finding strings in variables: " +
                                              str(p_test_find_statement_variables['pass']) +
-                                             "<br>  Both need to pass.<br> ",
+                                             "<br>  Both need to pass.<br> "
+                                             "The ENTIRE input string needs to be a variable (so not x + ' first' )",
                              }
 
     if not p_test_find_six_questions['pass'] or not p_test_find_statement_variables['pass']:
