@@ -30,10 +30,7 @@ def find_list(p_filename_data):
 def find_string(p_filename_data, p_search_string, p_num, p_points):
     import re
 
-    print(p_search_string)
-    print(p_filename_data)
     p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
-    print(p_matches)
     p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + "at least " +
                                   str(p_num) + " times (" + str(p_points) +
                                   " points) <br>",
