@@ -16,7 +16,6 @@ def io_test_find_all(p_filename, p_strings, p_test_num, p_points):
     from app.python_labs import YEAR
     from app.python_labs.read_file_contents import read_file_contents
 
-    var_dir = ''
     if sys.platform == 'darwin':
         var_dir = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/var'
         # This is Eric's home computer
@@ -80,7 +79,6 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
     from app.python_labs import YEAR
     from app.python_labs.read_file_contents import read_file_contents
 
-    var_dir = ''
     if sys.platform == 'darwin':
         var_dir = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/var'
         # This is Eric's home computer
@@ -136,7 +134,6 @@ def io_test(p_filename, p_string, p_test_num, p_points):
     from app.python_labs import YEAR
     from app.python_labs.read_file_contents import read_file_contents
 
-    var_dir = ''
     if sys.platform == 'darwin':
         var_dir = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/var'
         # This is Eric's home computer
