@@ -344,22 +344,16 @@ def feedback_2020():
 
 @app.route('/feedback_2032a')
 def feedback_2032a():
-    import re
-    import delegator
 
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_string_max
-    from app.python_labs.python_2_032 import python_2_032a
+    from app.python_labs.python_2_03x import python_2_032a
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
 
-
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 22.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
@@ -369,10 +363,9 @@ def feedback_2032a():
     tests.append(test_filename)
     if test_filename['pass'] is True:
 
-
         # Read in the python file to filename_data
-
         filename_data = read_file_contents(filename)
+
         # Check for ifs
         test_ifs = find_string_max(filename_data, 'if', 1, 5)
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
@@ -394,7 +387,6 @@ def feedback_2032a():
         tests.append(test_pep8)
         flash(score_info['score'])
 
-
         # Check for help comment
         help_points = 2.5
         test_help = helps(filename, help_points)
@@ -410,19 +402,17 @@ def feedback_2032a():
 
 @app.route('/feedback_2032b')
 def feedback_2032b():
-    import re
-    import delegator
 
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_string_max
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.python_2_03x import python_2_032b
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
-    score_info = {'score': 0, 'max_score': 22.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 22.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -430,142 +420,24 @@ def feedback_2032b():
     test_filename = filename_test(filename, '2.032b')
     tests.append(test_filename)
     if test_filename['pass'] is True:
-        # Check for ifs
-        cmd = 'grep "if" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        ifs = int(c.out)
 
-        test_ifs = {"name": "Checking for zero if statements (5 points)",
-                    "pass": True,
-                    "pass_message": "Pass!  Zero if statements",
-                    "fail_message": "Fail.  Code should not have any if statements.<br>"
-                                    "For example, print(1==1) NOT if (1 == 1): print('True') <br>"
-                                    "Review instructions or ask teacher for more details<br> ",
-                    }
-        if ifs == 0:
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
+        # Check for ifs
+        test_ifs = find_string_max(filename_data, 'if', 1, 5)
+        test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
+                            'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
+                            'If you think this should pass, control-F and search for "if" in your code'
+        if test_ifs['pass']:
             score_info['score'] += 5
-        else:
-            test_ifs['pass'] = False
         tests.append(test_ifs)
 
         # test all 8 cases
-        filename_output = filename + '.out'
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-1.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-1')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-        eight_cases_score = 0
-
-        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-2.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-2')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-3.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-3')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-4.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-4')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-5.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-5')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"True", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-6.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-6')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-7.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-7')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/2.032b-8.in > ' \
-              + filename_output
-        c = delegator.run(cmd)
-        if c.err:
-            flash('bad! You have an error somewhere in running program check 2.032-8')
-        with open(filename_output, 'r') as myfile:
-            outfile_data = myfile.read()
-
-        search_object = re.search(r"False", outfile_data, re.X | re.M | re.S)
-        if search_object:
-            eight_cases_score += 1
-
-        test_eight_tests = {"name": "Testing that all 8 test cases work (8 points)",
-                            "pass": True,
-                            "pass_message": "Pass!  All 8 test cases work",
-                            "fail_message": "Fail.  Check your 8 test cases.<br>"
-                                            "Please review the table that is after the 2.032b program run "
-                                            "in your assignment <br> "
-                                            "As part of this assignment, you should have populated that table.<br>"
-                                            "You should test your code with the data from this table.<br>"
-                                            "You need to figure out which ones, we do not tell you",
-                            }
-
-        if eight_cases_score != 8:
-            test_eight_tests['pass'] = False
-        if c.err:
-            test_eight_tests['pass'] = False
-            eight_cases_score = 0 
-
-        score_info['score'] += eight_cases_score
-        tests.append(test_eight_tests)
+        test_runs = python_2_032b(filename, filename_data)
+        if test_runs['pass_and_or']:
+            score_info['score'] += test_runs['score']
+        tests.append(test_runs)
 
         # Find number of PEP8 errors
         pep8_max_points = 7
@@ -589,128 +461,99 @@ def feedback_2032b():
 
 @app.route('/feedback_2040')
 def feedback_2040():
-    import delegator
+
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.find_items import find_string, find_all_strings, find_questions
 
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
-    score_info = {'score': 0, 'max_score': 46, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 46, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '2.040')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
-        # Check for equals, aka variable assignment
-        cmd = 'grep "=" ' + filename + ' | grep -v "==" | wc -l  '
-        c = delegator.run(cmd)
-        equals = int(c.out)
-
-        test_variables = {"name": "Checking for variables, need > 4 (5 points)",
-                          "pass": True,
-                          "pass_message": "Pass!  At least 4 equals signs assigning variables",
-                          "fail_message": "Fail.  Code should assign at least 4 prizes.<br>"
-                                          "For example, prize1 = 'brand new car' prize2 =..etc.. <br>"
-                                          "Review instructions or ask teacher for more details<br> ",
-                          }
-        if equals > 4:
-            score_info['score'] += 5
-        else:
-            test_variables['pass'] = False
-        tests.append(test_variables)
-
-        # test input
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-
-        test_inputs = {"name": "Checking for asking use question (5 points)",
-                       "pass": True,
-                       "pass_message": "Pass!  At least 4 equals signs assigning variables",
-                       "fail_message": "Fail. Code should ask user for a door to choose.<br>"
-                       }
-        if inputs >= 1:
-            score_info['score'] += 5
-        else:
-            test_inputs['pass'] = False
-        tests.append(test_inputs)
-
-        # test if
-        cmd = 'grep "if" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        ifs = int(c.out)
-
-        test_ifs = {"name": "Checking for at least one if(5 points)",
-                    "pass": True,
-                    "pass_message": "Pass!  At least 1 if in code",
-                    "fail_message": "Fail. Code should use an if to help decide what to print <br>"
-                                    " depending on what door was chosen"
-                    }
-        if ifs >= 1:
-            score_info['score'] += 5
-        else:
-            test_ifs['pass'] = False
-        tests.append(test_ifs)
-
-        # test else
-        cmd = 'grep "^else" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        elses = int(c.out)
-
-        test_elses = {"name": "Checking for at least one else at beginning of line(5 points)",
-                      "pass": True,
-                      "pass_message": "Pass!  At least one else in code at beginning of line",
-                      "fail_message": "Fail. Code should use an else in case user doesn't pick door 1-4"
-                      }
-        if elses >= 1:
-            score_info['score'] += 6
-        else:
-            test_elses['pass'] = False
-        tests.append(test_elses)
-
-        # test elif
-        cmd = 'grep "elif" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        elifs = int(c.out)
-
-        test_elifs = {"name": "Checking for at least 3 elifs (6 points)",
-                      "pass": True,
-                      "pass_message": "Pass!  At least 3 elifs in code",
-                      "fail_message": "Fail. Review the presentation for why we use elif vs if.  This question will be "
-                                      "on <br> your lab understanding Google form for sure."
-                      }
-        if elifs >= 3:
-            score_info['score'] += 6
-        else:
-            test_elifs['pass'] = False
-        tests.append(test_elifs)
-
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
+    if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
+        # Test for prize variables
+        test_prizes = find_all_strings(filename_data, ['prize1 \s* = \s* (\'|\")[a-z1-9\s]+',
+                                                       'prize2 \s* = \s* (\'|\")[a-z1-9\s]+',
+                                                       'prize3 \s* = \s* (\'|\")[a-z1-9\s]+',
+                                                       'prize4 \s* = \s* (\'|\")[a-z1-9\s]+', ], 5)
+        test_prizes['name'] += "Testing for 4 variables names prize1, prize2, prize3, prize4. <br>"
+        tests.append(test_prizes)
+        if not test_prizes['pass']:
+            test_prizes['fail_message'] += 'Be sure you have 4 variables called  prize1, prize2, prize3, prize4. <br>' \
+                                           'Be sure to set their values to be prizes'
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            score_info['score'] += 5
+
+            test_question = find_questions(filename_data, 1, 5)
+            if not test_question['pass']:
+                test_question['fail_message'] += "You need to ask the user a question about which door to pick. <br>"
+                tests.append(test_question)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+
+            else:
+                score_info['score'] += 5
+                tests.append(test_question)
+
+                # test if, check for at least 1 if statement
+                test_if = find_string(filename_data, '^if', 1, 5)
+                test_if['name'] += "Testing for at least if statement at BEGINNING of line. <br>" \
+                                   "(don't get fancy with functions yet). <br>"
+                if test_if['pass']:
+                    score_info['score'] += 5
+                tests.append(test_if)
+
+                # test else check for at least 1 else statement
+                test_else = find_string(filename_data, '^else', 1, 5)
+                test_else['name'] += "Testing for at least else statement at BEGINNING of line. <br>" \
+                                     "(don't get fancy with functions yet). <br>"
+                if test_else['pass']:
+                    score_info['score'] += 5
+                else:
+                    test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
+                tests.append(test_else)
+
+                # test elif check for at least 3
+                test_elif = find_string(filename_data, '^elif', 3, 5)
+                test_elif['name'] += "Testing for at least 3 elif statement at BEGINNING of line. <br>" \
+                                     "(don't get fancy with functions yet). <br>"
+                if test_elif['pass']:
+                    score_info['score'] += 5
+                else:
+                    test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
+                                                 'elif vs if if if. <br>'
+                tests.append(test_elif)
+
+                # Find number of PEP8 errors
+                pep8_max_points = 14
+                test_pep8 = pep8(filename, pep8_max_points)
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                tests.append(test_pep8)
+
+                # Check for help comment
+                help_points = 5
+                test_help = helps(filename, help_points)
+                if test_help['pass'] is True:
+                    score_info['score'] += help_points
+                tests.append(test_help)
+
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests,
+                                       filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2050a')
@@ -773,7 +616,6 @@ def feedback_2050a():
 @app.route('/feedback_2050b')
 def feedback_2050b():
     import re
-    import delegator
 
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -782,7 +624,6 @@ def feedback_2050b():
     # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 14.5, 'finished_scoring': False}
 
     # Test 1: file name
@@ -1826,7 +1667,6 @@ def feedback_4025():
         c = delegator.run(cmd)
         if c.err:
             flash("There was a problem creating the python test file")
-
 
         # test1 for serena game
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_1 2>&1 |grep -i fail |wc -l'
