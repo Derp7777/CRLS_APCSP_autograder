@@ -551,6 +551,18 @@ def feedback_2040():
                     score_info['score'] += help_points
                 tests.append(test_help)
 
+                # with open('/tmp/2019_ewu_2.040.py', 'r', encoding='utf8') as myfile:
+                #     p_filename_data = myfile.read()
+                # print(p_filename_data)
+                # match_obj = re.search('prize2 \s* = \s* (\'|") ([a-z1-9\s]+) (\'|")', p_filename_data,
+                #                       re.X | re.M | re.S)
+                # if match_obj:
+                #     print("YES")
+                # else:
+                #     print("no")
+                # print(match_obj.group(2))
+
+
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests,
                                        filename=filename, score_info=score_info)
