@@ -464,14 +464,14 @@ def feedback_2040():
 
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_string, find_all_strings, find_questions
-
+    from app.python_labs.python_2_040 import python_2_040
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 46, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 61, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -485,10 +485,10 @@ def feedback_2040():
         filename_data = read_file_contents(filename)
 
         # Test for prize variables
-        test_prizes = find_all_strings(filename_data, ['prize1 \s* = \s* (\'|\")[a-z1-9\s]+',
-                                                       'prize2 \s* = \s* (\'|\")[a-z1-9\s]+',
-                                                       'prize3 \s* = \s* (\'|\")[a-z1-9\s]+',
-                                                       'prize4 \s* = \s* (\'|\")[a-z1-9\s]+', ], 5)
+        test_prizes = find_all_strings(filename_data, ['prize1 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       'prize2 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       'prize3 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       'prize4 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+', ], 6)
         test_prizes['name'] += "Testing for 4 variables names prize1, prize2, prize3, prize4. <br>"
         tests.append(test_prizes)
         if not test_prizes['pass']:
@@ -496,9 +496,9 @@ def feedback_2040():
                                            'Be sure to set their values to be prizes'
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
+            score_info['score'] += 6
 
-            test_question = find_questions(filename_data, 1, 5)
+            test_question = find_questions(filename_data, 1, 6)
             if not test_question['pass']:
                 test_question['fail_message'] += "You need to ask the user a question about which door to pick. <br>"
                 tests.append(test_question)
@@ -506,37 +506,44 @@ def feedback_2040():
                                        score_info=score_info)
 
             else:
-                score_info['score'] += 5
+                score_info['score'] += 6
                 tests.append(test_question)
 
                 # test if, check for at least 1 if statement
-                test_if = find_string(filename_data, '^if', 1, 5)
+                test_if = find_string(filename_data, '^if', 1, 6)
                 test_if['name'] += "Testing for at least if statement at BEGINNING of line. <br>" \
                                    "(don't get fancy with functions yet). <br>"
                 if test_if['pass']:
-                    score_info['score'] += 5
+                    score_info['score'] += 6
                 tests.append(test_if)
 
                 # test else check for at least 1 else statement
-                test_else = find_string(filename_data, '^else', 1, 5)
+                test_else = find_string(filename_data, '^else', 1, 6)
                 test_else['name'] += "Testing for at least else statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
                 if test_else['pass']:
-                    score_info['score'] += 5
+                    score_info['score'] += 6
                 else:
                     test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
                 tests.append(test_else)
 
                 # test elif check for at least 3
-                test_elif = find_string(filename_data, '^elif', 3, 5)
+                test_elif = find_string(filename_data, '^elif', 3, 6)
                 test_elif['name'] += "Testing for at least 3 elif statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
                 if test_elif['pass']:
-                    score_info['score'] += 5
+                    score_info['score'] += 6
                 else:
                     test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
                                                  'elif vs if if if. <br>'
                 tests.append(test_elif)
+
+                test_correct_prizes = python_2_040(filename, filename_data)
+                if test_correct_prizes['pass']:
+                    score_info['score'] += 12
+                else:
+                    test_correct_prizes['fail_message'] += test_correct_prizes['debug']
+                tests.append(test_correct_prizes)
 
                 # Find number of PEP8 errors
                 pep8_max_points = 14
@@ -551,6 +558,7 @@ def feedback_2040():
                     score_info['score'] += help_points
                 tests.append(test_help)
 
+
                 # with open('/tmp/2019_ewu_2.040.py', 'r', encoding='utf8') as myfile:
                 #     p_filename_data = myfile.read()
                 # print(p_filename_data)
@@ -561,7 +569,6 @@ def feedback_2040():
                 # else:
                 #     print("no")
                 # print(match_obj.group(2))
-
 
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests,

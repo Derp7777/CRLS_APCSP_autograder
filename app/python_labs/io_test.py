@@ -50,6 +50,9 @@ def io_test_find_all(p_filename, p_strings, p_test_num, p_points):
 
     found_targets = []
     for target in p_strings:
+        target = target.replace(' ', '\s')
+        target = target.replace('$', '\$')
+        target = target.replace('+', '\+')
         search_object = re.search(target, outfile_data, re.X | re.M | re.S)
         if search_object:
             found_targets.append(target)
@@ -100,6 +103,7 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
         raise Exception('Failed, trying to run ' + cmd)
 
     outfile_data = read_file_contents(p_filename_output)
+    p_string = p_string.replace(' ', '\s')
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 
     p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
@@ -155,6 +159,9 @@ def io_test(p_filename, p_string, p_test_num, p_points):
         raise Exception('Failed, trying to run ' + cmd)
 
     outfile_data = read_file_contents(p_filename_output)
+    p_string = p_string.replace(' ', '\s')
+    p_string = p_string.replace('$', '\$')
+    p_string = p_string.replace('+', '\+')
 
     p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
                          "In output, looking for " + str(p_string) + "<br>",
@@ -166,6 +173,8 @@ def io_test(p_filename, p_string, p_test_num, p_points):
                  }
 
     search_object = re.search(p_string, outfile_data, re.X | re.M | re.S)
+    print(p_string)
+    print(outfile_data)
 
     if not search_object:
         p_test_io['pass'] = False

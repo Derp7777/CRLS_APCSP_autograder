@@ -167,7 +167,9 @@ def find_questions(p_filename_data, p_num, p_points):
                                      " points)<br>",
                              "pass": True,
                              "pass_message": "Pass!  Code asks at least " + str(p_num) + " questions ",
-                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>",
+                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>" +\
+                                             "For now, autograder code will fail checks like "
+                                             "abc = int(input('question') do it in two steps.<br>",
                              }
     if matches < p_num:
         p_test_find_questions['pass'] = False
