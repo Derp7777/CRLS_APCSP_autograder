@@ -216,7 +216,7 @@ def feedback_1060():
             tests.append(test_find_parts_of_speech)
 
             # Check for at least 1 print statement
-            test_find_print = find_string(filename_data, 'print \s* \(', 1, 5)
+            test_find_print = find_string(filename_data, 'print\s*\(', 1, 5)
             test_find_print['name'] += "Testing for at least one print statement. <br>"
             if test_find_print['pass']:
                 score_info['score'] += 5
@@ -663,7 +663,7 @@ def feedback_2051b():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 14.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 23, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -785,123 +785,124 @@ def feedback_2051b():
 
 @app.route('/feedback_3011')
 def feedback_3011():
-    import re
-    import delegator
 
+
+    from app.python_labs.find_items import find_string, find_questions, find_all_strings
+    from app.python_labs.python_3_011 import python_3_011
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+
 
     # have same feedback for all
     # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 54, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 64, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '3.011')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass'] is True:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # test for a list
         with open(filename, 'r') as myfile:
             filename_data = myfile.read()
 
-        search_object = re.search(r".+ = .* \[ .* \]", filename_data, re.X | re.M | re.S)
-
-        test_list = {"name": "Testing that there is something looking like a list",
-                     "pass": True,
-                     "pass_message": "Pass! Submitted file looks like it has a list",
-                     "fail_message": "Submitted file does not look like it has a list.",
-                     }
-
-        if not search_object:
-            test_list['pass'] = False
+        # test for a list being created with 4 items
+        test_houses = find_string(filename_data, 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]', 1, 10)
+        test_houses['name'] += "Testing that there is a list houses.  houses is a list with " \
+                            "6+ items.<br>"
+        if not test_houses['pass']:
+            test_houses['fail_message'] += "looked for 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]' " \
+                                           "in this string: " + filename_data
+            tests.append(test_houses)
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
+            tests.append(test_houses)
             score_info['score'] += 10
-        tests.append(test_list)
 
-        # test for 4+ items list
-        search_object = re.search(r".+ = .* \[ .* , .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
+            # Asks a question, but that is ignore
+            test_question = find_questions(filename_data, 1, 5)
+            if not test_question['pass']:
+                test_question['fail_message'] += "You need to ask the user a question to try to influence the hat. <br>"
+            else:
+                score_info['score'] += 5
+            tests.append(test_question)
 
-        test_four_item_list = {"name": "Testing that there is something looking like a 4+ items in list",
-                               "pass": True,
-                               "pass_message": "Pass! Submitted file looks like it has 4+ items in list",
-                               "fail_message": "Submitted file does not look like it has 4+ items in list.",
-        }
+            # test for importing random
+            test_random = find_string(filename_data, '(import\s+random|from\s+random\s+import)', 1, 5)
+            test_random['name'] += "Testing that you are import random in some way.<br>"
+            if not test_random['pass']:
+                tests.append(test_random)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                score_info['score'] += 5
+                tests.append(test_random)
 
-        if not search_object:
-            test_four_item_list['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_four_item_list)
+                # test for importing randint
+                test_randint = find_string(filename_data, 'randint', 1, 5)
+                test_randint['name'] += "Testing that you are using randint - random.choice works, but you " \
+                                        "should learn how to use randint.<br>"
+                if test_randint['pass']:
+                    score_info['score'] += 5
+                tests.append(test_randint)
 
-        # Check for any print
-        cmd = 'grep "print" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        prints = int(c.out)
-        test_print = {"name": "Testing for a print of any type (5 points)",
-                      "pass": True,
-                      "pass_message": "Pass (for now).  You have a print statment.  <br>",
-                      "fail_message": "Fail.  You do not have a print of any sort <br>",
-                      }
-        if prints == 0:
-            test_print['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_print)
+                # Check for at least 1 print statement
+                test_find_print = find_string(filename_data, 'print\s*\(', 1, 5)
+                test_find_print['name'] += "Testing for at least one print statement. <br>"
+                if test_find_print['pass']:
+                    score_info['score'] += 5
+                tests.append(test_find_print)
 
-        # Check for any input
-        cmd = 'grep "input" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        inputs = int(c.out)
-        test_input = {"name": "Testing for an input of any type (5 points)",
-                      "pass": True,
-                      "pass_message": "Pass (for now).  You have an input statment.  <br>",
-                      "fail_message": "Fail.  You do not have an input of any sort <br>",
-                      }
-        if inputs == 0:
-            test_input['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_input)
+                # Test efficiency
+                test_efficiency = find_all_strings(filename_data, ['houses\[0\]', 'houses\[1\]',
+                                                                   'houses\[2\]', 'houses\[3\]'], 5)
+                test_efficiency['name'] += "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>" \
+                                           "If you have a variable x which is a number of item in list," \
+                                           " list[x-1] will get you the correct item.<br>" \
+                                           "<br>  This technique saves a lot of lines of code over a big if/elif  " \
+                                           "and scales to big numbers.  " \
+                                           "<br>That is, a list with 10,000 items will need " \
+                                           "just one line to print out the list item whereas with a big if/else, " \
+                                           "you will need 20,000 lines of code.<br>" \
+                                           " If this does not make sense, ask a neighbor or the teacher."
+                if test_efficiency['pass']:
+                    test_efficiency['pass'] = False
+                    test_efficiency['fail_message'] += "You want to use a variable for the list index of houses."
+                else:
+                    test_efficiency['pass'] = True
+                    test_efficiency[
+                        'pass_message'] += "(actually, did NOT find houses[0], houses[1] houses[2] houses[3]"
+                if test_efficiency['pass']:
+                    score_info['score'] += 5
+                tests.append(test_efficiency)
 
-        # Check for any random at all
-        cmd = 'grep "random" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        randoms = int(c.out)
-        test_random = {"name": "Testing for an random of any type (5 points)",
-                       "pass": True,
-                       "pass_message": "Pass (for now).  You have an random statment.  <br>",
-                       "fail_message": "Fail.  You do not have an random of any sort <br>",
-                       }
-        if randoms == 0:
-            test_random['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_random)
+                test_runs = python_3_011(filename, filename_data)
+                if test_runs['pass']:
+                    score_info['score'] += 10
+                tests.append(test_runs)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
+            # Find number of PEP8 errors
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
             score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
+            tests.append(test_pep8)
 
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
+            # Check for help comment
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
+            tests.append(test_help)
 
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 
