@@ -35,7 +35,7 @@ def python_2_040(p_filename, p_filename_data):
     if not match_obj_prize4:
         raise Exception("Did not find a prize after prize4 variable")
 
-    p_pass_tests = {"name": "4 test cases for 2.040 work (8 points) <br>",
+    p_pass_tests = {"name": "4 test cases for 2.040 work (12 points) <br>",
                     "pass": True,
                     "pass_message": "Pass!  All 4 test cases work",
                     "fail_message": "Fail.  Check your 4 test cases.<br>"
@@ -53,18 +53,18 @@ def python_2_040(p_filename, p_filename_data):
     test_4 = io_test(p_filename, prize4, 4, 0)
 
     if test_1['pass']:
-        p_pass_tests['score'] += 2
+        p_pass_tests['score'] += 3
         debug_string += ' <br>1  prize passed '
     if test_2['pass']:
-        p_pass_tests['score'] += 2
+        p_pass_tests['score'] += 3
         debug_string += ' 2 prize passed '
     if test_3['pass']:
-        p_pass_tests['score'] += 2
+        p_pass_tests['score'] += 3
         debug_string += ' 3 prize passed'
     if test_4['pass']:
-        p_pass_tests['score'] += 2
+        p_pass_tests['score'] += 3
         debug_string += ' 4 prize pass'
-    if p_pass_tests['score'] != 8:
+    if p_pass_tests['score'] != 12:
         p_pass_tests['pass'] = False
         p_pass_tests['debug'] = debug_string
 

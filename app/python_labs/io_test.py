@@ -29,15 +29,18 @@ def io_test_find_all(p_filename, p_strings, p_test_num, p_points):
     p_var_filename = re.sub('.py', '.in', p_var_filename)
     p_var_filename = re.sub('.+_', '', p_var_filename)
     p_var_filename = re.sub('\.in', '-' + str(p_test_num) + '.in', p_var_filename)
-    p_filename_output = p_filename + '.out'
+#    p_filename_output = p_filename + '.out'
 
-    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    # cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    # c = delegator.run(cmd)
+    # if c.err:
+    #     raise Exception('Failed, trying to run ' + cmd)
+    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename
     c = delegator.run(cmd)
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
 
-    outfile_data = read_file_contents(p_filename_output)
-    print(outfile_data)
+    outfile_data = c.out
 
     p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
                          "In output, looking for " + str(p_strings) + "<br>",
@@ -97,13 +100,22 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
     p_var_filename = re.sub('\.in', '-' + str(p_test_num) + '.in', p_var_filename)
     p_filename_output = p_filename + '.out'
 
-    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename
     c = delegator.run(cmd)
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
-
-    outfile_data = read_file_contents(p_filename_output)
+    outfile_data = c.out
     p_string = p_string.replace(' ', '\s')
+    p_string = p_string.replace('$', '\$')
+    p_string = p_string.replace('+', '\+')
+
+    # cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    # c = delegator.run(cmd)
+    # if c.err:
+    #     raise Exception('Failed, trying to run ' + cmd)
+    #
+    # outfile_data = read_file_contents(p_filename_output)
+    # p_string = p_string.replace(' ', '\s')
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 
     p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
@@ -153,12 +165,22 @@ def io_test(p_filename, p_string, p_test_num, p_points):
     p_var_filename = re.sub('\.in', '-' + str(p_test_num) + '.in', p_var_filename)
     p_filename_output = p_filename + '.out'
 
-    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    # cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
+    # c = delegator.run(cmd)
+    # if c.err:
+    #     raise Exception('Failed, trying to run ' + cmd)
+    #
+    # outfile_data = read_file_contents(p_filename_output)
+    # p_string = p_string.replace(' ', '\s')
+    # p_string = p_string.replace('$', '\$')
+    # p_string = p_string.replace('+', '\+')
+
+    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename
     c = delegator.run(cmd)
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
 
-    outfile_data = read_file_contents(p_filename_output)
+    outfile_data = c.out
     p_string = p_string.replace(' ', '\s')
     p_string = p_string.replace('$', '\$')
     p_string = p_string.replace('+', '\+')
@@ -173,8 +195,6 @@ def io_test(p_filename, p_string, p_test_num, p_points):
                  }
 
     search_object = re.search(p_string, outfile_data, re.X | re.M | re.S)
-    print(p_string)
-    print(outfile_data)
 
     if not search_object:
         p_test_io['pass'] = False
@@ -185,6 +205,7 @@ def io_test(p_filename, p_string, p_test_num, p_points):
 if __name__ == "__main__":
     print("yes")
   #  abc = io_test('/Users/dimmyfinster/PycharmProjects/untitled5/2019_ewu_1.040.py', 1, 'asdfsdf', 5)
+
   #  print(abc)
     abc = io_test_find_all ('/Users/dimmyfinster/PycharmProjects/untitled5/2019_ewu_1.060.py',
                             ['(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'], 1, 5)

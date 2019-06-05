@@ -385,7 +385,6 @@ def feedback_2032a():
         test_pep8 = pep8(filename, pep8_max_points)
         score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
         tests.append(test_pep8)
-        flash(score_info['score'])
 
         # Check for help comment
         help_points = 2.5
@@ -504,7 +503,6 @@ def feedback_2040():
                 tests.append(test_question)
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
-
             else:
                 score_info['score'] += 6
                 tests.append(test_question)
@@ -558,18 +556,6 @@ def feedback_2040():
                     score_info['score'] += help_points
                 tests.append(test_help)
 
-
-                # with open('/tmp/2019_ewu_2.040.py', 'r', encoding='utf8') as myfile:
-                #     p_filename_data = myfile.read()
-                # print(p_filename_data)
-                # match_obj = re.search('prize2 \s* = \s* (\'|") ([a-z1-9\s]+) (\'|")', p_filename_data,
-                #                       re.X | re.M | re.S)
-                # if match_obj:
-                #     print("YES")
-                # else:
-                #     print("no")
-                # print(match_obj.group(2))
-
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests,
                                        filename=filename, score_info=score_info)
@@ -578,9 +564,9 @@ def feedback_2040():
 @app.route('/feedback_2050a')
 def feedback_2050a():
 
-    from app.python_labs.find_input import find_input
-    from app.python_labs.find_items import find_list
+    from app.python_labs.find_items import find_string, find_questions
     from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.python_2_05x import python_2_050a
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -594,42 +580,52 @@ def feedback_2050a():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '2.050a')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
-        # test for a list being created
-        test_list = find_list(filename_data)
-        if test_list['pass'] is True:
+        # test for a list being created with 4 items
+        test_prizes = find_string(filename_data, 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]', 1, 5)
+        test_prizes['name'] += "Testing that there is a variable prizes.  Prizes is a list with exactly 4 items"
+        if not test_prizes['pass']:
+            test_prizes['fail_message'] += "looked for 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]' " \
+                                           "in this string: " + filename_data
+            tests.append(test_prizes)
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
             score_info['score'] += 3
-        tests.append(test_list)
+            tests.append(test_prizes)
 
-        # Check for input
-        points = 3
-        test_find_input = find_input(filename_data, 1, points)
-        if test_find_input['pass'] is True:
-            score_info['score'] += points
-        tests.append(test_find_input)
+            # Check for question
+            points = 3
+            test_find_input = find_questions(filename_data, 1, points)
+            if test_find_input['pass']:
+                score_info['score'] += points
+            tests.append(test_find_input)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
+            # Test input gives output
+            test_runs = python_2_050a(filename, filename_data)
+            if test_runs['pass']:
+                score_info['score'] += test_runs['score']
+            tests.append(test_runs)
+
+            # Find number of PEP8 errors
+            pep8_max_points = 7
+            test_pep8 = pep8(filename, pep8_max_points)
             score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
+            tests.append(test_pep8)
 
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
+            # Check for help comment
+            help_points = 2.5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
+            tests.append(test_help)
 
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2050b')

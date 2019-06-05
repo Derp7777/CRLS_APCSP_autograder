@@ -167,7 +167,7 @@ def find_questions(p_filename_data, p_num, p_points):
                                      " points)<br>",
                              "pass": True,
                              "pass_message": "Pass!  Code asks at least " + str(p_num) + " questions ",
-                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>" +\
+                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>" +
                                              "For now, autograder code will fail checks like "
                                              "abc = int(input('question') do it in two steps.<br>",
                              }
@@ -177,22 +177,42 @@ def find_questions(p_filename_data, p_num, p_points):
     return p_test_find_questions
 
 
-# Inputs: p_filename, filename to search for help.
-# Output: p_tests, list of various tests.  Each test is a dictionary
-# This module runs tests required for Python 1.040
-if __name__ == "__main__":
-    find_function('/tmp/abc.py', 'hello', 3)
-    asdf = "[a-z]{1,2} \s* = \s* input \( [^']+ \) "
-    filename_data = '# print("yes") abc  = input(asdf) input(asdf) wish1 =' \
-                    ' input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  ' \
-                    'print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
+# Input parameters: p_filename_data - contains the entire python file (string)
+#                   p_string - regex string that extracts the list you are looking for
+# Output: list of items in the string
+# This module finds a list with a particular name in the code and returns as list to user
 
-    abc = find_string(filename_data, asdf, 1, 0)
-    print(abc)
-    asdf = '(verb|noun|adjective|adverb|preposition) .+ \s* = \s* input\('
-    filename_data = 'print("asdf") verb = input("yes") noun = input("yes") adjective = input("yes") ' \
-                    'noun3 = input("yes") adjective10 = input("yes") print(verb + " " + ' \
-                    'noun + " .?! " + adjective + " noun" + noun3 + " " + adjective10) # joe helped me '
-    abc = find_string(filename_data, asdf, 5, 0)
-    print(abc)
+
+def find_list_items(p_filename_data, p_string):
+
+    import re
+
+    p_search_object = re.search(p_string, p_filename_data, re.X | re.M | re.S)
+    match = p_search_object.group(1)
+    match = match.replace('"', '')
+    match = match.replace("'", '')
+    match = re.sub(r",\s+", "~", match)
+    items = match.split('~')
+    return items
+
+
+if __name__ == "__main__":
+    # find_function('/tmp/abc.py', 'hello', 3)
+    # asdf = "[a-z]{1,2} \s* = \s* input \( [^']+ \) "
+    # filename_data = '# print("yes") abc  = input(asdf) input(asdf) wish1 =' \
+    #                 ' input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  ' \
+    #                 'print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
+    #
+    # abc = find_string(filename_data, asdf, 1, 0)
+    # print(abc)
+    # asdf = '(verb|noun|adjective|adverb|preposition) .+ \s* = \s* input\('
+    # filename_data = 'print("asdf") verb = input("yes") noun = input("yes") adjective = input("yes") ' \
+    #                 'noun3 = input("yes") adjective10 = input("yes") print(verb + " " + ' \
+    #                 'noun + " .?! " + adjective + " noun" + noun3 + " " + adjective10) # joe helped me '
+    # abc = find_string(filename_data, asdf, 5, 0)
+    # print(abc)
+    filename_data = "hello world    prizes = [\"asdf\", '23', 'llll']"
+    # abc = find_list_items('prizes \s* = \s* \[ (.+) \]', filename_data)
+    abc = find_list_items(filename_data, 'prizes \s* = \s* \[ (.+) \]')
+
 
