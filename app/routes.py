@@ -1,5 +1,4 @@
 from flask import render_template, url_for, request, redirect, flash
-
 from app import app
 from app.forms import UploadForm
 from werkzeug.utils import secure_filename
@@ -43,10 +42,10 @@ def index():
                 return redirect(url_for('feedback_2032b', filename=filename))
             elif request.form['lab'] == '2.040':
                 return redirect(url_for('feedback_2040', filename=filename))
-            elif request.form['lab'] == '2.050a':
-                return redirect(url_for('feedback_2050a', filename=filename))
-            elif request.form['lab'] == '2.050b':
-                return redirect(url_for('feedback_2050b', filename=filename))
+            elif request.form['lab'] == '2.051a':
+                return redirect(url_for('feedback_2051a', filename=filename))
+            elif request.form['lab'] == '2.051b':
+                return redirect(url_for('feedback_2051b', filename=filename))
             elif request.form['lab'] == '3.011':
                 return redirect(url_for('feedback_3011', filename=filename))
             elif request.form['lab'] == '3.020':
@@ -561,24 +560,24 @@ def feedback_2040():
                                        filename=filename, score_info=score_info)
 
 
-@app.route('/feedback_2050a')
-def feedback_2050a():
+@app.route('/feedback_2051a')
+def feedback_2051a():
 
-    from app.python_labs.find_items import find_string, find_questions
+    from app.python_labs.find_items import find_string, find_questions, find_all_strings
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.python_2_05x import python_2_050a
+    from app.python_labs.python_2_05x import python_2_051a
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 15.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 15.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '2.050a')
+    test_filename = filename_test(filename, '2.051a')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -590,8 +589,10 @@ def feedback_2050a():
         test_prizes = find_string(filename_data, 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]', 1, 5)
         test_prizes['name'] += "Testing that there is a variable prizes.  Prizes is a list with exactly 4 items"
         if not test_prizes['pass']:
-            test_prizes['fail_message'] += "looked for 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]' " \
-                                           "in this string: " + filename_data
+            test_prizes['fail_message'] += "Looking for variable prizes that is a list with 4 items.  We name lists " \
+                                           "plural to help keep track of what is what.<br>  " \
+                                           "Looked for 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]' " \
+                                           "in this string: <br>" + filename_data
             tests.append(test_prizes)
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
@@ -599,17 +600,39 @@ def feedback_2050a():
             tests.append(test_prizes)
 
             # Check for question
-            points = 3
+            points = 5
             test_find_input = find_questions(filename_data, 1, points)
             if test_find_input['pass']:
                 score_info['score'] += points
             tests.append(test_find_input)
 
             # Test input gives output
-            test_runs = python_2_050a(filename, filename_data)
+            test_runs = python_2_051a(filename, filename_data)
             if test_runs['pass']:
                 score_info['score'] += test_runs['score']
             tests.append(test_runs)
+
+            # Test efficiency
+            test_efficiency = find_all_strings(filename_data, ['prizes\[0\]', 'prizes\[1\]',
+                                                               'prizes\[2\]','prizes\[3\]'], 5)
+            test_efficiency['name'] += "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>" \
+                                       "If you have a variable x which is a number of item in list," \
+                                       " list[x-1] will get you the correct item.<br>" \
+                                       "<br>  This technique saves a lot of lines of code over a big if/elif  " \
+                                       "and scales to big numbers.  " \
+                                       "<br>That is, a list with 10,000 items will need " \
+                                       "just one line to print out the list item whereas with a big if/else, " \
+                                       "you will need 20,000 lines of code.<br>" \
+                                       " If this does not make sense, ask a neighbor or the teacher."
+            if test_efficiency['pass']:
+                test_efficiency['pass'] = False
+                test_efficiency['fail_message'] += "You want to use a variable for the list index of prizes."
+            else:
+                test_efficiency['pass'] = True
+                test_efficiency['pass_message'] += "(actually, did NOT find prizes[0], prizes[1] prizes[2] prizes[3]"
+            if test_efficiency['pass']:
+                score_info['score'] += 5
+            tests.append(test_efficiency)
 
             # Find number of PEP8 errors
             pep8_max_points = 7
@@ -628,15 +651,16 @@ def feedback_2050a():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
-@app.route('/feedback_2050b')
-def feedback_2050b():
-    import re
+@app.route('/feedback_2051b')
+def feedback_2051b():
 
+    from app.python_labs.io_test import io_test
+    from app.python_labs.find_items import find_string, find_questions
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 14.5, 'finished_scoring': False}
@@ -644,46 +668,119 @@ def feedback_2050b():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '2.050b')
+    test_filename = filename_test(filename, '2.051b')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
-        # test for a 2 lists
-        with open(filename, 'r') as myfile:
-            filename_data = myfile.read()
-
-        search_object = re.search(r".+ = .* \[ .* \] (.|\n)*  .+ = .* \[ .* \]  ", filename_data, re.X | re.M | re.S)
-
-        test_twolist = {"name": "Testing that there is something looking like a 2 lists",
-                        "pass": True,
-                        "pass_message": "Pass! Submitted file looks like it has 2 lists",
-                        "fail_message": "Submitted file does not look like it has 2 lists.",
-        }
-
-        if not search_object:
-            test_twolist['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_twolist)
-
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
+    if not test_filename['pass'] is True:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
+        # test for a list being created with 4 items
+        test_lcs = find_string(filename_data, 'learning_communities \s* = \s* \[ .+ , .+ , .+ , .+ ,* \]', 1, 3)
+        test_lcs['name'] += "Testing that there is a list learning_communities.  learning_communities is a list with " \
+                            "exactly 4 items, C, R, L, and S.<br>"
+        if not test_lcs['pass']:
+            test_lcs['fail_message'] += "looked for 'learning_communities \s* = \s* \[ .+ , .+ , .+ , .+ ,* \]' " \
+                                           "in this string: " + filename_data
+            tests.append(test_lcs)
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            score_info['score'] += 3
+
+            # Read in the python file to filename_data
+            filename_data = read_file_contents(filename)
+
+            tests.append(test_lcs)
+            test_scores = find_string(filename_data,
+                                      'scores \s* = \s* \[ \s* 0 \s* , \s* 0 \s* , \s* 0 \s* , \s* 0 \s* ,*\]', 1, 3)
+            test_scores['name'] += "Testing that there is a list scores.  scores is a list, " \
+                                   "corresponding to LCs, initially all zero.<br>"
+            if not test_scores['pass']:
+                test_scores['fail_message'] += \
+                    "looked for scores \s* = \s* \[ \s* 0 \s* , \s* 0 \s* , \s* 0 \s* , \s* 0 \s*, * \] " \
+                    "in this string: " + filename_data
+                tests.append(test_scores)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                score_info['score'] += 3
+                tests.append(test_scores)
+
+                test_question = find_questions(filename_data, 1, 1)
+                if not test_question['pass']:
+                    test_question[
+                        'fail_message'] += "You need to ask the user a question about which LC to vote for. <br>"
+                else:
+                    score_info['score'] += 1
+                tests.append(test_question)
+
+                # test if, check for at least 1 if statement
+                test_if = find_string(filename_data, 'if', 1, 1)
+                test_if['name'] += "Testing for at least if statement . <br>" \
+                                   "(don't get fancy with functions yet). <br>"
+                if test_if['pass']:
+                    score_info['score'] += 1
+                tests.append(test_if)
+
+                # test else check for at least 1 else statement
+                test_else = find_string(filename_data, 'else', 1, 4)
+                test_else['name'] += "Testing for at least else statement. <br>" \
+                                     "(don't get fancy with functions yet). <br>"
+                if test_else['pass']:
+                    score_info['score'] += 4
+                else:
+                    test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
+                tests.append(test_else)
+
+                # test elif check for at least 3
+                test_elif = find_string(filename_data, 'elif', 3, 1)
+                test_elif['name'] += "Testing for at least 3 elif statement. <br>" \
+                                     "(don't get fancy with functions yet). <br>"
+                if test_elif['pass']:
+                    score_info['score'] += 1
+                else:
+                    test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
+                                                 'elif vs if if if. <br>'
+                tests.append(test_elif)
+
+                # Try C C R L S, should get 2, 1, 1, 1
+                test_1_io = io_test(filename, '\[\s*2\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1, 5)
+                test_1_io['name'] += "Ran code with human input of C C R L S, should get back [ 2, 1, 1, 1] on screen"
+                if test_1_io['pass']:
+                    score_info['score'] += 5
+                else:
+                    test_1_io['fail_message'] += " Be sure your program works with capital letters input from " \
+                                                 "keyboard (i.e. C R L S not c r l s)"
+                tests.append(test_1_io)
+
+                # Try C R L S blah blah blah, should get 1, 1, 1, 1
+                test_2_io = io_test(filename, '\[\s*1\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 2, 5)
+                test_2_io['name'] += "Ran code with human input of C R L S blahblah, should get back [ 1, 1, 1, 1] " \
+                                     "on screen"
+                if test_2_io['pass']:
+                    score_info['score'] += 5
+                else:
+                    test_2_io['fail_message'] += " Be sure your program works if user types something other than " \
+                                                 "C R L or S."
+                tests.append(test_2_io)
+
+                # Find number of PEP8 errors
+                pep8_max_points = 7
+                test_pep8 = pep8(filename, pep8_max_points)
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                tests.append(test_pep8)
+
+                # Check for help comment
+                help_points = 2.5
+                test_help = helps(filename, help_points)
+                if test_help['pass'] is True:
+                    score_info['score'] += help_points
+                tests.append(test_help)
+
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
 
 
 @app.route('/feedback_3011')

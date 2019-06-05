@@ -1,4 +1,4 @@
-def python_2_050a(p_filename, p_filename_data):
+def python_2_051a(p_filename, p_filename_data):
 
     import re
     from app.python_labs.find_items import find_list_items
@@ -10,7 +10,7 @@ def python_2_050a(p_filename, p_filename_data):
     test_3 = io_test(p_filename, prizes[2], 3, 0)
     test_4 = io_test(p_filename, prizes[3], 4, 0)
 
-    p_pass_tests = {"name": "4 test cases for 2.050a work (8 points) <br>",
+    p_pass_tests = {"name": "4 test cases for 2.051a work (8 points) <br>",
                     "pass": True,
                     "pass_message": "Pass!  All 4 test cases work",
                     "fail_message": "Fail.  Check your 4 test cases.<br>"
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     from app.python_labs.read_file_contents import read_file_contents
     print("yes")
 #    filename = '/home/ewu/abc/2.040/2019_mayasater_2.040.py'
-    filename `= '/Users/dimmyfinster/PycharmProjects/untitled5/2019_anais_2.050a.py'
+    filename = '/Users/dimmyfinster/PycharmProjects/untitled5/2019_anais_2.050a.py'
     filename_data = read_file_contents(filename)
-    bbb = python_2_050a(filename, filename_data)
+    bbb = python_2_051a(filename, filename_data)
     print(bbb)

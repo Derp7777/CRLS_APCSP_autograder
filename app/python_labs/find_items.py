@@ -1,4 +1,5 @@
 # Inputs: p_filename_data, contents of the file (string).
+
 # Output: Dictionary of test_list_created
 # This module finds if there is a list
 
@@ -163,7 +164,7 @@ def find_questions(p_filename_data, p_num, p_points):
     import re
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
-    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " questions (" + str(p_points) +
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " question(s) (" + str(p_points) +
                                      " points)<br>",
                              "pass": True,
                              "pass_message": "Pass!  Code asks at least " + str(p_num) + " questions ",
