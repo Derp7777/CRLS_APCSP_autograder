@@ -1503,15 +1503,15 @@ def feedback_4025():
         c = delegator.run(cmd)
         failures = int(c.out)
         test_serena_3 =  {"name": "Testing play_tournament function.  If I input a high enough winning percentage,  "
-                          "it should print 'Win' somewhere (5 points)",
+                                  "it should print 'Win' somewhere (5 points)",
                           "pass": True,
                           "pass_message": "Pass.  If I input a high enough winning percentage, "
-                          "it should print 'Win' somewhere.<br>"
-                          "Note, this 'pass' is subject to manual review.",
+                                          "it should print 'Win' somewhere.<br>"
+                                          "Note, this 'pass' is subject to manual review.",
                           "fail_message": "Fail.  If I input a high enough winning percentage, "
-                          "it should print 'Win' somewhere<br>"
-                          "Please check the play_tournament function prints.<br>",
-        }
+                                          "it should print 'Win' somewhere<br>"
+                                          "Please check the play_tournament function prints.<br>",
+                          }
         if failures > 0:
             test_serena_3['pass'] = False
         else:
@@ -1522,10 +1522,10 @@ def feedback_4025():
         test_play_tournament_loop =  {"name": "Testing play_tournament function.  Should have a loop somewhere. (2.5 points)",
                                       "pass": True,
                                       "pass_message": "Pass. play_tournament function has a loop somewhere. "
-                                      "Note, this 'pass' is subject to manual review.",
+                                                      "Note, this 'pass' is subject to manual review.",
                                       "fail_message": "Fail.   play_tournament function does not have loop somewhere."
-                                      "It needs a loop to play multiple games in case of win",
-        }
+                                                      "It needs a loop to play multiple games in case of win",
+                                      }
         play_tournament = extract_single_function(filename, 'play_tournament')
         match = re.search('(for|while)', play_tournament)
         if match:
@@ -1542,15 +1542,15 @@ def feedback_4025():
                           "pass": True,
                           "pass_message": "Pass.  data_analysis prints correct numbers given an input. ",
                           "fail_message": "Fail.  data_analysis prints in correct numbers given an input.<br>"
-                          "Input was list [25, 50, 75], and num_simulations = 100<br>"
-                          "Please check the data_analysis function prints correct values.<br>",
-        }
+                                          "Input was list [25, 50, 75], and num_simulations = 100<br>"
+                                          "Please check the data_analysis function prints correct values.<br>",
+                          }
         if failures > 0:
             test_serena_4['pass'] = False
         else:
             score_info['score'] += 5
         tests.append(test_serena_4)
-        
+
         # full run, percentage is 1.0
         filename_output = filename + '.out'
         cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/4.025-1.in > ' \
@@ -1565,15 +1565,15 @@ def feedback_4025():
                         "pass": True,
                         "pass_message": "Pass!  Wimbledon win % is correct, givyen win% of 1.0.",
                         "fail_message": "Fail.   Wimbledon win % is NOT correct, given win% of 1.0.<br>"
-                        "Looking for the word 'Wimbledon' and a '%'.  Looks for the percent of times times she wins.<br>"
-                        "check your run to verify that the output is correct and she wins the correct % of times, <br>"
-                        "given a win % of 1.0.  Assumes the characters '%' and 'Wimbledon' do not show up anywhere else in output."
-                        "<br> ",
-        }
+                                        "Looking for the word 'Wimbledon' and a '%'.  Looks for the percent of times times she wins.<br>"
+                                        "check your run to verify that the output is correct and she wins the correct % of times, <br>"
+                                        "given a win % of 1.0.  Assumes the characters '%' and 'Wimbledon' do not show up anywhere else in output."
+                                        "<br> ",
+                        }
         flash(line)
         match = re.search('([.0-9]*)%', line)
         if match:
-            percent = float(match.group(1))       
+            percent = float(match.group(1))
             if percent > 101.0 or percent < 99.0: 
                 test_win_all['pass'] = False            
             else:
@@ -1596,16 +1596,19 @@ def feedback_4025():
                          "pass": True,
                          "pass_message": "Pass!  Wimbledon win % is correct, given win% of 0.75.",
                          "fail_message": "Fail.   Wimbledon win % is NOT correct, given win% of 0.75.<br>"
-                         "Looking for the word 'Wimbledon' and a '%'.  Looks for the percent of times times she wins.<br>"
-                         "check your run to verify that the output is correct and she wins the correct % of times, <br>"
-                         "given a win 0.75.  Assumes the characters '%' and 'Wimbledon' do not show up anywhere else in output."
-                         "<br> ",
-        }
+                                         "Looking for the word 'Wimbledon' and a '%'.  Looks for the percent of"
+                                         " times times she wins.<br>"
+                                         "check your run to verify that the output is correct and she wins the "
+                                         "correct % of times, <br>"
+                                         "given a win 0.75.  Assumes the characters '%' and 'Wimbledon' do not "
+                                         "show up anywhere else in output."
+                                         "<br> ",
+                         }
         match = re.search('([.0-9]*)%', line)
         if match:
             percent = float(match.group(1))
-            if percent > 14.5 or percent < 12.5: 
-                test_win_some['pass'] = False            
+            if percent > 14.5 or percent < 12.5:
+                test_win_some['pass'] = False
             else:
                 score_info['score'] += 10
         else:
@@ -1742,7 +1745,6 @@ def feedback_6011():
 @app.route('/feedback_6_021')
 def feedback_6021():
     import re
-    import delegator
 
     from app.python_labs.find_items import find_function, function_called
     from app.python_labs.function_test import extract_all_functions, extract_single_function, \
@@ -1791,7 +1793,7 @@ def feedback_6021():
                                                                " blank dictionary in it to initialize. <br>"
                                                }
         martinez_function = extract_single_function(filename, 'martinez_dictionary')
-        search_object = re.search(r"{  }", martinez_function, re.X| re.M | re.S)
+        search_object = re.search(r"{  }", martinez_function, re.X | re.M | re.S)
         if search_object:
             score_info['score'] += 5
         else:
@@ -1869,7 +1871,7 @@ def feedback_6031():
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
-
+    from app.python_labs.read_file_contents import read_file_contents
     user = {'username': 'CRLS Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
@@ -1882,8 +1884,7 @@ def feedback_6031():
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()
+        filename_data = read_file_contents(filename)
 
         search_object = re.search(r"{ \s* }", filename_data, re.X | re.M | re.S)
         test_dictionary = {"name": "Testing that there is an empty dictionary(5 points)",
@@ -1910,7 +1911,7 @@ def feedback_6031():
             create_testing_file(filename)
 
             # function test 1
-            test_function_1 = function_test('6.021', 1, 5)
+            test_function_1 = function_test('6.031', 1, 5)
             test_function_1['name'] += "Checking mcglathery_dictionary 1.  " \
                                        "Adding 'fire' and 'charmander' , expect output {'fire':'charmander'} <br>"
             if test_function_1['pass']:
@@ -1918,7 +1919,7 @@ def feedback_6031():
             tests.append(test_function_1)
 
             # function test 2
-            test_function_2 = function_test('6.021', 2, 10)
+            test_function_2 = function_test('6.031', 2, 10)
             test_function_2['name'] += "Checking mcglathery_dictionary 2.  Adding 'ice' and 'iceperson2' to " \
                                        "{'fire':['charmander'], 'ice':['iceperson']}." \
                                        " Expect output {['fire':['charmander'], 'ice':['iceperson','iceperson2']} <br>"
@@ -1936,7 +1937,7 @@ def feedback_6031():
                 score_info['score'] += 5
 
                 # function test 3
-                test_function_3 = function_test('6.021', 3, 5)
+                test_function_3 = function_test('6.031', 3, 5)
                 test_function_3['name'] += "Checking mcglathery_dictionary 3.  testing get function with input  " \
                                            "{'fire':['charmander']} expecting something with 'fire'  <br>"
                 if test_function_3['pass']:
@@ -1944,7 +1945,7 @@ def feedback_6031():
                 tests.append(test_function_3)
 
                 # function test 3
-                test_function_4 = function_test('6.021', 3, 10)
+                test_function_4 = function_test('6.031', 3, 10)
                 test_function_4['name'] += "Checking mcglathery_dictionary 4.  testing get function with input  " \
                                            "{'fire':['charmander','fireperson'} expecting something" \
                                            "with 'fire' and 'fireperson   <br>"
@@ -1959,10 +1960,11 @@ def feedback_6031():
                 test_loop = {"name": "Testing that program has a loop. (5 points)",
                              "pass": True,
                              "pass_message": "Pass.  Testing that program has a loop.  <br>",
-                             "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
-                             "The program needs a while or a for. <br>"
-                             "Fix code and resubmit. <br>",
-                }
+                             "fail_message": "Fail.  Testing that program has a loop "
+                                             "(assume a while or for means you have a loop) <br>"
+                                             "The program needs a while or a for. <br>"
+                                             "Fix code and resubmit. <br>",
+                             }
                 if loop == 0:
                     test_loop['pass'] = False
                 else:
@@ -1984,122 +1986,79 @@ def feedback_6031():
                 tests.append(test_help)
                 score_info['finished_scoring'] = True
 
-                return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+
 
 @app.route('/feedback_6_041')
 def feedback_6041():
-    import re
-    import delegator
 
-    from app.python_labs.function_test import extract_all_functions
+    from app.python_labs.find_items import find_function, find_string
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, function_test
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.read_file_contents import read_file_contents
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 64, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 64, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.041')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        filename_data = read_file_contents(filename)
 
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()            
-
-        # Check for function item_list_to_dictionary with 1 input
-        search_object = re.search(r"^def \s item_list_to_dictionary\(.+ \)", filename_data, re.X| re.M | re.S)
-        test_add = {"name": "Testing that 'item_list_to_dictionary' function exists with one input arguments (5 points)",
-                                    "pass": True,
-                                    "pass_message": "Pass.  'item_list_to_dictionary' function exists with one input arguments (5 points)",
-                                    "fail_message": "Fail.  'item_list_to_dictionary' function does not exist with one input arguments (5 points)",
-        }
-        if not search_object:
-            test_add['pass'] = False
-        else:
+        # Check for function add with 2 inputs
+        test_find_function = find_function(filename, 'item_list_to_dictionary', 2, 5)
+        tests.append(test_find_function)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_add)
+        tests.append(test_find_function)
 
         # extract functions and create python test file
         extract_all_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/6.041.test.py > /tmp/6.041.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
+        create_testing_file(filename)
 
-        
-        # test1 for kann
-        cmd = 'python3 /tmp/6.041.test.py testAutograde.test_kann_1 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_kann_1 = {"name": "Checking that item_list_to_dictionary works.   Input "
-                               "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', 'noodles noodles', 'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] "
-                               "expected {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, 'Gooey gelato':1}) (10 points)",
-                       "pass": True,
-                       "pass_message": "Pass.  Input <br>"
-                                       "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', 'noodles noodles', 'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] "
-                                       "expected {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, 'Gooey gelato':1}) ",
-                       "fail_message": "Fail.  Input <br>"
-                       "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', 'noodles noodles', 'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] "
-                       "expected but didn't get {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, 'Gooey gelato':1})"
-                       " Check out your code and try again.",
-        }
-        if failures > 0:
-            test_kann_1['pass'] = False
-        else:
+        # function test 1
+        test_function_1 = function_test('6.041', 1, 10)
+        test_function_1['name'] += "Checking that item_list_to_dictionary works.   Input " \
+                                   "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', " \
+                                   "'noodles noodles', " \
+                                   "'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] " \
+                                   " expected {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2," \
+                                   "'Gooey gelato':1}) <br>"
+        if test_function_1['pass']:
             score_info['score'] += 10
-        tests.append(test_kann_1)
+        tests.append(test_function_1)
 
-        # Check for function min_item with 1 input
-        search_object = re.search(r"^def \s min_item\(.+ \)", filename_data, re.X| re.M | re.S)
-        test_add = {"name": "Testing that 'min_item' function exists with one input arguments (5 points)",
-                    "pass": True,
-                    "pass_message": "Pass.  'min_item' function exists with one input arguments (5 points)",
-                    "fail_message": "Fail.  'min_item' function does not exist with one input arguments (5 points)",
-        }
-        if not search_object:
-            test_add['pass'] = False
-        else:
+        # Check for function add with 2 inputs
+        test_find_function = find_function(filename, 'min_item', 2, 5)
+        tests.append(test_find_function)
+        if test_find_function['pass']:
             score_info['score'] += 5
-        tests.append(test_add)
+        tests.append(test_find_function)
 
-        # test2 for kann
-        cmd = 'python3 /tmp/6.041.test.py testAutograde.test_kann_2 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test = "Call min_item with input {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, 'Gooey gelato':99} "\
-               "expect output 'garlic bread')"
-        test_kann_2 = {"name": "Checking kann_dictionary 2. " + test + " (10 points)",
-                       "pass": True,
-                       "pass_message": "Pass.  " + test,
-                       "fail_message": "Fail.  " + test + "\n" 
-                                       "Check out your code and try again.",
-        }
-        if failures > 0:
-            test_kann_2['pass'] = False
-        else:
+        # function test 2
+        test_function_2 = function_test('6.041', 1, 10)
+        test_function_2['name'] += "Call min_item with input" \
+                                   " {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, " \
+                                   "'Gooey gelato':99}.<br> " \
+                                   "expect output 'garlic bread'). <br>"
+        if test_function_2['pass']:
             score_info['score'] += 20
-        tests.append(test_kann_2)
+        tests.append(test_function_2)
                     
         # Check that removes, just look for del or pop
-        search_object = re.search(r"\.pop\( | del", filename_data, re.X| re.M | re.S)
-        test = "Look for something in code that removes item from dictionary"
-        test_get = {"name": test + " (5 points)",
-                    "pass": True,
-                    "pass_message": "Pass. " + test,
-                    "fail_message": "Fail. " + test + "<br>"
-                                    "Check your code and try again.",
-        }
-        if not search_object:
-            test_get['pass'] = False
-        else:
+        test_removal = find_string(filename_data, r"\.pop\( | del", 1, 5)
+        if test_removal:
             score_info['score'] += 5
-        tests.append(test_get)
+        tests.append(test_removal)
 
         # Find number of PEP8 errors
         pep8_max_points = 14
@@ -2116,9 +2075,6 @@ def feedback_6041():
         tests.append(test_help)
 
         score_info['finished_scoring'] = True
-
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -2168,7 +2124,6 @@ def feedback_7021():
         if c.err:
             flash("There was a problem creating the python test file")
 
-        
         # test1 for atwood
         cmd = 'python3 /tmp/7.021.test.py testAutograde.test_atwood_1 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
@@ -2191,7 +2146,7 @@ def feedback_7021():
                                     "pass": True,
                                     "pass_message": "Pass.  'collectible' function exists with one input argument ",
                                     "fail_message": "Fail.  'collectible' function does not exist with one input argument ",
-        }
+                                    }
         if not search_object:
             test_collectible_printer['pass'] = False
         else:
@@ -2202,17 +2157,17 @@ def feedback_7021():
         cmd = 'python3 /tmp/7.021.test.py testAutograde.test_atwood_2 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
         failures = int(c.out)
-        test = "Call collectible_printer with  leia = Collectible('Leia action figure', 'poor', 400)"\
+        test = "Call collectible_printer with  leia = Collectible('Leia action figure', 'poor', 400)" \
                "rey = Collectible('Rey in her racer', 'new', 30)" \
-               "collectibles = [leia, rey] "\
+               "collectibles = [leia, rey] " \
                "output = collectible_printer(collectibles), expecting output with " \
-               "'Leia action figure' and 'Rey in her racer' in there somewhere" 
+               "'Leia action figure' and 'Rey in her racer' in there somewhere"
         test_atwood_2 = {"name": "Checking Atwood test 2. " + test + " (5 points)",
-                       "pass": True,
-                       "pass_message": "Pass.  " + test,
-                       "fail_message": "Fail.  " + test + "\n" 
-                                       "Check out your code and try again.",
-        }
+                         "pass": True,
+                         "pass_message": "Pass.  " + test,
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_atwood_2['pass'] = False
         else:
@@ -2227,9 +2182,9 @@ def feedback_7021():
         test_atwood_3 = {"name": "Checking atwood test 3. " + test + " (10 points)",
                          "pass": True,
                          "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                                         "Check out your code and try again.",
-        }
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_atwood_3['pass'] = False
         else:
@@ -2239,12 +2194,12 @@ def feedback_7021():
         # Check for all objects
         cmd = 'grep "[a-zA-Z0-9]\s*=\s*Collectible" ' + filename + ' | wc -l '
         c = delegator.run(cmd)
-        objects = int(c.out)        
+        objects = int(c.out)
         test_collectibles = {"name": "Testing for at least 3 objects of type Collectible (5 points)",
                              "pass": True,
                              "pass_message": "Pass.  > 3 objects of type Collectible",
                              "fail_message": "Fail.  < 3 objects of type Collectible.  Please check your code.",
-        }
+                             }
         if objects < 3:
             test_collectibles['pass'] = False
         else:
@@ -2256,7 +2211,7 @@ def feedback_7021():
                                         "pass": False,
                                         "pass_message": "Pass.  collectible_printer function is called.  <br>",
                                         "fail_message": "Fail.  collectible_printer function isn't called in the code. <br>"
-        }
+                                        }
         with open(filename) as infile:
             for line in infile.readlines():
                 found = re.search("(?<!def\s)collectible_printer" , line,  re.X | re.M | re.S)
@@ -2292,8 +2247,7 @@ def feedback_7021():
 def feedback_7031():
     import delegator
 
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import extract_all_functions, create_testing_file
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -2340,11 +2294,11 @@ def feedback_7031():
         test = "Call __add__ magic method with no overflow.  Verify that I can add  stack1 = MoneyStack(1, 1, 1, 2, 3) " \
                " to stack2 = MoneyStack(2, 0, 0, 1, 5)  and get stack3 = MoneyStack(3, 1, 1, 3, 8)"
         test_flaherty_2 = {"name": "Checking Flaherty test 2. " + test + " (10 points)",
-                       "pass": True,
-                       "pass_message": "Pass.  " + test,
-                       "fail_message": "Fail.  " + test + "\n" 
-                                       "Check out your code and try again.",
-        }
+                           "pass": True,
+                           "pass_message": "Pass.  " + test,
+                           "fail_message": "Fail.  " + test + "\n"
+                                                              "Check out your code and try again.",
+                           }
         if failures > 0:
             test_flaherty_2['pass'] = False
         else:
@@ -2358,11 +2312,11 @@ def feedback_7031():
         test = "Call __add__ magic method with overflow.  Verify that I can add  stack1 = MoneyStack(4, 1, 1, 2, 3) " \
                " to stack2 = MoneyStack(9, 2, 2, 5, 9)  and get stack3 = MoneyStack(3, 1, 1, 4, 13)"
         test_flaherty_3 = {"name": "Checking flaherty test 3. " + test + " (10 points)",
-                         "pass": True,
-                         "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                                         "Check out your code and try again.",
-        }
+                           "pass": True,
+                           "pass_message": "Pass.  " + test,
+                           "fail_message": "Fail.  " + test + "\n"
+                                                              "Check out your code and try again.",
+                           }
         if failures > 0:
             test_flaherty_3['pass'] = False
         else:
@@ -2394,8 +2348,7 @@ def feedback_7034():
     import delegator
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import extract_all_functions, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -2443,9 +2396,9 @@ def feedback_7034():
         test_disney_2 = {"name": "Checking Disney test 2. " + test + " (5 points)",
                          "pass": True,
                          "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                         "Check out your code and try again.",
-        }
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_disney_2['pass'] = False
         else:
@@ -2461,9 +2414,9 @@ def feedback_7034():
         test_disney_3 = {"name": "Checking disney test 3. " + test + " (5 points)",
                          "pass": True,
                          "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                                         "Check out your code and try again.",
-        }
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_disney_3['pass'] = False
         else:
@@ -2479,9 +2432,9 @@ def feedback_7034():
         test_disney_4 = {"name": "Checking disney test 4. " + test + " (5 points)",
                          "pass": True,
                          "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                                         "Check out your code and try again.",
-        }
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_disney_4['pass'] = False
         else:
@@ -2497,9 +2450,9 @@ def feedback_7034():
         test_disney_5 = {"name": "Checking disney test 5. " + test + " (5 points)",
                          "pass": True,
                          "pass_message": "Pass.  " + test,
-                         "fail_message": "Fail.  " + test + "\n" 
-                                         "Check out your code and try again.",
-        }
+                         "fail_message": "Fail.  " + test + "\n"
+                                                            "Check out your code and try again.",
+                         }
         if failures > 0:
             test_disney_5['pass'] = False
         else:
@@ -2530,8 +2483,7 @@ def feedback_7034():
 def feedback_4031():
     import delegator
 
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import create_testing_file, extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -2573,16 +2525,16 @@ def feedback_4031():
         failures = int(c.out)
         test = "Test that loop2 looks correct.  Expect '4 5 6 7 8 9 10 11'"
         test_loop_2 =  {"name": test + " (2.5 points)",
-                                        "pass": True,
-                                        "pass_message": "Pass. " + test,
-                                        "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        "pass": True,
+                        "pass_message": "Pass. " + test,
+                        "fail_message": "Fail. " + test + " Please check your code.",
+                        }
         if failures > 0:
             test_loop_2['pass'] = False
         else:
             score_info['score'] += 2.5
         tests.append(test_loop_2)
-                
+
         # test to see if loop 3 is correct
         cmd = 'python3 /tmp/4.031.test.py testAutograde.test_draw_3 2>&1 |grep -i fail |wc -l'
         c = delegator.run(cmd)
@@ -2592,7 +2544,7 @@ def feedback_4031():
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_3['pass'] = False
         else:
@@ -2704,8 +2656,7 @@ def feedback_4036():
     import re
     import delegator
 
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import extract_all_functions, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
