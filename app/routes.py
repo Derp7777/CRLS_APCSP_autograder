@@ -902,13 +902,11 @@ def feedback_3011():
 
 @app.route('/feedback_3020')
 def feedback_3020():
-    import re
-    import delegator
 
-    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_function, function_called, find_string
     from app.python_labs.function_test import extract_all_functions, extract_single_function, \
         function_test, create_testing_file
+    from app.python_labs.python_3_020 import ten_runs, check_random
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -916,7 +914,7 @@ def feedback_3020():
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
-    score_info = {'score': 0, 'max_score': 61, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 61, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -926,8 +924,6 @@ def feedback_3020():
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        # Read in the python file to filename_data
-        filename_data = read_file_contents(filename)
 
         test_find_function_1 = find_function(filename, 'birthday_song', 1, 4)
         if test_find_function_1['pass']:
@@ -984,7 +980,8 @@ def feedback_3020():
                 cards_function = extract_single_function(filename, 'pick_card')
 
                 test_find_cards = find_string(cards_function, r"\s+ cards \s* = \s* \[ .+ , .+ , .+ , .* \]", 1, 2)
-                test_find_cards['name'] += ("<h5 style=\"color:blue;\">Looking for a variable named cards that is a list"
+                test_find_cards['name'] += ("<h5 style=\"color:blue;\">Looking for a variable named cards that"
+                                            " is a list"
                                             " with at least 4 items."
                                             "<br>This variable must be inside "
                                             "find_cards function.</p><br>")
@@ -1015,61 +1012,15 @@ def feedback_3020():
                     score_info['score'] += 4
                 tests.append(test_pick_card_run)
 
-                # test 2 funs and verify they are different
-                filename_output1 = filename + '.out1'
-                filename_output2 = filename + '.out2'
-
-                cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
-                      + filename_output1
-                c = delegator.run(cmd)
-                if c.err:
-                    flash('bad! You have an error somewhere in running program check 3.020.in')
-                cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
-                      + filename_output2
-                c = delegator.run(cmd)
-                if c.err:
-                    flash('bad! You have an error somewhere in running program check 3.020.in')
-
-                cmd = 'diff ' + filename_output1 + ' ' + filename_output2 + ' | wc -l'
-                c = delegator.run(cmd)
-                different_lines = int(c.out)
-                test_pick_cards_different_outputs =  {"name": "Testing that pick_card shows random behavior when code is run (4 points) ",
-                                                      "pass": True,
-                                                      "pass_message": "Pass. pick_card shows random behavior when code is run. <br>",
-                                                      "fail_message": "Fail. pick_card doesn't show random behavior. <br>"
-                                                                      "Be sure that you are calling pick_card.<br>"
-                                                                      "Be sure that pick_card uses random numbers.",
-                }
-                if different_lines == 0:
-                    test_pick_cards_different_outputs['pass'] = False
-                else:
+                # Check that random is random
+                test_random = check_random(filename)
+                if test_random['pass']:
                     score_info['score'] += 4
-                tests.append(test_pick_cards_different_outputs)
+                tests.append(test_random)
 
                 # check that pick_card prints out 10 cards (looks for 'of' 10x)
-                test_run_ten_cards = {
-                    "name": "Testing that program draws 10 cards (4 points) ",
-                    "pass": True,
-                    "pass_message": "Pass. program draws 10 cards. <br>",
-                    "fail_message": "Fail. program doesn't draw 10 cards. <br>"
-                                    "looking for something like this: <br>"
-                                    "2 of hearts <br>"
-                                    "3 of spades <br>"
-                                    "K of diamonds <br>"
-                                    "9 of clubs <br>"
-                                    "etc... for 10 cards.  card OF suit<br>",
-                    }
-
-                num_ofs = 0
-                with open(filename_output2) as infile:
-                    for line in infile.readlines():
-                        found = re.search(r"of", line,  re.X | re.M | re.S)
-                        if found:
-                            num_ofs += 1
-                infile.close()
-                if num_ofs <= 9:
-                    test_run_ten_cards['pass'] = False
-                else:
+                test_run_ten_cards = ten_runs(filename)
+                if test_run_ten_cards['pass']:
                     score_info['score'] += 4
                 tests.append(test_run_ten_cards)
 
@@ -1088,7 +1039,8 @@ def feedback_3020():
                 tests.append(test_help)
 
                 score_info['finished_scoring'] = True
-                return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
 
 
 @app.route('/feedback_3026')
@@ -1103,7 +1055,7 @@ def feedback_3026():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 44.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 44.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1116,7 +1068,7 @@ def feedback_3026():
         filename_data = read_file_contents(filename)
 
         # Check for function return_min
-        test_find_function = find_function(filename, 'return_min', 1)
+        test_find_function = find_function(filename, 'return_min', 1, 5)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)
@@ -1125,7 +1077,7 @@ def feedback_3026():
         if test_find_function['pass']:
 
             # find string 'return min' i.e. ran function
-            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min')
+            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min', 5)
             extra_string = " (return_min function is called at least once)"
             test_return_min_run["name"] += extra_string
             test_return_min_run["pass_message"] += extra_string
@@ -1135,7 +1087,7 @@ def feedback_3026():
             tests.append(test_return_min_run)
 
             # find string return (return in the function)
-            test_return = find_string(filename_data, 'return \s .+')
+            test_return = find_string(filename_data, r'return \s .+', 1, 5)
             extra_string = " (There is a return in the code)"
             test_return["name"] += extra_string
             test_return["pass_message"] += extra_string
@@ -1149,28 +1101,28 @@ def feedback_3026():
             create_testing_file(filename)
 
             # function test 1
-            test_function_1 = function_test('3.026', 1)
+            test_function_1 = function_test('3.026', 1, 5)
             test_function_1['name'] += " (return_min with list [-1, 3, 5, 99] returns -1) "
             if test_function_1['pass']:
                 score_info['score'] += 5
             tests.append(test_function_1)
 
             # function test 2
-            test_function_2 = function_test('3.026', 2)
+            test_function_2 = function_test('3.026', 2, 5)
             test_function_2['name'] += " (return_min with list [-1, 3, 5, -99] returns -99) "
             if test_function_1['pass']:
                 score_info['score'] += 5
             tests.append(test_function_2)
 
             # function test 3
-            test_function_3 = function_test('3.026', 3)
+            test_function_3 = function_test('3.026', 3, 5)
             test_function_3['name'] += " (return_min with list [5] returns 5) "
             if test_function_1['pass']:
                 score_info['score'] += 5
             tests.append(test_function_3)
 
             # function test 4
-            test_function_4 = function_test('3.026', 4)
+            test_function_4 = function_test('3.026', 4, 5)
             test_function_4['name'] += " (return_min with list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] " \
                                        "returns -444) "
             if test_function_1['pass']:
@@ -1202,118 +1154,87 @@ def feedback_3026():
 
 @app.route('/feedback_4011')
 def feedback_4011():
-    import re
-    import delegator
 
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
-    from app.python_labs.function_test import function_test
-    from app.python_labs.find_items import find_function
+    import re
+    from app.python_labs.function_test import function_test, extract_single_function,\
+        extract_all_functions, create_testing_file
+    from app.python_labs.find_items import find_function, find_loop, function_called
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
-    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '4.011')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
 
-        # Read in the python file to filename_data
-        filename_data = read_file_contents(filename)
-
-        # Check for function return_min
-        test_find_function = find_function(filename, 'could_it_be_a_martian_word', 1)
+        # Check for function
+        test_find_function = find_function(filename, 'could_it_be_a_martian_word', 1, 5)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)
 
-        if test_find_function['pass']:
-
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            extract_all_functions(filename)
+            function_data = extract_single_function(filename, 'could_it_be_a_martian_word')
+            create_testing_file(filename)
+            filename_data = read_file_contents(filename)
 
             # Check for a loop of some sort (for or while)
-            cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            loop = int(c.out)
-            test_loop = {"name": "Testing that program has a loop. (5 points)",
-                         "pass": True,
-                         "pass_message": "Pass.  Testing that program has a loop.  <br>",
-                         "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
-                         "The program needs a while or a for. <br>"
-                         "Fix code and resubmit. <br>",
-            }
-            if loop == 0:
-                test_loop['pass'] = False
-            else:
+            test_loop = find_loop(function_data, 5)
+            test_loop['name'] += "Testing there is a loop in the could_it_be_a_martian_word function.<br>"
+            if test_loop['pass']:
                 score_info['score'] += 5
             tests.append(test_loop)
 
-            # Check for 3 ifs on different lines
-            cmd = 'grep "if" ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            ifs = int(c.out)
-            test_ifs = {"name": "Testing that program is efficient. (5 points)",
-                        "pass": True,
-                        "pass_message": "Pass.  Testing that program is efficient.  <br>",
-                        "fail_message": "Fail.  Testing that program is efficient<br>"
-                        
-                        "Are you using an if/if/if/if or if/elif/elif/elif? <br>"
-                        "Check HW11.  Using if/elif/elif can get really big code with a lot of conditions <br>",
-            }
-            if ifs >= 3:
-                test_ifs['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_ifs)
-
             # Check that function is called 3x
-            test_function_run = {"name": "Testing that could_it_be_a_martian_word function is called at least once (10 points)",
-                                 "pass": False,
-                                 "pass_message": "Pass.  could_it_be_a_martian_word function is called at least once <br>",
-                                 "fail_message": "Fail.  could_it_be_a_martian_word function is not called at least once  <br>"
-            }
-            count = 1
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.search("(?<!def\s)could_it_be_a_martian_word" , line, re.X | re.M | re.S)
-                    if found:
-                        count += 1
-            infile.close()
-            if count >= 2:
-                test_function_run['pass'] = True
+            test_function_run = function_called(filename, 'could_it_be_a_martian_word', 3, 5)
+            if test_function_run['pass']:
                 score_info['score'] += 5
             tests.append(test_function_run)
 
-            # extract functions and create python test file
-            extract_all_functions(filename)
-            create_testing_file(filename)
-
-            test_function_1 = function_test('4.011', 1)
+            test_function_1 = function_test('4.011', 1, 10)
             test_function_1['name'] += " (could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []) "
             if test_function_1['pass']:
                 score_info['score'] += 10
             tests.append(test_function_1)
 
-            test_function_2 = function_test('4.011', 2)
+            test_function_2 = function_test('4.011', 2, 10)
             test_function_2['name'] += " (could_it_be_a_martian_word with 'ba' returns ['a']) "
             if test_function_2['pass']:
                 score_info['score'] += 10
             tests.append(test_function_2)
 
-            test_function_3 = function_test('4.011', 3)
+            test_function_3 = function_test('4.011', 3, 10)
             test_function_3['name'] += " (could_it_be_a_martian_word with 'baa' returns ['a']) "
             if test_function_3['pass']:
                 score_info['score'] += 10
             tests.append(test_function_3)
+
+            matches = len(re.findall(r"[^l]if \s", filename_data, re.X | re.M | re.S))
+            test_ifs = {"name": "Testing that code is efficient, not too many if if if (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass! Code appears to be efficient<br>",
+                        "fail_message": "Fail. Code is not efficient! if if if is not the way to go<br>",
+                        "score": 5
+                        }
+            if matches > 3:
+                test_ifs['pass'] = False
+                test_ifs['score'] = 0
+            else:
+                score_info['score'] += 5
+            tests.append(test_ifs)
 
             # Find number of PEP8 errors
             pep8_max_points = 14
@@ -1331,123 +1252,82 @@ def feedback_4011():
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        else:
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4021')
 def feedback_4021():
-    import re
-    import delegator
 
-    from app.python_labs.find_items import find_function
+    from app.python_labs.find_items import find_function, function_called, find_loop
+    from app.python_labs.function_test import function_test, extract_all_functions, \
+        extract_single_function, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '4.021')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Check for function the_rock_says
-        test_find_function = find_function(filename, 'the_rock_says', 1)
-        if test_find_function['pass']:
-            score_info['score'] += 5
+        test_find_function = find_function(filename, 'the_rock_says', 1, 5)
         tests.append(test_find_function)
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            score_info['score'] += 5
 
-        # Only continue if you have a the_rock_says function
-        if test_find_function['pass']:
             # Check that function is called 3x
-            test_the_rock_says_run = {"name": "Testing that the_rock_says function is called at least once (5 points)",
-                                          "pass": False,
-                                          "pass_message": "Pass.  the_rock_says function is called.  <br>",
-                                          "fail_message": "Fail.  the_rock_says function isn't called in the code. <br>"
-            }
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.search("(?<!def\s)the_rock_says" , line,  re.X | re.M | re.S)
-                    if found:
-                        test_the_rock_says_run['pass'] = True
-            infile.close()
-            if test_the_rock_says_run['pass']:
+            test_function_run = function_called(filename, 'the_rock_says', 3, 5)
+            if test_function_run['pass']:
                 score_info['score'] += 5
-            tests.append(test_the_rock_says_run)
+            tests.append(test_function_run)
 
             # extract functions and create python test file
-            extract_functions(filename)
-            functions_filename = filename.replace('.py', '.functions.py')
-            cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/4.021.test.py > /tmp/4.021.test.py'
-            c = delegator.run(cmd)
-            if c.err:
-                flash("There was a problem creating the python test file")
+            extract_all_functions(filename)
+            function_data = extract_single_function(filename, 'the_rock_says')
+            create_testing_file(filename)
 
+            # Check for a loop of some sort (for or while)
+            test_loop = find_loop(function_data, 5)
+            test_loop['name'] += "Testing there is a loop in the could_it_be_a_martian_word function.<br>"
+            if test_loop['pass']:
+                score_info['score'] += 5
+            tests.append(test_loop)
 
             # test1 for the_rock_says
-            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_1 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_the_rock_says_1 = {"name": "Testing calling the_rock_says with list ['eggs', 'apple'] returns a list "
-                                            "['The Rock says eggs', 'The Rock says apple']",
-                                    "pass": True,
-                                    "pass_message": "Pass. Calling the_rock_says with list ['eggs', 'apple'] returns a list"
-                                                    " ['The Rock says eggs', 'The Rock says apple'] <br>",
-                                    "fail_message": "Fail.   Calling the_rock_says with list ['eggs', 'apple'] doesn't return a list ['The Rock says eggs'"
-                                    ",'The Rock says apple']."
-                                    " You should test your the_rock_says function to see what it returns <br>"
-                                    " If you think it is correct, check your capitalization. "
-            }
-            if failures > 0:
-                test_the_rock_says_1['pass'] = False
-            else:
+            test_function_1 = function_test('4.021', 1, 5)
+            test_function_1['name'] += " (Testing calling the_rock_says with list ['eggs', 'apple'] returns a list " \
+                                       "['The Rock says eggs', 'The Rock says apple']) "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_the_rock_says_1)
-
+            tests.append(test_function_1)
 
             # test2 for the_rock_says
-            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_2 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_the_rock_says_2 =  {"name": "Testing calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
-                                     "pass": True,
-                                     "pass_message": "Pass. Calling the_rock_says with list ['eggs', 'smell'] returns ['The Rock says eggs', 'Do you smell what The Rock is cooking']",
-                                     "fail_message": "Fail.  Calling the_rock_says with list ['eggs', 'smell'] doesn't return ['The Rock says eggs', 'Do you smell what The Rock is cooking']"
-                                     " You should test your the_rock_says functionto see what it returns <br>"
-                                     " If you think it is correct, check your capitalization",
-            }
-            if failures > 0:
-                test_the_rock_says_2['pass'] = False
-            else:
+            test_function_2 = function_test('4.021', 1, 5)
+            test_function_2['name'] += " (Testing calling the_rock_says withlist ['eggs', 'smell'] returns " \
+                                       "['The Rock says eggs', 'Do you smell what The Rock is cooking']" \
+                                       "['The Rock says eggs', 'The Rock says apple']) <br> "
+            if test_function_2['pass']:
                 score_info['score'] += 5
-            tests.append(test_the_rock_says_2)
-
+            tests.append(test_function_2)
 
             # test3 for the_rock_says
-            cmd = 'python3 /tmp/4.021.test.py testAutograde.test_the_rock_says_3 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_the_rock_says_3 =  {"name": "Testing calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is cooking', 'Do you smellell what The Rock is cooking', 'Do you smellellellellellellell what The Rock is cooking']",
-                                     "pass": True,
-                                     "pass_message": "Pass. Calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns correct answer.  <br>",
-                                     "fail_message": "Fail.   Calling the_rock_says with list ['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is cooking', 'Do you smellell what The Rock is cooking', 'Do you smellellellellellellell what The Rock is cooking']"
-                                                            " You should test your the_rock_says to see what it returns <br>"
-                                     " If you think it is correct, check your capitalization",
-
-            }
-            if failures > 0:
-                test_the_rock_says_3['pass'] = False
-            else:
+            test_function_3 = function_test('4.021', 1, 5)
+            test_function_3['name'] += " (Testing calling the_rock_says with list ['smog', 'smells', 'smashmouth'] " \
+                                       "returns ['Do you smell what The Rock is cooking', " \
+                                       "'Do you smellell what The Rock is cooking', " \
+                                       "'Do you smellellellellellellell what The Rock is cooking'] <br> "
+            if test_function_3['pass']:
                 score_info['score'] += 5
-            tests.append(test_the_rock_says_3)
+            tests.append(test_function_3)
 
             # Find number of PEP8 errors
             pep8_max_points = 7
@@ -1466,144 +1346,81 @@ def feedback_4021():
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-        else:
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
 
 @app.route('/feedback_4022')
 def feedback_4022():
-    import re
-    import delegator
-
+    from app.python_labs.find_items import find_function, function_called, find_loop
+    from app.python_labs.function_test import function_test, extract_all_functions, \
+        extract_single_function, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '4.022')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
-        # Check for function bad_lossy_compression
-        cmd = 'grep "^def bad_lossy_compression([a-zA-Z_]\+[^,])" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-
-        bad_lossy_compression = int(c.out)
-        cmd = 'grep "bad_lossy_compression([a-zA-Z_]\+[^,])" ' + filename + '   '
-        c = delegator.run(cmd)
-        if c.err:
-            flash("Grepping for bad_lossy_compression failed")
-        test_bad_lossy_compression = {"name": "Testing that bad_lossy_compression function exists with one input argument (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass.   bad_lossy_compression function exists with one input argument  <br>",
-                              "fail_message": "Fail.   bad_lossy_compression function exists with one input argument. <br>"
-                                              "It may be spelled incorrectly.  The function needs to be named "
-                                              "bad_lossy_compression, exactly. <br>"
-                                              "You may not have one input argument.  You need one.<br>"
-                                              "Fix code and resubmit. <br>",
-        }
-        if bad_lossy_compression == 0:
-            test_bad_lossy_compression['pass'] = False
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Check for function the_rock_says
+        test_find_function = find_function(filename, 'bad_lossy_compression', 1, 5)
+        tests.append(test_find_function)
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             score_info['score'] += 5
-        tests.append(test_bad_lossy_compression)
-
         # Only continue if you have a bad_lossy_compression function
-        if test_bad_lossy_compression['pass']:
-            # Check that function is called 
-            test_bad_lossy_compression_run = {"name": "Testing that bad_lossy_compression function is called at least 3x (5 points)",
-                                          "pass": False,
-                                          "pass_message": "Pass.  bad_lossy_compression function is called.  <br>",
-                                          "fail_message": "Fail.  bad_lossy_compression function isn't called in the code. <br>"
-            }
-            count = 0
-    
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.search("(?<!def\s)bad_lossy_compression" , line,  re.X | re.M | re.S)
-                    if found:
-                        count += 1
-            if count >= 2:
-                test_bad_lossy_compression_run['pass'] = True
-            infile.close()
-            if test_bad_lossy_compression_run['pass']:
+        if test_find_function['pass']:
+
+            # Check that function is called 3x
+            test_function_run = function_called(filename, 'bad_lossy_compression', 3, 5)
+            if test_function_run['pass']:
                 score_info['score'] += 5
-            tests.append(test_bad_lossy_compression_run)
+            tests.append(test_function_run)
 
             # extract functions and create python test file
-            extract_functions(filename)
-            functions_filename = filename.replace('.py', '.functions.py')
-            cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/4.022.test.py > /tmp/4.022.test.py'
-            c = delegator.run(cmd)
-            if c.err:
-                flash("There was a problem creating the python test file")
+            extract_all_functions(filename)
+            function_data = extract_single_function(filename, 'bad_lossy_compression')
+            create_testing_file(filename)
 
-
-            # test1 for bad_lossy_compression
-            cmd = 'python3 /tmp/4.022.test.py testAutograde.test_bad_lossy_compression_1 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_bad_lossy_compression_1 = {"name": "Testing calling bad_lossy_compression with 'The rain in spain falls mainly in the plain' returns  "
-                                                    "'The ain n spin flls ainl in he pain'",
-                                            "pass": True,
-                                            "pass_message": "Pass. Calling bad_lossy_compression with  'The rain in spain falls mainly in the plain' returns  "
-                                            "'The ain n spin flls ainl in he pain'<br>",
-                                            "fail_message": "Fail.   Calling bad_lossy_compression with  'The rain in spain falls mainly in the plain' "
-                                                            " doesn't return  'The ain n spin flls ainl in he pain'",
-            }
-            if failures > 0:
-                test_bad_lossy_compression_1['pass'] = False
-            else:
+            # Check for a loop of some sort (for or while)
+            test_loop = find_loop(function_data, 5)
+            test_loop['name'] += "Testing there is a loop in the bad_lossy_compression function.<br>"
+            if test_loop['pass']:
                 score_info['score'] += 5
-            tests.append(test_bad_lossy_compression_1)
+            tests.append(test_loop)
 
-
-            # test2 for bad_lossy_compression
-            cmd = 'python3 /tmp/4.022.test.py testAutograde.test_bad_lossy_compression_2 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_bad_lossy_compression_2 =  {"name": "Testing calling bad_lossy_compression with 'I am sick and tired of these darned snakes on this darned plane' returns 'I a sik ad tredof hes danedsnaes n tis arnd pane'",
-                                     "pass": True,
-                                     "pass_message": "Pass. Calling bad_lossy_compression with 'I am sick and tired of these darned snakes on this darned plane' r\
-eturns 'I a sik ad tredof hes danedsnaes n tis arnd pane'",
-                                     "fail_message": "Fail.  Calling bad_lossy_compression with 'I am sick and tired of these darned snakes on this darned plane' doesn't  return 'I a sik ad tredof hes danedsnaes n tis arnd pane'"
-                                     " You should test your bad_lossy_compression functionto see what it returns <br>"
-                                     " If you think it is correct, check your capitalization",
-            }
-            if failures > 0:
-                test_bad_lossy_compression_2['pass'] = False
-            else:
+            # test1
+            test_function_1 = function_test('4.022', 1, 5)
+            test_function_1['name'] += " (Testing calling bad_lossy_compression with 'The rain in spain falls mainly" \
+                                       " in the plain' returns 'The ain n spin flls ainl in he pain') "
+            if test_function_1['pass']:
                 score_info['score'] += 5
-            tests.append(test_bad_lossy_compression_2)
+            tests.append(test_function_1)
 
-
-            # test3 for bad_lossy_compression
-            cmd = 'python3 /tmp/4.022.test.py testAutograde.test_bad_lossy_compression_3 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_bad_lossy_compression_3 =  {"name": "Testing calling bad_lossy_compression with 'Madness?!?!?!?! THIS IS SPARTA!!!!' returns 'Madess!?!!?!THI ISSPATA!!!'",
-                                     "pass": True,
-                                     "pass_message": "Pass. Calling bad_lossy_compression with  'Madness?!?!?!?! THIS IS SPARTA!!!!' returns 'Madess!?!!?!THI ISSPA\
-TA!!!'",
-                                     "fail_message": "Fail.   Calling bad_lossy_compression with 'Madness?!?!?!?! THIS IS SPARTA!!!!' does not return 'Madess!?!!?!THI ISSPATA!!!'"
-                                                            " You should test your bad_lossy_compression to see what it returns <br>"
-                                     " If you think it is correct, check your capitalization",
-
-            }
-            if failures > 0:
-                test_bad_lossy_compression_3['pass'] = False
-            else:
+            # test2 for the_rock_says
+            test_function_2 = function_test('4.022', 2, 5)
+            test_function_2['name'] += " (Testing calling bad_lossy_compression with " \
+                                       "'I am sick and tired of these darned snakes on this darned plane'" \
+                                       " returns 'I a sik ad tredof hes danedsnaes n tis arnd pane' <br> "
+            if test_function_2['pass']:
                 score_info['score'] += 5
-            tests.append(test_bad_lossy_compression_3)
+            tests.append(test_function_2)
+
+            # test3 for the_rock_says
+            test_function_3 = function_test('4.022', 3, 5)
+            test_function_3['name'] += "Testing calling bad_lossy_compression with 'Madness?!?!?!?!" \
+                                       " THIS IS SPARTA!!!!'" \
+                                       " returns 'Madess!?!!?!THI ISSPATA!!!' <br> "
+            if test_function_3['pass']:
+                score_info['score'] += 5
+            tests.append(test_function_3)
 
             # Find number of PEP8 errors
             pep8_max_points = 7
@@ -1621,10 +1438,6 @@ TA!!!'",
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-        else:
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
     
 @app.route('/feedback_4025')
@@ -1634,11 +1447,12 @@ def feedback_4025():
 
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
+    from app.python_labs.function_test import extract_single_function, extract_all_functions, create_testing_file
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 64, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 64,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1648,13 +1462,8 @@ def feedback_4025():
     if test_filename['pass'] is True:
 
         # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/4.025.test.py > /tmp/4.025.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
+        extract_all_functions(filename)
+        create_testing_file(filename)
 
         # test1 for serena game
         cmd = 'python3 /tmp/4.025.test.py testAutograde.test_serena_1 2>&1 |grep -i fail |wc -l'
@@ -1741,7 +1550,6 @@ def feedback_4025():
         else:
             score_info['score'] += 5
         tests.append(test_serena_4)
-
         
         # full run, percentage is 1.0
         filename_output = filename + '.out'
@@ -1826,130 +1634,109 @@ def feedback_4025():
 
 @app.route('/feedback_6_011')
 def feedback_6011():
-    import re
-    import delegator
 
+    import re
     from app.python_labs.function_test import function_test
-    from app.python_labs.create_testing_file import create_testing_file
-    from app.python_labs.extract_all_functions import extract_all_functions
+    from app.python_labs.function_test import extract_all_functions, create_testing_file
     from app.python_labs.find_items import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.read_file_contents import read_file_contents
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.011')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
-        # Test for dictionary with 3+ items
-        with open(filename, 'r', encoding='utf8') as myfile:
-            filename_data = myfile.read()
-            
-        search_object = re.search(r"{ .+ : .+ , .+ : .+ , .+ : .+ }", filename_data, re.X | re.M | re.S)
-        test_dictionary = {"name": "Testing that there is a dictionary with 3+ key/value pairs(10 points)",
-                           "pass": True,
-                           "pass_message": "Pass! "
-                                           "Submitted file looks like it has a dictionary with 3+ key/value pairs. ",
-                           "fail_message": "Fail. Submitted file does not look like it has a dictionary with 3+ "
-                                           "key/value pairs. ",
-        }
-        
-        if not search_object:
-            test_dictionary['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_dictionary)
-        
-        test_find_function = find_function(filename, 'bob_kraft_translator', 2)
-        if test_find_function['pass']:
-            score_info['score'] += 5
-        tests.append(test_find_function)
-
-        # extract functions and create python test file
-        extract_all_functions(filename)
-        create_testing_file(filename)
-
-        test_function_1 = function_test('6.011', 1)
-        test_function_1['name'] += " (Sent in dictionary  {'wth': 'What the heck'}, searcg for 'wth', " \
-                                   "returned 'what the heck') <br>"
-        if test_function_1['pass']:
-            score_info['score'] += 10
-        tests.append(test_function_1)
-
-        test_function_2 = function_test('6.011', 2)
-        test_function_2['name'] += " (Sent in dictionary  {'wth': 'What the heck', 'aymm': 'Ay yo my man',}, " \
-                                   "looking for aymm, should receive 'Ay yo my man'. <br>"
-        if test_function_2['pass']:
-            score_info['score'] += 10
-        tests.append(test_function_2)
-
-        # test3 for bob play tournament prints win
-        cmd = 'python3 /tmp/6.011.test.py testAutograde.test_bob_3 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_bob_3 =  {"name":  "Testing bob_kraft_translator 3.  Sending in bob_dict = {'wth': 'What the heck',"
-                       "'aymm': 'Ay yo my man',}, looking for asdfasdf, should receive something with"
-                                "'do not know' (10 points)",
-                       "pass": True,
-                       "pass_message": "Pass.  Sent in bob_dict = {'wth': 'What the heck',"
-                                       "'aymm': 'Ay yo my man',}, looked for asdfasdf, received something with"
-                                       " 'do not know' (10 points)",
-                       "fail_message": "Fail.  Sent in bob_dict = {'wth': 'What the heck',"
-                                       "'aymm': 'Ay yo my man',}, looked for asdfasdf, received something without"
-                                       " 'do not know' (10 points)<br>"
-                                       "Please check your code",
-        }
-        if failures > 0:
-            test_bob_3['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_bob_3)
-
-
-
-        # Check for 3 ifs on different lines
-        cmd = 'grep "if" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        ifs = int(c.out)
-        test_ifs = {"name": "Testing that program is efficient. (5 points)",
-                    "pass": True,
-                    "pass_message": "Pass.  Testing that program is efficient.  <br>",
-                    "fail_message": "Fail.  Testing that program is efficient<br>"
-
-                                    "Are you using an if/if/if/if or if/elif/elif/elif? <br>"
-                                    "Check HW11.  Using if/elif/elif can get really big code with a lot of conditions <br>",
-                    }
-        if ifs >= 3:
-            test_ifs['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_ifs)
-
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
-    else:
+    if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+
+        test_find_function = find_function(filename, 'bob_kraft_translator', 2, 5)
+        tests.append(test_find_function)
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            score_info['score'] += 5
+
+            # Test for dictionary with 3+ items
+            filename_data = read_file_contents(filename)
+
+            search_object = re.search(r"{ .+ : .+ , .+ : .+ , .+ : .+ }", filename_data, re.X | re.M | re.S)
+            test_dictionary = {"name": "Testing that there is a dictionary with 3+ key/value pairs(10 points)",
+                               "pass": True,
+                               "pass_message": "Pass! "
+                                               "Submitted file looks like it has a dictionary with 3+ key/value pairs.",
+                               "fail_message": "Fail. Submitted file does not look like it has a dictionary with 3+ "
+                                               "key/value pairs. ",
+                               }
+
+            if not search_object:
+                test_dictionary['pass'] = False
+            else:
+                score_info['score'] += 10
+            tests.append(test_dictionary)
+
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
+
+            test_function_1 = function_test('6.011', 1, 10)
+            test_function_1['name'] += " (Sent in dictionary  {'wth': 'What the heck'}, search for 'wth', " \
+                                       "returned 'what the heck') <br>"
+            if test_function_1['pass']:
+                score_info['score'] += 10
+            tests.append(test_function_1)
+
+            test_function_2 = function_test('6.011', 2, 10)
+            test_function_2['name'] += " (Sent in dictionary  {'wth': 'What the heck', 'aymm': 'Ay yo my man',}, " \
+                                       "looking for aymm, should receive 'Ay yo my man'. <br>"
+            if test_function_2['pass']:
+                score_info['score'] += 10
+            tests.append(test_function_2)
+
+            test_function_3 = function_test('6.011', 3, 10)
+            test_function_3['name'] += " (Sent in dictionary  {'wth': 'What the heck','aymm': 'Ay yo my man',}, " \
+                                       "asdfasdf, received something with 'do not know''. <br>"
+            if test_function_3['pass']:
+                score_info['score'] += 10
+            tests.append(test_function_3)
+
+            # Check for 3 ifs on different lines
+            matches = len(re.findall(r"[^l]if \s", filename_data, re.X | re.M | re.S))
+            test_ifs = {"name": "Testing that code is efficient, not too many if if if (5 points)",
+                        "pass": True,
+                        "pass_message": "Pass! Code appears to be efficient<br>",
+                        "fail_message": "Fail. Code is not efficient! if if if is not the way to go<br>",
+                        "score": 5
+                        }
+            if matches > 3:
+                test_ifs['pass'] = False
+                test_ifs['score'] = 0
+            else:
+                score_info['score'] += 5
+            tests.append(test_ifs)
+
+            # Find number of PEP8 errors
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
+            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            tests.append(test_pep8)
+
+            # Check for help comment
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
+            tests.append(test_help)
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_6_021')
@@ -1957,7 +1744,9 @@ def feedback_6021():
     import re
     import delegator
 
-    from app.python_labs.find_items import find_function
+    from app.python_labs.find_items import find_function, function_called
+    from app.python_labs.function_test import extract_all_functions, extract_single_function, \
+        create_testing_file, function_test
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -1972,48 +1761,35 @@ def feedback_6021():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.021')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
+        martinez_function = extract_single_function(filename, 'martinez_dictionary')
+        extract_all_functions(filename)
+        create_testing_file(filename)
 
-        test_find_function = find_function(filename, 'birthday_song', 1)
+        test_find_function = find_function(filename, 'martinez_dictionary', 1, 5)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)
 
-        # Check that function martinez_dictionary is called 
-        test_martinez_dictionary_run = {"name": "Testing that martinez_dictionary function is called at least once (5 points)",
-                                        "pass": False,
-                                        "pass_message": "Pass.  martinez_dictionary function is called.  <br>",
-                                        "fail_message": "Fail.  martinez_dictionary function isn't called in the code. <br>"
-        }
-        with open(filename) as infile:
-            for line in infile.readlines():
-                found = re.search("(?<!def\s)martinez_dictionary" , line,  re.X | re.M | re.S)
-                if found:
-                    test_martinez_dictionary_run['pass'] = True
-        infile.close()
-        if test_martinez_dictionary_run['pass']:
+        # Check that function is called
+        test_function_run = function_called(filename, 'martinez_dictionary', 3, 5)
+        if test_function_run['pass']:
             score_info['score'] += 5
-        tests.append(test_martinez_dictionary_run)
+        tests.append(test_function_run)
 
-        # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/6.021.test.py > /tmp/6.021.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
-
-            
         # extract martinez_dictionary functions and look for dictionary
-        test_martinez_dictionary_dictionary = {"name": "Testing that martinez_dictionary function has a blank dictionary to initialize(5 points)",
+        test_martinez_dictionary_dictionary = {"name": "Testing that martinez_dictionary function has a blank"
+                                                       " dictionary to initialize(5 points)",
                                                "pass": True,
-                                               "pass_message": "Pass.  martinez_dictionary function has a blank dictionary to initialize.  <br>",
-                                               "fail_message": "Fail.  martinez_dictionary function does not have a blank dictionary in it to initialize. <br>"
-        }
+                                               "pass_message": "Pass.  martinez_dictionary function has a blank "
+                                                               "dictionary to initialize.  <br>",
+                                               "fail_message": "Fail.  martinez_dictionary function does not have a"
+                                                               " blank dictionary in it to initialize. <br>"
+                                               }
         martinez_function = extract_single_function(filename, 'martinez_dictionary')
         search_object = re.search(r"{  }", martinez_function, re.X| re.M | re.S)
         if search_object:
@@ -2022,114 +1798,65 @@ def feedback_6021():
             test_martinez_dictionary_dictionary['pass'] = False
         tests.append(test_martinez_dictionary_dictionary)
 
-
-        # test1 for martinez
-        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_1 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_martinez_1 = {"name": "Checking martinez_dictionary 1 (10 points)",
-                           "pass": True,
-                           "pass_message": "Pass. Sent in list ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], got back {'Goku':500}",
-                           "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], didn't get back {'Goku':500}"
-                                           " Check out your code and try again.",
-        }
-        if failures > 0:
-            test_martinez_1['pass'] = False
-        else:
+        # Martinez test 1
+        test_function_1 = function_test('6.021', 1, 10)
+        test_function_1['name'] += "Test for martinez_list, ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], expect back" \
+                                   "{'Goku': 500}' <br>"
+        if test_function_1['pass']:
             score_info['score'] += 10
-        tests.append(test_martinez_1)
-            
-        # test2 for martinez play_tournament prints tournmaent
-        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_2 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_martinez_2 = { "name": "Checking martinez_dictionary 2 (10 points)",
-                            "pass": True,
-                            "pass_message": "Pass. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
-                                            " got back  {'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100}",
-                            "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
-                            " didn't get back  {'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100} <br>"
-                            "Please check your code and try again.",
+        tests.append(test_function_1)
 
-        }
-        if failures > 0:
-            test_martinez_2['pass'] = False
-        else:
+        # Martinez test 2
+        test_function_2 = function_test('6.021', 2, 10)
+        test_function_2['name'] += "Test for martinez_list, " \
+                                   "['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'], expect back" \
+                                   "{'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100}' <br>"
+        if test_function_2['pass']:
             score_info['score'] += 10
-        tests.append(test_martinez_2)
+        tests.append(test_function_2)
 
-        # Check for function data_generator
-        search_object = re.search(r"^def \s data_generator\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
-        test_data_generator = {"name": "Testing that data_generator function exists with two input arguments (5 points)",
-                                     "pass": True,
-                                     "pass_message": "Pass.  data_generator function exists with two input arguments (5 points)",
-                                     "fail_message": "Fail.  data_generator function does exist with two input arguments (5 points)",
-        }
-        if not search_object:
-            test_data_generator['pass'] = False
+        test_find_function = find_function(filename, 'data_generator', 2, 5)
+        tests.append(test_find_function)
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             score_info['score'] += 5
-        tests.append(test_data_generator)
+            tests.append(test_find_function)
 
-        
-        # test3 for martinez, checks that 2 lists are different
-        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_3 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_martinez_3 = { "name": "Checking data_generator, send in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, "
-                                    " The two lists should be different (test of random) (5 points)",
-                            "pass": True,
-                            "pass_message": "Pass. Sent in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, "
-                                            " The two lists are different (test of random)",
-                            "fail_message": "Fail. Sent in list ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'],"
-                                            " they are not different. <br>"
-                                            "Please check your code and try again.",
+            # Martinez test 3
+            test_function_3 = function_test('6.021', 3, 5)
+            test_function_3['name'] += "Checking data_generator, send in " \
+                                       "['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, " \
+                                       "The two lists should be different (test of random)  <br>"
+            if test_function_3['pass']:
+                score_info['score'] += 5
+            tests.append(test_function_3)
 
-        }
-        if failures > 0:
-            test_martinez_3['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_martinez_3)
+            # Martinez test 4
+            test_function_4 = function_test('6.021', 2, 10)
+            test_function_4['name'] += "Checking data_generator, send in " \
+                                       "['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]  " \
+                                       "n=100, they should all show up once at least}' <br>"
+            if test_function_4['pass']:
+                score_info['score'] += 5
+            tests.append(test_function_4)
 
-        # test4 for martinez, checks that list generated has everything that's supposed to be there
-        cmd = 'python3 /tmp/6.021.test.py testAutograde.test_martinez_4 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_martinez_4 = { "name": "Checking data_generator, send in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]  "
-                                    " n=100, they should all show up once at least) (5 points)",
-                            "pass": True,
-                            "pass_message": "Pass. Sent in ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]"
-                                            " n=100, they all show up once at least)",
-                            "fail_message": "Fail. Sent in list ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]"
-                                            " n=100, they do not all show up once at least) "
-                                            "Please check your code and try again.",
+            # Find number of PEP8 errors
+            pep8_max_points = 14
+            test_pep8 = pep8(filename, pep8_max_points)
+            if test_pep8['pass'] is False:
+                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            tests.append(test_pep8)
 
-        }
-        if failures > 0:
-            test_martinez_4['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_martinez_4)
+            # Check for help comment
+            help_points = 5
+            test_help = helps(filename, help_points)
+            if test_help['pass'] is True:
+                score_info['score'] += help_points
+            tests.append(test_help)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_6_031')
@@ -2137,7 +1864,8 @@ def feedback_6031():
     import re
     import delegator
 
-    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.function_test import extract_all_functions, function_test, create_testing_file
+    from app.python_labs.find_items import find_function
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -2151,18 +1879,19 @@ def feedback_6031():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.031')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         with open(filename, 'r', encoding='utf8') as myfile:
             filename_data = myfile.read()
-            
+
         search_object = re.search(r"{ \s* }", filename_data, re.X | re.M | re.S)
         test_dictionary = {"name": "Testing that there is an empty dictionary(5 points)",
                            "pass": True,
                            "pass_message": "Pass! "
                                            "Submitted file looks like it has an empty dictionary ",
                            "fail_message": "Fail. Submitted file does not look like it has an empty dictionary",
-        }
+                           }
         if not search_object:
             test_dictionary['pass'] = False
         else:
@@ -2170,153 +1899,99 @@ def feedback_6031():
         tests.append(test_dictionary)
 
         # Check for function add with 2 inputs
-        search_object = re.search(r"^def \s add\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
-        test_add = {"name": "Testing that add function exists with two input arguments (5 points)",
-                                    "pass": True,
-                                    "pass_message": "Pass.  add function exists with two input arguments (5 points)",
-                                    "fail_message": "Fail.  add function does not exist with two input arguments (5 points)",
-        }
-        if not search_object:
-            test_add['pass'] = False
+        test_find_function = find_function(filename, 'add', 2, 5)
+        tests.append(test_find_function)
+        if not test_find_function['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             score_info['score'] += 5
-        tests.append(test_add)
 
-        # extract functions and create python test file
-        extract_functions(filename)
-        functions_filename = filename.replace('.py', '.functions.py')
-        cmd = ' cat ' + functions_filename + \
-              ' /home/ewu/CRLS_APCSP_autograder/var/6.031.test.py > /tmp/6.031.test.py'
-        c = delegator.run(cmd)
-        if c.err:
-            flash("There was a problem creating the python test file")
+            extract_all_functions(filename)
+            create_testing_file(filename)
 
-        
-        # test1 for mcglathery
-        cmd = 'python3 /tmp/6.031.test.py testAutograde.test_mcglathery_1 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_mcglathery_1 = {"name": "Checking mcglathery_dictionary 1.  Adding 'fire' and 'charmander' , expect output {'fire':'charmander'}(5 points)",
+            # function test 1
+            test_function_1 = function_test('6.021', 1, 5)
+            test_function_1['name'] += "Checking mcglathery_dictionary 1.  " \
+                                       "Adding 'fire' and 'charmander' , expect output {'fire':'charmander'} <br>"
+            if test_function_1['pass']:
+                score_info['score'] += 5
+            tests.append(test_function_1)
+
+            # function test 2
+            test_function_2 = function_test('6.021', 2, 10)
+            test_function_2['name'] += "Checking mcglathery_dictionary 2.  Adding 'ice' and 'iceperson2' to " \
+                                       "{'fire':['charmander'], 'ice':['iceperson']}." \
+                                       " Expect output {['fire':['charmander'], 'ice':['iceperson','iceperson2']} <br>"
+            if test_function_2['pass']:
+                score_info['score'] += 10
+            tests.append(test_function_2)
+
+            # Check for function add with 2 inputs
+            test_find_function = find_function(filename, 'get', 2, 5)
+            tests.append(test_find_function)
+            if not test_find_function['pass']:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                score_info['score'] += 5
+
+                # function test 3
+                test_function_3 = function_test('6.021', 3, 5)
+                test_function_3['name'] += "Checking mcglathery_dictionary 3.  testing get function with input  " \
+                                           "{'fire':['charmander']} expecting something with 'fire'  <br>"
+                if test_function_3['pass']:
+                    score_info['score'] += 5
+                tests.append(test_function_3)
+
+                # function test 3
+                test_function_4 = function_test('6.021', 3, 10)
+                test_function_4['name'] += "Checking mcglathery_dictionary 4.  testing get function with input  " \
+                                           "{'fire':['charmander','fireperson'} expecting something" \
+                                           "with 'fire' and 'fireperson   <br>"
+                if test_function_4['pass']:
+                    score_info['score'] += 10
+                tests.append(test_function_4)
+
+                # Check for a loop of some sort (for or while)
+                cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
+                c = delegator.run(cmd)
+                loop = int(c.out)
+                test_loop = {"name": "Testing that program has a loop. (5 points)",
                              "pass": True,
-                             "pass_message": "Pass.  Added 'fire' and 'charmander' , got output {['fire':'charmander']}",
-                             "fail_message": "Fail.  Added 'fire' and 'charmander' , didn't get output {['fire':'charmander']}"
-                                             " Check out your code and try again.",
-        }
-        if failures > 0:
-            test_mcglathery_1['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_mcglathery_1)
+                             "pass_message": "Pass.  Testing that program has a loop.  <br>",
+                             "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
+                             "The program needs a while or a for. <br>"
+                             "Fix code and resubmit. <br>",
+                }
+                if loop == 0:
+                    test_loop['pass'] = False
+                else:
+                    score_info['score'] += 5
+                tests.append(test_loop)
 
-        # test2 for mcglathery
-        cmd = 'python3 /tmp/6.031.test.py testAutograde.test_mcglathery_2 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_mcglathery_2 = {"name": "Checking mcglathery_dictionary 2.  Adding 'ice' and 'iceperson2' to {'fire':['charmander'], 'ice':['iceperson']}."
-                                     "expect output {['fire':['charmander'], 'ice':['iceperson','iceperson2']}(10 points)",
-                             "pass": True,
-                             "pass_message": "Pass.  Adding 'ice' and 'iceperson2' to {'fire':['charmander'], 'ice':['iceperson'].<br>"
-                                     "got output {['fire':['charmander'], 'ice':['iceperson','iceperson2']}(10 points)",
-                             "fail_message": "Fail.  Adding 'ice' and 'iceperson' to dictionary already with 'fire' and 'charmander'.<br>"
-                                             "didn't get output {['fire':'charmander', 'ice':['iceperson', 'iceperson2']}(10 points)"
-                                             "Check out your code and try again.",
-        }
-        if failures > 0:
-            test_mcglathery_2['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_mcglathery_2)
-                    
-        # Check for function get with 2 inputs
-        search_object = re.search(r"^def \s get\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
-        test_get = {"name": "Testing that get function exists with two input arguments (5 points)",
-                                    "pass": True,
-                                    "pass_message": "Pass.  get function exists with two input arguments (5 points)",
-                                    "fail_message": "Fail.  get function does exist with two input arguments (5 points)",
-        }
-        if not search_object:
-            test_get['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_get)
+                # Find number of PEP8 errors
+                pep8_max_points = 14
+                test_pep8 = pep8(filename, pep8_max_points)
+                if test_pep8['pass'] is False:
+                    score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                tests.append(test_pep8)
 
-        # test3 for mcglathery
-        cmd = 'python3 /tmp/6.031.test.py testAutograde.test_mcglathery_3 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_mcglathery_3 = { "name": "Checking mcglathery_dictionary 3.  testing get function with input  {'fire':['charmander']} expecting something with 'fire' (5 points)",
-                              "pass": True,
-                              "pass_message": "Pass. Sent in dictionary, {'fire':['charmander']}, got something back with 'fire' in it. ",
-                              "fail_message": "Fail. Sent in dictionary  {'fire':['charmander']}, didn't get something back with 'fire' in it. " 
-                              "Please check your code and try again.",
-                              
-        }
-        if failures > 0:
-            test_mcglathery_3['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_mcglathery_3)
+                # Check for help comment
+                help_points = 5
+                test_help = helps(filename, help_points)
+                if test_help['pass'] is True:
+                    score_info['score'] += help_points
+                tests.append(test_help)
+                score_info['finished_scoring'] = True
 
-        # test4 for mcglathery
-        cmd = 'python3 /tmp/6.031.test.py testAutograde.test_mcglathery_4 2>&1 |grep -i fail |wc -l'
-        c = delegator.run(cmd)
-        failures = int(c.out)
-        test_mcglathery_4 = { "name": "Checking mcglathery_dictionary 4.  testing get function with input  {'fire':['charmander','fireperson'} expecting something"
-                                      "with 'fire' and 'fireperson (10 points)",
-                              "pass": True,
-                              "pass_message": "Pass. Sent in dictionary, {'fire':['charmander','fireperson']}, got something back with 'fire' and 'fireperson' in it. ",
-                              "fail_message": "Fail. Sent in dictionary  {'fire':['charmander','fireperson']}, didn't get something back with 'fire' and 'fireperson' in it. " 
-                              "Please check your code and try again.",
-                              
-        }
-        if failures > 0:
-            test_mcglathery_4['pass'] = False
-        else:
-            score_info['score'] += 10
-        tests.append(test_mcglathery_4)
-
-        # Check for a loop of some sort (for or while)
-        cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        loop = int(c.out)
-        test_loop = {"name": "Testing that program has a loop. (5 points)",
-                     "pass": True,
-                     "pass_message": "Pass.  Testing that program has a loop.  <br>",
-                     "fail_message": "Fail.  Testing that program has a loop (assume a while or for means you have a loop) <br>"
-                     "The program needs a while or a for. <br>"
-                     "Fix code and resubmit. <br>",
-        }
-        if loop == 0:
-            test_loop['pass'] = False
-        else:
-            score_info['score'] += 5
-        tests.append(test_loop)
-
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
-        score_info['finished_scoring'] = True
-
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
+                return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 @app.route('/feedback_6_041')
 def feedback_6041():
     import re
     import delegator
 
+    from app.python_labs.function_test import extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -2349,7 +2024,7 @@ def feedback_6041():
         tests.append(test_add)
 
         # extract functions and create python test file
-        extract_functions(filename)
+        extract_all_functions(filename)
         functions_filename = filename.replace('.py', '.functions.py')
         cmd = ' cat ' + functions_filename + \
               ' /home/ewu/CRLS_APCSP_autograder/var/6.041.test.py > /tmp/6.041.test.py'
@@ -2452,6 +2127,7 @@ def feedback_7021():
     import re
     import delegator
 
+    from app.python_labs.function_test import extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -2484,7 +2160,7 @@ def feedback_7021():
         tests.append(test_collectible)
 
         # extract functions and create python test file
-        extract_functions(filename)
+        extract_all_functions(filename)
         functions_filename = filename.replace('.py', '.functions.py')
         cmd = ' cat ' + functions_filename + \
               ' /home/ewu/CRLS_APCSP_autograder/var/7.021.test.py > /tmp/7.021.test.py'
@@ -3096,10 +2772,10 @@ def feedback_4036():
         failures = int(c.out)
         test =  "Test that test2 looks correct.  hunger = 10000, hunger_increase_per_day = 0.25, should give ~2903 pieces for function 1"
         test_chicken_2 =  {"name": test + " (10 points)",
-                                        "pass": True,
-                                        "pass_message": "Pass. " + test,
-                                        "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                           "pass": True,
+                           "pass_message": "Pass. " + test,
+                           "fail_message": "Fail. " + test + " Please check your code.",
+                           }
         if failures > 0:
             test_chicken_2['pass'] = False
         else:
@@ -3109,10 +2785,10 @@ def feedback_4036():
         # Check for function with 2 inputs
         search_object = re.search(r"^def \s fried_chicken_problem_2\(.+ , .+ \)", filename_data, re.X| re.M | re.S)
         test_get = {"name": "Testing that fried_chicken_problem_2 function exists with two input arguments (5 points)",
-                                    "pass": True,
-                                    "pass_message": "Pass.  get function exists with two input arguments (5 points)",
-                                    "fail_message": "Fail.  get function does exist with two input arguments (5 points)",
-        }
+                    "pass": True,
+                    "pass_message": "Pass.  get function exists with two input arguments (5 points)",
+                    "fail_message": "Fail.  get function does exist with two input arguments (5 points)",
+                    }
         if not search_object:
             test_get['pass'] = False
         else:
@@ -3125,10 +2801,10 @@ def feedback_4036():
         failures = int(c.out)
         test =  "Test that test3 looks correct.  hunger = 100, hunger_increase_per_day = 0, should give between 24.8 and 25.2 pieces for function 2"
         test_chicken_3 =  {"name": test + " (10 points)",
-                        "pass": True,
-                        "pass_message": "Pass. " + test,
-                        "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                           "pass": True,
+                           "pass_message": "Pass. " + test,
+                           "fail_message": "Fail. " + test + " Please check your code.",
+                           }
         if failures > 0:
             test_chicken_3['pass'] = False
         else:
@@ -3141,10 +2817,10 @@ def feedback_4036():
         failures = int(c.out)
         test =  "Test that test4 looks correct.  hunger = 10000, hunger_increase_per_day = 0.25, should give between 2902.2 and 2902.7 pieces for function 2"
         test_chicken_4 =  {"name": test + " (10 points)",
-                        "pass": True,
-                        "pass_message": "Pass. " + test,
-                        "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                           "pass": True,
+                           "pass_message": "Pass. " + test,
+                           "fail_message": "Fail. " + test + " Please check your code.",
+                           }
         if failures > 0:
             test_chicken_4['pass'] = False
         else:

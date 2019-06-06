@@ -18,6 +18,7 @@ def function_test(p_lab, p_test_number, p_points):
     cmd = 'python3 /tmp/' + str(p_lab) + '.test.py testAutograde.test_' + str(p_test_number) + " 2>&1 "
     c = delegator.run(cmd)
 
+    print(cmd)
     error = re.search('Error', c.out, re.X | re.M | re.S)
     failed_assertion = re.search('AssertionError', c.out, re.X | re.M | re.S)
     OK = re.search('^OK$', c.out, re.X | re.M | re.S)
@@ -102,6 +103,7 @@ def extract_single_function(p_orig_file, p_function):
     import re
     function_file = p_orig_file.replace('.py', '.functions.py')
     extracted_function = ''
+    print("wuttt")
     with open(function_file, 'r', encoding='utf8') as infile:
         line = True
         while line:
@@ -122,4 +124,5 @@ def extract_single_function(p_orig_file, p_function):
                         print("writing this inside function " + str(line))
                         extracted_function += line
                 extracted_function += line
+    print(extracted_function)
     return extracted_function

@@ -22,6 +22,29 @@ def find_list(p_filename_data):
     return p_test_list
 
 # Inputs: p_filename_data, contents of the file (string).
+# Output: Dictionary of test_loop, created
+# This module finds if there is a loop
+
+
+def find_loop(p_filename_data, p_points):
+    import re
+
+    # test for a list that is created (i.e. abc = [asdf]
+    p_search_object = re.search(r"(for|while)", p_filename_data, re.X | re.M | re.S)
+
+    p_test_loop = {"name": "Testing that there is a loop. (" + str(p_points) + " points)<br>",
+                   "pass": True,
+                   "pass_message": "Pass! There is a loop in the code selection",
+                   "fail_message": "Fail.  There is not a loop in the selected code.  Selected code is this:<br>"
+                                   "" + p_filename_data,
+                   }
+    if p_search_object:
+        p_test_loop['pass'] = True
+    else:
+        p_test_loop['pass'] = False
+    return p_test_loop
+
+# Inputs: p_filename_data, contents of the file (string).
 #         p_search_string, what you are looking for, literally (string)
 #         p_num, number of times you need to find the string
 # Output: Dictionary of test_find_string
@@ -157,34 +180,47 @@ def find_function(p_filename, p_function_name, p_num_parameters, p_points):
 
 # Inputs: p_filename, contents of the file (string).
 #         p_function_name, function name I am looking for (string)
+#         p_times, number of times function needs to be called, minimum
 #         p_points, points this is worth (int)
 # Output: Dictionary of test_function_called
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def function_called(p_filename, p_function_name, p_points):
+def function_called(p_filename, p_function_name, p_times, p_points):
 
+    from app.python_labs.read_file_contents import read_file_contents
     import re
     p_test_function_called = {"name": "Testing that there is a function " + p_function_name +
-                                      " that gets called in the main program (i.e. not in a function) (" + str(p_points)
-                                      +
-                                      "). <br>",
+                                      " that gets called in the main program at least " +
+                                      str(p_times) + " times.  (" + str(p_points) + " points).<br>"
+                                      + "). <br>",
                               "pass": False,
                               "pass_message": "Pass! There is a function " + p_function_name +
                                               " that gets called in the main program (i.e. not part of a function). "
                                               "<br>",
                               "fail_message": "Fail.  The function " + p_function_name +
-                                              " is NOT called in the main program.  If this doesn't make sense, look"
+                                              " is NOT called in the main program enough times. <br>"
+                                              " If this doesn't make sense, look"
                                               "in the presentation examples 1-6 to see calling functions in action."
                                               " <br>",
+                              "score" : p_points
                               }
     regex = r"(?<!def \s)" + p_function_name
+    matches = 0
     with open(p_filename) as infile:
         for line in infile.readlines():
-            found = re.search(regex, line, re.X | re.M | re.S)
-            if found:
-                p_test_function_called['pass'] = True
+            match = re.search(regex, line, re.X | re.M | re.S)
+            if match:
+                matches += 1
     infile.close()
+    if matches >= p_times:
+        p_test_function_called['pass'] = True
+    else:
+        p_test_function_called['score'] = 0
+        filename_data = read_file_contents(p_filename)
+        p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
+                                                  " of " + p_function_name + \
+                                                  " in file with this data: <br> " + filename_data
     return p_test_function_called
 
 
