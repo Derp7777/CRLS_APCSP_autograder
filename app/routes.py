@@ -906,8 +906,9 @@ def feedback_3020():
     import delegator
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_function, function_called
-    from app.python_labs.function_test import extract_all_functions, function_test, create_testing_file
+    from app.python_labs.find_items import find_function, function_called, find_string
+    from app.python_labs.function_test import extract_all_functions, extract_single_function, \
+        function_test, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -962,182 +963,132 @@ def feedback_3020():
                 score_info['score'] += 5
             tests.append(test_function_2)
 
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            # function test 3
+            test_function_3 = function_test('3.020', 3, 8)
+            test_function_3['name'] += " (output looks good) "
+            if test_function_3['pass']:
+                score_info['score'] += 8
+            tests.append(test_function_3)
 
-
-
-
-            # Check for function pick_card
-            cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
-            c = delegator.run(cmd)
-            pick_card = int(c.out)
-            test_pick_card = {"name": "Testing that pick_card function exists (4 points)",
-                                  "pass": True,
-                                  "pass_message": "Pass.  pick_card function exists.  <br>",
-                                  "fail_message": "Fail.  pick_card function isn't in the code. <br>"
-                                  "It may be spelled incorrectly.  The function needs to be named "
-                                  "pick_card, exactly."
-                                  "Fix code and resubmit. <br>",
-            }
-            if pick_card == 0:
-                test_pick_card['pass'] = False
-            else:
+            test_find_function_2 = find_function(filename, 'pick_card', 0, 4)
+            if test_find_function_2['pass']:
                 score_info['score'] += 4
-            tests.append(test_pick_card)
+            tests.append(test_find_function_2)
 
-            # test for 4+ items list named cards
-#            search_object = re.search(r"cards \s* = \s* \[ .* , .* , .* , .*\]", filename, re.X | re.M | re.S)
-
-            with open(filename, 'r') as myfile:
-                filename_data = myfile.read()
-
-            search_object = re.search(r"\s* cards \s* = \s* \[ .* , .* , .* \]", filename_data, re.X | re.M | re.S)
-            test_cards_list = {"name": "Testing that there is a list named cards with 4+ items (2 points)",
-                                   "pass": True,
-                                   "pass_message": "Pass! Submitted file looks like it has a list named "
-                                                   "cards with 4+ items",
-                                   "fail_message": "Submitted file does not look like it has a list named "
-                                                   "'cards' with 4+ items. <br>"
-                                                   "The list must be named exactly 'cards'",
-            }
-            
-            if not search_object:
-                test_cards_list['pass'] = False
+            # Only continue if you have a birthday_song_function
+            if not test_find_function_2['pass']:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
             else:
-                score_info['score'] += 2
-            tests.append(test_cards_list)
 
-            # test for 4+ items list named suits
-            search_object = re.search(r"\s* suits \s* = .* \[ .* , .* , .* , .* \]", filename_data, re.X | re.M | re.S)
-            
-            test_suits_list = {"name": "Testing that there is a list named suits with 4+ items (2 points)",
-                                   "pass": True,
-                                   "pass_message": "Pass! Submitted file looks like it has a list named suits with 4+ items",
-                                   "fail_message": "Submitted file does not look like it has a list named 'suits' with 4 items. <br>"
-                                                   "The list must be named exactly 'suits'",
-            }
-            
-            if not search_object:
-                test_suits_list['pass'] = False
-            else:
-                score_info['score'] += 2
-            tests.append(test_suits_list)
+                cards_function = extract_single_function(filename, 'pick_card')
 
-            # test to see pick_card output spits out 1 'of'
-            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_pick_card_output 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_pick_card_function =  {"name": "Testing that pick_card_output function gives 1 card ",
-                                            "pass": True,
-                                            "pass_message": "Pass.  pick_card function prints 'of' once "
-                                                            "(assume this means prints 1 card).  <br>",
-                                            "fail_message": "Fail.  pick_card function doesn't 'of' once. "
-                                                            "Expecting to see '1 of hearts' or something like that.<br>"
-                                                            "Function should print just ONE card. <br>"
-            }
-            if failures > 0:
-                test_pick_card_function['pass'] = False
-            else:
-                score_info['score'] += 5
-            tests.append(test_pick_card_function)
+                test_find_cards = find_string(cards_function, r"\s+ cards \s* = \s* \[ .+ , .+ , .+ , .* \]", 1, 2)
+                test_find_cards['name'] += ("<h5 style=\"color:blue;\">Looking for a variable named cards that is a list"
+                                            " with at least 4 items."
+                                            "<br>This variable must be inside "
+                                            "find_cards function.</p><br>")
+                if test_find_cards['pass']:
+                    score_info['score'] += 2
+                tests.append(test_find_cards)
 
+                test_find_suits = find_string(cards_function, r"\s+ suits \s* = \s* \[ .+ , .+ , .+ , .+ \]", 1, 2)
+                test_find_suits['name'] += (
+                    "<h5 style=\"color:blue;\">Looking for a variable named suits that is a list"
+                    " with 4 items."
+                    "<br>This variable must be inside "
+                    "find_cards function.</p><br>")
+                if test_find_suits['pass']:
+                    score_info['score'] += 2
+                tests.append(test_find_suits)
 
-            # Check that pick_card function is called once
-            test_pick_card_run = {"name": "Testing that pick_card function is called at least once (4 points)",
-                                  "pass": False,
-                                  "pass_message": "Pass.  pick_card function is called.  <br>",
-                                  "fail_message": "Fail.  pick_card function isn't called in the code. <br>"
-                                  "If this fails, but you think it should not, try to do this: <br>"
-                                  "pick_card()<br>"
-                                  "(do it at the beginning of the line instead in a loop)",
-                               
-            }
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.match("(?<!def\s)pick_card" , line,  re.X | re.M | re.S)
-                    if found:
-                        test_pick_card_run['pass'] = True
-            infile.close()
-            if test_pick_card_run['pass']:
-                score_info['score'] += 4
-            tests.append(test_pick_card_run)
+                # function test 4
+                test_function_4 = function_test('3.020', 4, 5)
+                test_function_4['name'] += " (function picks 1 card) "
+                if test_function_4['pass']:
+                    score_info['score'] += 5
+                tests.append(test_function_4)
 
-            
-            # test 2 funs and verify they are different
-            filename_output1 = filename + '.out1'
-            filename_output2 = filename + '.out2'
+                # Check that function is called once
+                test_pick_card_run = function_called(filename, 'pick_card', 4)
+                if test_pick_card_run['pass']:
+                    score_info['score'] += 4
+                tests.append(test_pick_card_run)
 
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
-                  + filename_output1
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program check 3.020.in')
-            cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
-                  + filename_output2
-            c = delegator.run(cmd)
-            if c.err:
-                flash('bad! You have an error somewhere in running program check 3.020.in')
+                # test 2 funs and verify they are different
+                filename_output1 = filename + '.out1'
+                filename_output2 = filename + '.out2'
 
-            cmd = 'diff ' + filename_output1 + ' ' + filename_output2 + ' | wc -l'
-            c = delegator.run(cmd)
-            different_lines = int(c.out)
-            test_pick_cards_different_outputs =  {"name": "Testing that pick_card shows random behavior when code is run (4 points) ",
-                                                  "pass": True,
-                                                  "pass_message": "Pass. pick_card shows random behavior when code is run. <br>",
-                                                  "fail_message": "Fail. pick_card doesn't show random behavior. <br>"
-                                                                  "Be sure that you are calling pick_card.<br>"
-                                                                  "Be sure that pick_card uses random numbers.",
-            }
-            if different_lines == 0:
-                test_pick_cards_different_outputs['pass'] = False
-            else:
-                score_info['score'] += 4
-            tests.append(test_pick_cards_different_outputs)
+                cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
+                      + filename_output1
+                c = delegator.run(cmd)
+                if c.err:
+                    flash('bad! You have an error somewhere in running program check 3.020.in')
+                cmd = 'python3 ' + filename + ' < /home/ewu/CRLS_APCSP_autograder/var/3.020.in > ' \
+                      + filename_output2
+                c = delegator.run(cmd)
+                if c.err:
+                    flash('bad! You have an error somewhere in running program check 3.020.in')
 
-            # check that pick_card prints out 10 cards (looks for 'of' 10x)
-            test_run_ten_cards = {
-                "name": "Testing that program draws 10 cards (4 points) ",
-                "pass": True,
-                "pass_message": "Pass. program draws 10 cards. <br>",
-                "fail_message": "Fail. program doesn't draw 10 cards. <br>"
-                                "looking for something like this: <br>"
-                                "2 of hearts <br>"
-                                "3 of spades <br>"
-                                "K of diamonds <br>"
-                                "9 of clubs <br>"
-                                "etc... for 10 cards.  card OF suit<br>",
+                cmd = 'diff ' + filename_output1 + ' ' + filename_output2 + ' | wc -l'
+                c = delegator.run(cmd)
+                different_lines = int(c.out)
+                test_pick_cards_different_outputs =  {"name": "Testing that pick_card shows random behavior when code is run (4 points) ",
+                                                      "pass": True,
+                                                      "pass_message": "Pass. pick_card shows random behavior when code is run. <br>",
+                                                      "fail_message": "Fail. pick_card doesn't show random behavior. <br>"
+                                                                      "Be sure that you are calling pick_card.<br>"
+                                                                      "Be sure that pick_card uses random numbers.",
                 }
+                if different_lines == 0:
+                    test_pick_cards_different_outputs['pass'] = False
+                else:
+                    score_info['score'] += 4
+                tests.append(test_pick_cards_different_outputs)
 
-            num_ofs = 0
-            with open(filename_output2) as infile:
-                for line in infile.readlines():
-                    found = re.search(r"of", line,  re.X | re.M | re.S)
-                    if found:
-                        num_ofs += 1
-            infile.close()
-            flash(num_ofs)
-            if num_ofs <= 9:
-                test_run_ten_cards['pass'] = False
-            else:
-                score_info['score'] += 4
-            tests.append(test_run_ten_cards)
+                # check that pick_card prints out 10 cards (looks for 'of' 10x)
+                test_run_ten_cards = {
+                    "name": "Testing that program draws 10 cards (4 points) ",
+                    "pass": True,
+                    "pass_message": "Pass. program draws 10 cards. <br>",
+                    "fail_message": "Fail. program doesn't draw 10 cards. <br>"
+                                    "looking for something like this: <br>"
+                                    "2 of hearts <br>"
+                                    "3 of spades <br>"
+                                    "K of diamonds <br>"
+                                    "9 of clubs <br>"
+                                    "etc... for 10 cards.  card OF suit<br>",
+                    }
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-            tests.append(test_pep8)
+                num_ofs = 0
+                with open(filename_output2) as infile:
+                    for line in infile.readlines():
+                        found = re.search(r"of", line,  re.X | re.M | re.S)
+                        if found:
+                            num_ofs += 1
+                infile.close()
+                if num_ofs <= 9:
+                    test_run_ten_cards['pass'] = False
+                else:
+                    score_info['score'] += 4
+                tests.append(test_run_ten_cards)
 
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
-            tests.append(test_help)
+                # Find number of PEP8 errors
+                pep8_max_points = 14
+                test_pep8 = pep8(filename, pep8_max_points)
+                if test_pep8['pass'] is False:
+                    score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                tests.append(test_pep8)
 
-            score_info['finished_scoring'] = True
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+                # Check for help comment
+                help_points = 5
+                test_help = helps(filename, help_points)
+                if test_help['pass'] is True:
+                    score_info['score'] += help_points
+                tests.append(test_help)
+
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_3026')
