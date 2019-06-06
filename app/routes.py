@@ -786,19 +786,15 @@ def feedback_2051b():
 @app.route('/feedback_3011')
 def feedback_3011():
 
-
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_string, find_questions, find_all_strings
     from app.python_labs.python_3_011 import python_3_011
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 64, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
@@ -809,14 +805,13 @@ def feedback_3011():
     if not test_filename['pass'] is True:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        # test for a list
-        with open(filename, 'r') as myfile:
-            filename_data = myfile.read()
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
         # test for a list being created with 4 items
         test_houses = find_string(filename_data, 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]', 1, 10)
         test_houses['name'] += "Testing that there is a list houses.  houses is a list with " \
-                            "6+ items.<br>"
+                               "6+ items.<br>"
         if not test_houses['pass']:
             test_houses['fail_message'] += "looked for 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]' " \
                                            "in this string: " + filename_data
@@ -905,45 +900,18 @@ def feedback_3011():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
-
-def extract_single_function(orig_file, function):
-    import re
-    function_file = orig_file.replace('.py', '.functions.py')
-    extracted_function = ''
-    with open(function_file, 'r', encoding='utf8') as infile:
-        line = True
-        while line:
-            print("looking for this function : " + function)
-            line = infile.readline()
-            start_def = re.search("^(def|class) \s+ " + function , line,  re.X | re.M | re.S)
-            if start_def:
-                print("entering function!")
-                print('writing this' + str(line))
-                extracted_function += line
-                print("reading this" + str(line))
-                inside_function = True
-                while inside_function:
-                    print('reading this ' + str(line))
-                    line = infile.readline()
-                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
-                    if inside_function:
-                        print("writing this inside function " + str(line))
-                        extracted_function += line
-                extracted_function += line
-    return extracted_function
-
-
 @app.route('/feedback_3020')
 def feedback_3020():
     import re
     import delegator
 
+    from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.find_items import find_function, function_called
+    from app.python_labs.function_test import extract_all_functions, function_test, create_testing_file
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
 
@@ -954,89 +922,50 @@ def feedback_3020():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '3.020')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
 
-        # Check for function birthday_song
-        cmd = 'grep "def birthday_song(" ' + filename + ' | wc -l  '
-        c = delegator.run(cmd)
-        birthday_song = int(c.out)
-        test_birthday_song = {"name": "Testing that birthday song function exists (4 points)",
-                              "pass": True,
-                              "pass_message": "Pass.  birthday_song function exists.  <br>",
-                              "fail_message": "Fail.  birthday_song function isn't in the code. <br>"
-                                              "It may be spelled incorrectly.  The function needs to be named "
-                                              "birthday_song, exactly."
-                                              "Fix code and resubmit. <br>",
-        }
-        if birthday_song == 0:
-            test_birthday_song['pass'] = False
-        else:
+        test_find_function_1 = find_function(filename, 'birthday_song', 1, 4)
+        if test_find_function_1['pass']:
             score_info['score'] += 4
-        tests.append(test_birthday_song)
+        tests.append(test_find_function_1)
 
         # Only continue if you have a birthday_song_function
-        if test_birthday_song['pass']:
+        if not test_find_function_1['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+
             # Check that function is called once
-            test_birthday_song_run = {"name": "Testing that birthday song function is called at least once (4 points)",
-                                      "pass": False,
-                                      "pass_message": "Pass.  birthday_song function is called.  <br>",
-                                      "fail_message": "Fail.  birthday_song function isn't called in the code. <br>"
-            }
-            with open(filename) as infile:
-                for line in infile.readlines():
-                    found = re.match("(?<!def\s)birthday_song" , line,  re.X | re.M | re.S)
-                    if found:
-                        test_birthday_song_run['pass'] = True
-            infile.close()
+            test_birthday_song_run = function_called(filename, 'birthday_song', 4)
             if test_birthday_song_run['pass']:
                 score_info['score'] += 4
             tests.append(test_birthday_song_run)
 
-            # test that output of any sort with happy birthday
-
             # extract functions and create python test file
-            extract_functions(filename)
-            functions_filename = filename.replace('.py', '.functions.py')
-            cmd = ' cat ' + functions_filename + \
-                  ' /home/ewu/CRLS_APCSP_autograder/var/3.020.test.py > /tmp/3.020.test.py'
-            c = delegator.run(cmd)
-            if c.err:
-                flash("There was a problem creating the python test file")
+            extract_all_functions(filename)
+            create_testing_file(filename)
 
-            # test to see happy birthday output spits out 'birthday'
-            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_happy_birthday 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_birthday_song_birthday = {"name": "Testing that birthday song function is "
-                                                    "prints 'birthday' (4 points)",
-                                            "pass": True,
-                                            "pass_message": "Pass.  birthday_song function prints 'birthday'.  <br>",
-                                            "fail_message": "Fail.  birthday_song function doesn't print 'birthday'."
-                                                            " <br>"
-            }
-            if failures > 0:
-                test_birthday_song_birthday['pass'] = False
-            else:
+            # function test 1
+            test_function_1 = function_test('3.020', 1, 5)
+            test_function_1['name'] += " (prints out 'birthday' somewhere) "
+            if test_function_1['pass']:
                 score_info['score'] += 4
-            tests.append(test_birthday_song_birthday)
+            tests.append(test_function_1)
 
-            # test to see happy birthday output spits out argument
-            cmd = 'python3 /tmp/3.020.test.py testAutograde.test_happy_birthday_output 2>&1 |grep -i fail |wc -l'
-            c = delegator.run(cmd)
-            failures = int(c.out)
-            test_birthday_song_argument = {"name": "Testing that birthday song function is "
-                                                   "prints the argument (5 points)",
-                                           "pass": True,
-                                           "pass_message": "Pass.  birthday_song function prints the argument.  <br>",
-                                           "fail_message": "Fail.  birthday_song function doesn't print argument. <br>"
-                                                           "For example, if you call birthday_song('Martinez'), the"
-                                                           "function should print out 'Martinez' somewhere in there<br>"
-                                           }
-            if failures > 0:
-                test_birthday_song_argument['pass'] = False
-            else:
+            # function test 2
+            test_function_2 = function_test('3.020', 2, 5)
+            test_function_2['name'] += " (prints out input parameter somewhere) "
+            if test_function_2['pass']:
                 score_info['score'] += 5
-            tests.append(test_birthday_song_argument)
+            tests.append(test_function_2)
+
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+
 
             # Check for function pick_card
             cmd = 'grep "def pick_card(" ' + filename + ' | wc -l  '
@@ -1209,11 +1138,6 @@ def feedback_3020():
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
-        else:
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_3026')
@@ -2102,7 +2026,7 @@ def feedback_6021():
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
-        test_find_function = find_function(filename, 'martinez_dictionary', 1)
+        test_find_function = find_function(filename, 'birthday_song', 1)
         if test_find_function['pass']:
             score_info['score'] += 5
         tests.append(test_find_function)

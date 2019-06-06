@@ -4,18 +4,18 @@
 # This module runs tests
 
 
-def function_test(p_lab, p_test_number):
+def function_test(p_lab, p_test_number, p_points):
     import delegator
     import re
 
-    p_test_function = {"name": "Testing calling functions, test " + str(p_test_number),
+    p_test_function = {"name": "Testing calling functions, test " + str(p_test_number) + ".  (" + str(p_points) +
+                               " points )",
                        "pass": True,
                        "pass_message": "Pass! Test number " + str(p_test_number) + " gave expected result. <br>",
                        "fail_message": "Fail. Test number " + str(p_test_number) + " gave unexpected result. <br>",
                        }
 
     cmd = 'python3 /tmp/' + str(p_lab) + '.test.py testAutograde.test_' + str(p_test_number) + " 2>&1 "
-
     c = delegator.run(cmd)
 
     error = re.search('Error', c.out, re.X | re.M | re.S)
@@ -44,7 +44,6 @@ def create_testing_file(p_filename):
 
     from app.python_labs import YEAR
 
-    var_dir = ''
     if sys.platform == 'darwin':
         var_dir = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/var'
         # This is Eric's home computer
@@ -98,3 +97,29 @@ def extract_all_functions(orig_file):
                     else:
                         outfile.write(line)
 
+
+def extract_single_function(p_orig_file, p_function):
+    import re
+    function_file = p_orig_file.replace('.py', '.functions.py')
+    extracted_function = ''
+    with open(function_file, 'r', encoding='utf8') as infile:
+        line = True
+        while line:
+            print("looking for this function : " + p_function)
+            line = infile.readline()
+            start_def = re.search("^(def|class) \s+ " + p_function , line,  re.X | re.M | re.S)
+            if start_def:
+                print("entering function!")
+                print('writing this' + str(line))
+                extracted_function += line
+                print("reading this" + str(line))
+                inside_function = True
+                while inside_function:
+                    print('reading this ' + str(line))
+                    line = infile.readline()
+                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
+                    if inside_function:
+                        print("writing this inside function " + str(line))
+                        extracted_function += line
+                extracted_function += line
+    return extracted_function

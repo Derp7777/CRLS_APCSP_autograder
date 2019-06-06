@@ -109,11 +109,12 @@ def find_string_max(p_filename_data, p_search_string, p_num_max, p_points):
 # Inputs: p_filename_data, contents of the file (string).
 #         p_function_name, function name I am looking for (string)
 #         p_num_parameters, number of parameters I expect (integer)
+#         p_points, points this is worth (int)
 # Output: Dictionary of test_function_exists
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def find_function(p_filename, p_function_name, p_num_parameters):
+def find_function(p_filename, p_function_name, p_num_parameters, p_points):
     import delegator
 
     # Check for function return_min
@@ -128,7 +129,8 @@ def find_function(p_filename, p_function_name, p_num_parameters):
         cmd_string = 'grep "^def ' + p_function_name + '(\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+[^,])\s*"'
 
     p_test_function_exists = {"name": "Testing that there is a function " + p_function_name +
-                                      " with " + str(p_num_parameters) + " input parameters.",
+                                      " with " + str(p_num_parameters) + " input parameters. (" + str(p_points) +
+                                      " points). <br>",
                               "pass": True,
                               "pass_message": "Pass! There is a function " + p_function_name +
                                               " with " + str(p_num_parameters) + " input parameters. <br>",
@@ -151,6 +153,40 @@ def find_function(p_filename, p_function_name, p_num_parameters):
                                                   c.out + "<br>" + " but not " + p_function_name + " with" +\
                                                   " exactly " + str(p_num_parameters) + " input parameter(s). <br>"
     return p_test_function_exists
+
+
+# Inputs: p_filename, contents of the file (string).
+#         p_function_name, function name I am looking for (string)
+#         p_points, points this is worth (int)
+# Output: Dictionary of test_function_called
+# This module finds if there is a function with a certain name and certain parameters
+
+
+def function_called(p_filename, p_function_name, p_points):
+
+    import re
+    p_test_function_called = {"name": "Testing that there is a function " + p_function_name +
+                                      " that gets called in the main program (i.e. not in a function) (" + str(p_points)
+                                      +
+                                      "). <br>",
+                              "pass": False,
+                              "pass_message": "Pass! There is a function " + p_function_name +
+                                              " that gets called in the main program (i.e. not part of a function). "
+                                              "<br>",
+                              "fail_message": "Fail.  The function " + p_function_name +
+                                              " is NOT called in the main program.  If this doesn't make sense, look"
+                                              "in the presentation examples 1-6 to see calling functions in action."
+                                              " <br>",
+                              }
+    regex = r"(?<!def \s)" + p_function_name
+    with open(p_filename) as infile:
+        for line in infile.readlines():
+            found = re.search(regex, line, re.X | re.M | re.S)
+            if found:
+                p_test_function_called['pass'] = True
+    infile.close()
+    return p_test_function_called
+
 
 # Input parameters: p_filename_data - contains the entire python file (string)
 #                   p_num - minimum number of times you want to find a question (int).  i.e. you require minimum
