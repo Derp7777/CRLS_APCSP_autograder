@@ -2380,7 +2380,7 @@ def feedback_7034():
                          "pass": True,
                          "pass_message": "Pass. This test worked: " + test,
                          "fail_message": "Fail. This test failed: " + test + " <br> Please check your code and try again.",
-        }
+                         }
         if failures > 0:
             test_disney_1['pass'] = False
         else:
@@ -2508,7 +2508,7 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop1 looks correct.  Expect '* * * * * *'"
-        test_loop_1 =  {"name": test + " (2.5 points)",
+        test_loop_1 = {"name": test + " (2.5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
@@ -2524,7 +2524,7 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop2 looks correct.  Expect '4 5 6 7 8 9 10 11'"
-        test_loop_2 =  {"name": test + " (2.5 points)",
+        test_loop_2 = {"name": test + " (2.5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
@@ -2540,7 +2540,7 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop3 looks correct.  Expect '1 * 3 * 5 * 7 * 9 * 11'"
-        test_loop_3 =  {"name": test + " (2.5 points)",
+        test_loop_3 = {"name": test + " (2.5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
@@ -2556,11 +2556,11 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop4 looks correct.  Expect a 6x6 square of *'s (see problem set)"
-        test_loop_4 =  {"name": test + " (5 points)",
+        test_loop_4 = {"name": test + " (5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_4['pass'] = False
         else:
@@ -2572,11 +2572,11 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop5 looks correct.  (See problem set)"
-        test_loop_5 =  {"name": test + " (5 points)",
+        test_loop_5 = {"name": test + " (5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_5['pass'] = False
         else:
@@ -2588,11 +2588,11 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop6 looks correct.  (See problem set)"
-        test_loop_6 =  {"name": test + " (5 points)",
+        test_loop_6 = {"name": test + " (5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_6['pass'] = False
         else:
@@ -2604,11 +2604,11 @@ def feedback_4031():
         c = delegator.run(cmd)
         failures = int(c.out)
         test = "Test that loop7 looks correct.  (See problem set)"
-        test_loop_7 =  {"name": test + " (5 points)",
+        test_loop_7 = {"name": test + " (5 points)",
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_7['pass'] = False
         else:
@@ -2624,7 +2624,7 @@ def feedback_4031():
                         "pass": True,
                         "pass_message": "Pass. " + test,
                         "fail_message": "Fail. " + test + " Please check your code.",
-        }
+                        }
         if failures > 0:
             test_loop_8['pass'] = False
         else:
