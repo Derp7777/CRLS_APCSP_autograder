@@ -14,9 +14,11 @@ def filename_test(p_filename, p_lab):
     find_all = re.search(YEAR + r"_ .+ _ " + p_lab + r".py", p_filename, re.X | re.M | re.S)
     p_test_filename = {"name": "Testing that file is named correctly",
                        "pass": True,
-                       "pass_message": "Pass! File name looks correct (i.e. something like 2019_luismartinez_" + p_lab +
+                       "pass_message": "<h5 style=\"color:green;\">Pass!</h5> File name looks correct "
+                                       "(i.e. something like 2019_luismartinez_" + p_lab +
                                        ".py)",
-                       "fail_message": "File name of submitted file does not follow required convention. "
+                       "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                       "File name of submitted file does not follow required convention. "
                                        " Rename and resubmit.<br>"
                                        "File name should be like this: <br> <br>"
                                        "2019_luismartinez_" + p_lab + ".py <br><br>"

@@ -305,26 +305,31 @@ def object_created(p_filename, p_function_name, p_times, p_points):
 # Input parameters: p_filename_data - contains the entire python file (string)
 #                   p_num - minimum number of times you want to find a question (int).  i.e. you require minimum
 #                           3 strings that look like blah = input('question here')
+#                   p_points - number of points this question is worth
 # Output: Dictionary of test_function_exists
 # This module finds if user gets asked questions (input = ) a certain number of times
 
 
 def find_questions(p_filename_data, p_num, p_points):
-
     import re
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
+    matches_int = len(re.findall(r".{1,2} \s* = \s* int\( input\(", p_filename_data, re.X | re.M | re.S))
+
     p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " question(s) (" + str(p_points) +
                                      " points)<br>",
                              "pass": True,
-                             "pass_message": "Pass!  Code asks at least " + str(p_num) + " questions ",
-                             "fail_message": "Fail.  Code does not ask at least " + str(p_num) + " questions .<br>" +
-                                             "For now, autograder code will fail checks like "
-                                             "abc = int(input('question') do it in two steps.<br>",
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h3>  "
+                                             "Code asks at least " + str(p_num) + " questions ",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                             "Code does not ask at least " + str(p_num) + " questions .<br>",
+                             "score": 0
                              }
-    if matches < p_num:
+    if matches < p_num and matches_int < p_num:
         p_test_find_questions['pass'] = False
         p_test_find_questions['fail_message'] += "<br>  Found this many questions: " + str(matches) + ".<br>"
+    if p_test_find_questions['pass']:
+        p_test_find_questions['score'] = p_points
     return p_test_find_questions
 
 

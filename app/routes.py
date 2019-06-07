@@ -98,7 +98,7 @@ def feedback_1040():
     tests = list()
     score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5, 'finished_scoring': False}
 
-    # Test 1: file name
+    # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '1.040')
@@ -115,10 +115,9 @@ def feedback_1040():
         test_find_three_questions['name'] += " Checking that Genie asks at least 3 questions. <br> " + \
                                              " Autograder will not continue if this test fails. <br>"
         tests.append(test_find_three_questions)
-        if test_find_three_questions['pass'] is False:
+        if not test_find_three_questions['pass']:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
 
             test_io_1 = io_test(filename, '.+ a1 .+ a2 .+ a3 ', 1, 5)
             test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " +\
@@ -163,6 +162,10 @@ def feedback_1040():
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
+
+            for test in tests:
+                print("yes")
+             #   score_info['score'] += test['score']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
