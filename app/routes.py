@@ -936,7 +936,7 @@ def feedback_3020():
         else:
 
             # Check that function is called once
-            test_birthday_song_run = function_called(filename, 'birthday_song', 4)
+            test_birthday_song_run = function_called(filename, 'birthday_song', 1, 4)
             if test_birthday_song_run['pass']:
                 score_info['score'] += 4
             tests.append(test_birthday_song_run)
@@ -1007,7 +1007,7 @@ def feedback_3020():
                 tests.append(test_function_4)
 
                 # Check that function is called once
-                test_pick_card_run = function_called(filename, 'pick_card', 4)
+                test_pick_card_run = function_called(filename, 'pick_card', 1, 5)
                 if test_pick_card_run['pass']:
                     score_info['score'] += 4
                 tests.append(test_pick_card_run)
@@ -1048,7 +1048,7 @@ def feedback_3026():
 
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_function
+    from app.python_labs.find_items import find_string, find_function, function_called
     from app.python_labs.function_test import function_test, create_testing_file, extract_all_functions
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -1076,15 +1076,11 @@ def feedback_3026():
         # Only continue if you have a return_min_function
         if test_find_function['pass']:
 
-            # find string 'return min' i.e. ran function
-            test_return_min_run = find_string(filename_data, '(?<!def\s)return_min', 5)
-            extra_string = " (return_min function is called at least once)"
-            test_return_min_run["name"] += extra_string
-            test_return_min_run["pass_message"] += extra_string
-            test_return_min_run["fail_message"] += extra_string
-            if test_return_min_run['pass'] is True:
+            # Check that function is called 1x
+            test_function_run = function_called(filename, 'return_min', 1, 5)
+            if test_function_run['pass']:
                 score_info['score'] += 5
-            tests.append(test_return_min_run)
+            tests.append(test_function_run)
 
             # find string return (return in the function)
             test_return = find_string(filename_data, r'return \s .+', 1, 5)
