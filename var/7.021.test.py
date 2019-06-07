@@ -6,7 +6,7 @@ import re
 
 
 class testAutograde(unittest.TestCase):
-      def test_atwood_1(self):
+      def test_1(self):
             leia = Collectible('Leia action figure', 'poor', 400)
             attribute_dict = vars(leia)
             attributes = []
@@ -34,7 +34,7 @@ class testAutograde(unittest.TestCase):
             self.assertEqual(True, success)
             
 
-      def test_atwood_2(self):
+      def test_2(self):
             leia = Collectible('Leia action figure', 'poor', 400)
             rey = Collectible('Rey in her racer', 'new', 30)
             collectibles = [leia, rey]
@@ -43,7 +43,7 @@ class testAutograde(unittest.TestCase):
             search_object2 = re.search(r"Rey \s in \s her \ racer", output, re.X| re.M | re.S)
             self.assertEqual(True, search_object and search_object2)
 
-      def test_atwood_3(self):
+      def test_3(self):
             leia = Collectible('Leia action figure', 'poor', 400)
             rey = Collectible('Rey in her racer', 'new', 30)
             collectibles = [leia, rey]

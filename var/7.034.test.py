@@ -6,7 +6,7 @@ import re
 
 
 class testAutograde(unittest.TestCase):
-      def test_disney_1(self):
+      def test_1(self):
             goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
             attribute_dict = vars(goofy)
             for key in attribute_dict:
@@ -22,7 +22,7 @@ class testAutograde(unittest.TestCase):
             self.assertEqual(True, success)
 
             
-      def test_disney_2(self):
+      def test_2(self):
             goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
             goofy.add_content('meatball')
             attribute_dict = vars(goofy)
@@ -35,7 +35,7 @@ class testAutograde(unittest.TestCase):
                         name_key = key
             self.assertEqual(['wallet', 'paper', 'rock', 'scissors', 'meatball'], getattr(goofy, pocket_key))
 
-      def test_disney_3(self):
+      def test_3(self):
             goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
             dr_wu = DisneyBody('Dr. Wu', ['strawberries'])
             goofy.add_content(dr_wu)
@@ -49,7 +49,7 @@ class testAutograde(unittest.TestCase):
                         name_key = key
             self.assertEqual(['wallet', 'paper', 'rock', 'scissors' ], getattr(goofy, pocket_key))
 
-      def test_disney_4(self):
+      def test_4(self):
             goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
             dr_wu = DisneyBody('Dr. Wu', ['pancreas', 'liver', 'heart', 'strawberries'])
             goofy.add_content(dr_wu)

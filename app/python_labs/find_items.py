@@ -178,6 +178,84 @@ def find_function(p_filename, p_function_name, p_num_parameters, p_points):
     return p_test_function_exists
 
 
+# Inputs: p_filename_data, contents of the file (string).
+#         p_class_name, function name I am looking for (string)
+#         p_parent, number of parameters I expect (integer)
+#         p_points, points this is worth (int)
+# Output: Dictionary of test_class_exists
+# This module finds if there is a class with a certain name and certain parameters
+
+def find_class(p_filename, p_class_name, p_parent, p_points):
+    import delegator
+
+    # Check for function return_min
+    cmd_string = 'grep "^class " + p_class_name + " \(" + p_parent + "object\)"'
+
+    cmd = cmd_string + ' ' + p_filename
+    c = delegator.run(cmd)
+    p_test_class_exists = {}
+    p_test_class_exists['name'] = "Looking for this class " + p_class_name + " with this parent " + " p_parent (" + \
+                        p_points +  " points). "
+    if c.err:
+        p_test_class_exists['pass'] = False
+        p_test_class_exists['fail_message'] += "Error message: " + c.err
+    elif c.out:
+        p_test_class_exists['pass_message'] += "Found this: " + c.out
+        p_test_class_exists['score'] = p_points
+    else:
+        p_test_class_exists['pass'] = False
+        cmd = 'grep "class" ' + p_filename
+        c = delegator.run(cmd)
+        p_test_class_exists['fail_message'] += "The file " + p_filename + " has these classes: <br> " +\
+                                                  c.out + "<br>" + " but not " + p_class_name + " with" +\
+                                                  " this parent " + str(p_parent) + " input parameter(s). <br>"
+    return p_test_class_exists
+
+# Inputs: p_filename, contents of the file (string).
+#         p_class_name, fclass name I am looking for (string)
+#         p_times, number of times object needs to be created, minimum (int)
+#         p_points, points this is worth (int)
+# Output: Dictionary of test_function_called
+# This module finds if there is a function with a certain name and certain parameters
+
+
+def function_called(p_filename, p_class_name, p_times, p_points):
+
+    from app.python_labs.read_file_contents import read_file_contents
+    import re
+    p_test_function_called = {"name": "Testing that there are objects of type  " + p_class_name +
+                                      " that gets created in the main program at least " +
+                                      str(p_times) + " times.  (" + str(p_points) + " points).<br>"
+                                      + "). <br>",
+                              "pass": False,
+                              "pass_message": "Pass! There is object of type " + p_class_name +
+                                              " that gets created enough times "
+                                              "<br>",
+                              "fail_message": "Fail.  The class " + p_class_name +
+                                              " does NOT have enough objects of that type in the program. <br>"
+                                              " If this doesn't make sense, look at the presentations for help"
+                                              " <br>",
+                              "score" : p_points
+                              }
+    regex = r"[a-zA-Z0-9]\s*=\s*" + p_class_name
+    matches = 0
+    with open(p_filename) as infile:
+        for line in infile.readlines():
+            match = re.search(regex, line, re.X | re.M | re.S)
+            if match:
+                matches += 1
+    infile.close()
+    if matches >= p_times:
+        p_test_function_called['pass'] = True
+    else:
+        p_test_function_called['score'] = 0
+        filename_data = read_file_contents(p_filename)
+        p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
+                                                  " of objects of class type:" + p_class_name + \
+                                                  " in file with this data: <br> " + filename_data
+    return p_test_function_called
+
+
 # Inputs: p_filename, contents of the file (string).
 #         p_function_name, function name I am looking for (string)
 #         p_times, number of times function needs to be called, minimum
@@ -186,11 +264,11 @@ def find_function(p_filename, p_function_name, p_num_parameters, p_points):
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def function_called(p_filename, p_function_name, p_times, p_points):
+def object_created(p_filename, p_function_name, p_times, p_points):
 
     from app.python_labs.read_file_contents import read_file_contents
     import re
-    p_test_function_called = {"name": "Testing that there is a function " + p_function_name +
+    p_test_object_created = {"name": "Testing that there is a function " + p_function_name +
                                       " that gets called in the main program at least " +
                                       str(p_times) + " times.  (" + str(p_points) + " points).<br>"
                                       + "). <br>",
@@ -214,14 +292,14 @@ def function_called(p_filename, p_function_name, p_times, p_points):
                 matches += 1
     infile.close()
     if matches >= p_times:
-        p_test_function_called['pass'] = True
+        p_test_object_created['pass'] = True
     else:
-        p_test_function_called['score'] = 0
+        p_test_object_created['score'] = 0
         filename_data = read_file_contents(p_filename)
-        p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
+        p_test_object_created["fail_message"] += "Found this many matches: " + str(matches) + \
                                                   " of " + p_function_name + \
                                                   " in file with this data: <br> " + filename_data
-    return p_test_function_called
+    return p_test_object_created
 
 
 # Input parameters: p_filename_data - contains the entire python file (string)

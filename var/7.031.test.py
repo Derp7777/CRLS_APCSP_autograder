@@ -6,14 +6,14 @@ import re
 
 
 class testAutograde(unittest.TestCase):
-      def test_flaherty_1(self):
+      def test_1(self):
             stack1 = MoneyStack(1, 2, 3, 4, 5)
             if getattr(stack1, 'singles') == 1 and getattr(stack1, 'fives') == 2 and \
                getattr(stack1, 'tens') == 3 and getattr(stack1, 'twenties') == 4 and getattr(stack1, 'hundreds') == 5:
                   success = True
             self.assertEqual(True, success)
             
-      def test_flaherty_2(self):
+      def test_2(self):
             stack1 = MoneyStack(1, 1, 1, 2, 3)
             stack2 = MoneyStack(2, 0, 0, 1, 5)
             stack3 = stack1 + stack2
@@ -22,7 +22,7 @@ class testAutograde(unittest.TestCase):
                   success = True
             self.assertEqual(True, success)
 
-      def test_flaherty_3(self):
+      def test_3(self):
             stack1 = MoneyStack(4, 1, 1, 2, 3)
             stack2 = MoneyStack(9, 2, 2, 5, 9)
             stack3 = stack1 + stack2
