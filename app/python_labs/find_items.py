@@ -302,15 +302,13 @@ def object_created(p_filename, p_function_name, p_times, p_points):
     return p_test_object_created
 
 
-# Input parameters: p_filename_data - contains the entire python file (string)
-#                   p_num - minimum number of times you want to find a question (int).  i.e. you require minimum
-#                           3 strings that look like blah = input('question here')
-#                   p_points - number of points this question is worth
-# Output: Dictionary of test_function_exists
-# This module finds if user gets asked questions (input = ) a certain number of times
-
-
 def find_questions(p_filename_data, p_num, p_points):
+    """ This function finds if file has any questions in it (i.e. input = ) a certain number of times.
+    Input parameters: p_filename_data - contains the entire python file (string)
+                      p_num - minimum number of times you want to find a question (int).
+                              i.e. you require minimum 3 strings that look like blah = input('question here')
+                      p_points - number of points this question is worth
+    Output: Dictionary of test_function_exists"""
     import re
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
@@ -319,17 +317,17 @@ def find_questions(p_filename_data, p_num, p_points):
     p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " question(s) (" + str(p_points) +
                                      " points)<br>",
                              "pass": True,
-                             "pass_message": "<h5 style=\"color:green;\">Pass!</h3>  "
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                                              "Code asks at least " + str(p_num) + " questions ",
                              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
                                              "Code does not ask at least " + str(p_num) + " questions .<br>",
-                             "score": 0
+                             "points": 0
                              }
     if matches < p_num and matches_int < p_num:
         p_test_find_questions['pass'] = False
         p_test_find_questions['fail_message'] += "<br>  Found this many questions: " + str(matches) + ".<br>"
     if p_test_find_questions['pass']:
-        p_test_find_questions['score'] = p_points
+        p_test_find_questions['points'] = p_points
     return p_test_find_questions
 
 
@@ -369,6 +367,5 @@ if __name__ == "__main__":
     # print(abc)
     filename_data = "hello world    prizes = [\"asdf\", '23', 'llll']"
     # abc = find_list_items('prizes \s* = \s* \[ (.+) \]', filename_data)
-    abc = find_list_items(filename_data, 'prizes \s* = \s* \[ (.+) \]')
-
+    abc = find_list_items(filename_data, r'prizes \s* = \s* \[ (.+) \]')
 

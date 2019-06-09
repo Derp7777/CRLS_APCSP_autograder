@@ -24,9 +24,10 @@ def filename_test(p_filename, p_lab):
                                        "2019_luismartinez_" + p_lab + ".py <br><br>"
                                        "File must be python file (ends in .py).<br>" 
                                        "A Google doc with Python code copy+pasted in is not accepted <br>"
-                                       " Other tests not run. They will be run after filename is fixed.<br>"
+                                       " Other tests not run. They will be run after filename is fixed.<br>",
+                       'points': 0,
                        }
-    if find_year and find_lab and find_all :
+    if find_year and find_lab and find_all:
         p_test_filename['pass'] = True
     else:
         p_test_filename['pass'] = False

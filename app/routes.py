@@ -118,54 +118,40 @@ def feedback_1040():
         if not test_find_three_questions['pass']:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-
-            test_io_1 = io_test(filename, '.+ a1 .+ a2 .+ a3 ', 1, 5)
+            # io test 1- a b c
+            test_io_1 = io_test(filename, r'.+ a1 .* a2 .* a3 ', 1, points=5)
             test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " +\
                                  " should print 'your wishes are a, b, and c' <br>"
             tests.append(test_io_1)
-            if test_io_1['pass']:
-                score_info['score'] += 5
 
             # Check that there are 6 total questions (3 part 1, 3 part 2)
             test_find_six_questions = find_questions(filename_data, 6, 5)
             test_find_six_questions['name'] += " Checking that Genie asks at least 6 questions (you need 3 for" \
                                                " part 1 and 3 for part 2). <br>"
             tests.append(test_find_six_questions)
-            if test_find_three_questions['pass'] is True:
-                score_info['score'] += 5
 
             # Check that repeated questions put into variables.
-            test_input_variable = statement_variables(filename_data)
-            if test_input_variable['pass'] is True:
-                score_info['score'] += 5
+            test_input_variable = statement_variables(filename_data, 5)
             tests.append(test_input_variable)
 
-            test_io_2 = io_test(filename, '.+ a1 .+ a2 .+ a3 .+ b2 .+ b3 .+ b1 ', 1, 5)
+            # io test 2 - a b c, b2, b3, b1
+            test_io_2 = io_test(filename, r'.+ a1 .* a2 .* a3 .* b2 .* b3 .* b1 ', 1, points=5)
             test_io_2['name'] += "Check things are in correct order - wishing for a, b, c, d, e, f " + \
                                  " should print 'your wishes are a, b, and c' <br>" +\
                                  " and 'your wishes are e, f, and d' <br>"
             tests.append(test_io_2)
-            if test_io_2['pass']:
-                score_info['score'] += 5
 
-            # Find number of PEP8 errors
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 2.5)
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
-
             for test in tests:
-                print("yes")
-             #   score_info['score'] += test['score']
+                if test['pass']:
+                    print(test['pass_message'])
+                    score_info['score'] += test['points']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 

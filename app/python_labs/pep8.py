@@ -1,10 +1,10 @@
-# Inputs: p_filename, filename to search for help.
-#         p_points, number of points this is worth.
-# Output: dictionary of test_help
-# This module finds number of pep8 errors
-
-
 def pep8(p_filename, p_max_points):
+    """
+    This module fines the number of PEP8 errors
+    :param p_filename: Name of the python file
+    :param p_max_points: maximum number of points you can get for 0 pep8 errors or warnings
+    :return: dictionary with test info
+    """
     import delegator
     import sys
 
@@ -33,15 +33,17 @@ def pep8(p_filename, p_max_points):
         error_msg = error_msg.replace(p_filename, '<br>' + p_filename)
     test_pep8 = {"name": "Testing for PEP8 warnings and errors (" + str(p_max_points) + " points)",
                  "pass": True,
-                 "pass_message": "Pass! Zero PEP8 warnings or errors, congrats!",
-                 "fail_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>" +
+                 "pass_message": "You have " + str(side_errors) + " PEP8 warning(s) or error(s). <br>" +
                                  "This translates to -" +
                                  str(min(p_max_points, side_errors)) +
                                  " point(s) deduction.<br>" +
                                  " Warnings/Errors are:" + error_msg,
-                 "pep8_errors": 0
+                 "pep8_errors": 0,
+                 'points': 0,
                  }
+    test_pep8['fail_message'] = test_pep8['pass_message']
     if side_errors != 0:
-        test_pep8['pass'] = False
         test_pep8['pep8_errors'] = side_errors
+    test_pep8['points'] = max(0, int(p_max_points) - test_pep8['pep8_errors'])
+
     return test_pep8
