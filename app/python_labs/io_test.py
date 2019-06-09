@@ -32,51 +32,6 @@ def _var_filename(p_filename, p_test_num):
 
     return p_var_filename
 
-
-# Input parameters: p_filename - filename (string)
-#                   p_test - the number of test to run
-#                   p_strings - list of regex string you are going to search the output for (string)
-#                   p_points - the number of points this test is worth
-# Output: Dictionary of test_list_created
-# This module runs tests and tries to find all strings in output
-def io_test_find_all(p_filename, p_strings, p_test_num, p_points):
-    import delegator
-    import re
-
-    var_dir = _var_dir()
-    var_filename = _var_filename(p_filename, p_test_num)
-    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + var_filename
-    c = delegator.run(cmd)
-    if c.err:
-        raise Exception('Failed, trying to run ' + cmd + ".  Try running the program in pycharm to see what is wrong.")
-
-    outfile_data = c.out
-
-    p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
-                         "In output, looking for " + str(p_strings) + "<br>",
-                 "pass": True,
-                 "pass_message": "Pass! Input/output gave expected result. <br>",
-                 "fail_message": "Fail. Input/output gave unexpected result. <br>" +
-                                 "Looked for this: " + str(p_strings) + "<br>" +
-                                 " in this: " + str(outfile_data) + "<br>",
-                 }
-
-    found_targets = []
-    for target in p_strings:
-        target = target.replace(' ', '\s')
-        target = target.replace('$', '\$')
-        target = target.replace('+', '\+')
-        search_object = re.search(target, outfile_data, re.X | re.M | re.S)
-        if search_object:
-            found_targets.append(target)
-
-    if p_strings != found_targets:
-        p_test_io['pass'] = False
-        p_test_io['fail_message'] += 'Did not find all, but found these: ' + str(found_targets)
-
-    return p_test_io
-
-
 # Input parameters: p_filename - filename (string)
 #                   p_test - the number of test to run
 #                   p_string - regex string you are going to search the output for (string)
@@ -119,14 +74,15 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
     return p_test_io
 
 
-def io_test(p_filename, p_string, p_test_num, *, points=0):
+def io_test(p_filename, p_string, p_test_num, *, points=0, occurrences=1):
     """
     This function runs a python program with a piped in file.  Then looks for certain strings.
     Returns a test dictionary.
     :param p_filename: filename of python code (string)
     :param p_string: regex string you are going to search the output for (string)
     :param p_test_num: the number of test to run (basically the input file for test)
-    :param p_points: the number of points this test is worth
+    :param points: the number of points this test is worth
+    :param occurrences: how many times you want the string to show up in the code output
     :return: Dictionary containing info for this test.
     """
     import delegator
@@ -141,9 +97,6 @@ def io_test(p_filename, p_string, p_test_num, *, points=0):
         raise Exception('Failed, trying to run ' + cmd + ".  Try running the program manually to see what is wrong.")
 
     outfile_data = c.out
-#    p_string = p_string.replace(' ', '\s')
-#    p_string = p_string.replace('$', '\$')
-#    p_string = p_string.replace('+', '\+')
 
     p_test_io = {"name": "Testing input/output  (" + str(points) + " points).<br>" +
                          "In output, looking for " + str(p_string) + "<br>",
@@ -156,13 +109,50 @@ def io_test(p_filename, p_string, p_test_num, *, points=0):
                  "points": 0
                  }
 
-    search_object = re.search(p_string, outfile_data, re.X | re.M | re.S)
+    p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 
-    if not search_object:
+    if p_matches < occurrences:
         p_test_io['pass'] = False
+        p_test_io['fail_message'] += "Found this many matches: " + str(p_matches)
     else:
         p_test_io['points'] += points
     return p_test_io
+
+
+def io_test_find_all(p_filename, p_strings, p_test_num, *, points=0):
+    """
+    This function runs a python program with a piped in file.  Then looks for certain strings X times, using io_test.
+    :param p_filename: Filename of python code (strong)
+    :param p_strings: regex strings you are going to search the output for (string)
+    :param p_test_num: the number of test to run (basically the input file for test)
+    :param points: Points this test is worth
+    :return: Dictionary containing info for this test.
+    """
+
+    tests = []
+    for regex_string in p_strings:
+        this_test = io_test(p_filename, regex_string, p_test_num)
+        tests.append(this_test)
+
+    p_test_io = {"name": "Testing input/output  (" + str(points) + " points).<br>" +
+                         "In output, looking for " + str(p_strings) + "<br>",
+                 "pass": True,
+                 "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
+                                 " Input/output gave expected result. <br>",
+                 "fail_message": "<h5 style=\"color:red;\">Fail</h5>."
+                                 " Input/output gave unexpected result. <br>",
+                 'points': 0
+                 }
+
+    for this_test in tests:
+        if not this_test['pass']:
+            p_test_io['pass'] = False
+            p_test_io['fail_message'] += this_test['fail_message']
+    if p_test_io['pass']:
+        p_test_io['points'] += points
+
+    return p_test_io
+
 
 
 if __name__ == "__main__":

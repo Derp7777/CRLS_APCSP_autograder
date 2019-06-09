@@ -8,7 +8,7 @@ def pep8(p_filename, p_max_points):
     import delegator
     import sys
 
-    ignore_codes = 'E226,E241,W504,W293,E126'
+    ignore_codes = 'E226,E241,W504,W293,E126,W503'
     if sys.platform == 'darwin':
         pycodestyle_file = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/venv1/bin/pycodestyle'
         # This is Eric's home computer
@@ -27,7 +27,8 @@ def pep8(p_filename, p_max_points):
     side_errors = int(c.out)
     error_msg = 'NONE'
     if side_errors != 0:
-        cmd = pycodestyle_file + ' --ignore=' + ignore_codes + '--max-line-length=120 ' + p_filename
+        cmd = pycodestyle_file + ' --ignore=' + ignore_codes + ' --max-line-length=120 ' + p_filename
+        print(cmd)
         c = delegator.run(cmd)
         error_msg = c.out
         error_msg = error_msg.replace(p_filename, '<br>' + p_filename)

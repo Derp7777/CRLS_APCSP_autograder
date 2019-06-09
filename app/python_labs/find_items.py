@@ -44,32 +44,51 @@ def find_loop(p_filename_data, p_points):
         p_test_loop['pass'] = False
     return p_test_loop
 
-# Inputs: p_filename_data, contents of the file (string).
-#         p_search_string, what you are looking for, literally (string)
-#         p_num, number of times you need to find the string
-# Output: Dictionary of test_find_string
-# This module finds if there is a search string within the file
 
-
-def find_string(p_filename_data, p_search_string, p_num, p_points):
+def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='min'):
+    """
+    This function looks for a regex string within a larger string X times
+    :param p_filename_data: The larger string to search
+    :param p_search_string: The regex to ook for
+    :param p_num: number of times you require regex to appear in larger string
+    :param points: points this is worth (int)
+    :param minmax: whether you want p_num to be MIN or MAX times string can appear.  Default is min.
+    :return: dictionary of test info
+    """
     import re
 
-    print(p_search_string)
-    print(p_filename_data)
     p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
     p_test_find_string = {"name": "Testing that this string is there: " + p_search_string + " at least " +
-                                  str(p_num) + " times (" + str(p_points) +
+                                  str(p_num) + " times (" + str(points) +
                                   " points) <br>",
                           "pass": True,
-                          "pass_message": "Pass! Found this string: " + p_search_string + " at least " +
+                          "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Found this string: "
+                                          + p_search_string + " at least " +
                                           str(p_num) + " times.<br>",
-                          "fail_message": "Fail.  Didn't find this string:" + p_search_string + " at least " +
+                          "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Didn't find this string:"
+                                          + p_search_string + " at least " +
                                           str(p_num) + " times.<br>",
+                          'points': 0
                           }
+    if minmax == 'max':
+        if p_matches <= p_num:
+            passed = True
+        else:
+            passed = False
+    elif minmax == 'min':
+        if p_matches >= p_num:
+            passed = True
+        else:
+            passed = False
+    else:
+        raise Exception("variable minmax must be either 'min' or 'max'")
 
-    if p_matches < p_num:
+    if not passed:
         p_test_find_string['pass'] = False
-        p_test_find_string['fail_message'] += "Found match " + str(p_matches) + " times. <br>"
+        p_test_find_string['fail_message'] += "Found match " + str(p_matches) + " times in this string:. <br>" + \
+                                              p_filename_data
+    else:
+        p_test_find_string['points'] += points
     return p_test_find_string
 
 
@@ -100,34 +119,6 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
     if passed != p_search_strings:
         p_test_find_strings['pass'] = False
     return p_test_find_strings
-
-
-# Inputs: p_filename_data, contents of the file (string).
-#         p_search_string, what you are looking for, literally (string)
-#         p_num_max, MAX number of times you can find the string
-# Output: Dictionary of test_find_string
-# This module finds if there is a string, maximum number of times
-
-
-def find_string_max(p_filename_data, p_search_string, p_num_max, p_points):
-    import re
-
-    # test for a list that is created (i.e. abc = [asdf]
-    p_matches = len(re.findall(p_search_string, p_filename_data, re.X | re.M | re.S))
-    p_test_find_string = {"name": "Testing that this string is there maximum times: " +
-                                  p_search_string + " (" + str(p_points) +
-                                  " points) <br>",
-                          "pass": True,
-                          "pass_message": "Pass! Found this string: " + p_search_string + " no more than " +
-                                          str(p_num_max) + " times. <br>",
-                          "fail_message": "Fail.  Found this string " + p_search_string + " more than " +
-                                          str(p_num_max) + "times. <br>",
-                          }
-
-    if p_matches > p_num_max:
-        p_test_find_string['pass'] = False
-    return p_test_find_string
-
 
 # Inputs: p_filename_data, contents of the file (string).
 #         p_function_name, function name I am looking for (string)

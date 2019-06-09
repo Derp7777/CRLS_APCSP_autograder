@@ -119,9 +119,10 @@ def feedback_1040():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             # io test 1- a b c
-            test_io_1 = io_test(filename, r'.+ a1 .* a2 .* a3 ', 1, points=5)
+            test_io_1 = io_test(filename, r'.+ a1 .+ a2 .+ a3 ', 1, points=5)
             test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " +\
-                                 " should print 'your wishes are a, b, and c' <br>"
+                                 " should print 'your wishes are a, b, and c.' <br>" \
+                                 "You must have at least 1 character of some sort between your wishes.<br>"
             tests.append(test_io_1)
 
             # Check that there are 6 total questions (3 part 1, 3 part 2)
@@ -135,10 +136,11 @@ def feedback_1040():
             tests.append(test_input_variable)
 
             # io test 2 - a b c, b2, b3, b1
-            test_io_2 = io_test(filename, r'.+ a1 .* a2 .* a3 .* b2 .* b3 .* b1 ', 1, points=5)
+            test_io_2 = io_test(filename, r'.+ a1 .+ a2 .+ a3 .+ b2 .+ b3 .+ b1 ', 1, points=5)
             test_io_2['name'] += "Check things are in correct order - wishing for a, b, c, d, e, f " + \
                                  " should print 'your wishes are a, b, and c' <br>" +\
-                                 " and 'your wishes are e, f, and d' <br>"
+                                 " and 'your wishes are e, f, and d' <br>" \
+                                 "You must have at least 1 character of some sort between your wishes.<br>"
             tests.append(test_io_2)
 
             # Find number of PEP8 errors and helps
@@ -159,27 +161,25 @@ def feedback_1040():
 def feedback_1060():
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_questions, find_string, find_string_max
-    from app.python_labs.io_test import io_test_find_all, io_test_find_string
+    from app.python_labs.find_items import find_questions, find_string
+    from app.python_labs.io_test import io_test_find_all, io_test
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
-    # have same feedback for all
-    # different template
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
-    # Test 1: file name
+    # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '1.060')
     tests.append(test_filename)
 
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
@@ -188,82 +188,67 @@ def feedback_1060():
         test_find_five_questions['name'] += " Checking for at least 5 questions. <br> " + \
                                             " Autograder will not continue if this test fails. <br>"
         tests.append(test_find_five_questions)
-        if test_find_five_questions['pass'] is False:
+        if not test_find_five_questions['pass']:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
 
             # Check that inputs are named after part of speech
             test_find_parts_of_speech = find_string(filename_data,
-                                                    '(verb|noun|adjective|adverb|preposition) .{1,3} \s* = \s* input\(',
-                                                    5, 5)
+                                                    r'(verb|noun|adjective|adverb|preposition|place) _* [0-9]* \s* = '
+                                                    r'\s* input\(',
+                                                    5, points=5)
             test_find_parts_of_speech['name'] += "Testing that variables are named after parts of speech. <br>"\
                                                  "If this test fails, rename variables to parts of speech " \
-                                                 "per instructions.<br>"
-            if test_find_parts_of_speech['pass']:
-                score_info['score'] += 5
+                                                 "per instructions.<br>" \
+                                                 "Also note, Python variable name convention is LOWERCASE, so this " \
+                                                 "test will flunk variables like 'Noun1' or 'Verb2'<br>"
             tests.append(test_find_parts_of_speech)
 
             # Check for at least 1 print statement
-            test_find_print = find_string(filename_data, 'print\s*\(', 1, 5)
+            test_find_print = find_string(filename_data, r'print \s* \(', 1, points=5)
             test_find_print['name'] += "Testing for at least one print statement. <br>"
-            if test_find_print['pass']:
-                score_info['score'] += 5
             tests.append(test_find_print)
 
             # Check for less than 3 print statements
-            test_find_three_print = find_string_max(filename_data, 'print \s \(', 3, 5)
+            test_find_three_print = find_string(filename_data, r'print \s \(', 3, points=5, minmax='max')
             test_find_three_print['name'] += "Testing for at maximum of three print statements. <br>"
-            if test_find_three_print['pass']:
-                score_info['score'] += 5
             tests.append(test_find_three_print)
 
             # answer 5 questions, they should all show up in printout
-            test_io_five_inputs = io_test_find_all(filename, ['a1', 'a2', 'a3', 'b1', 'b2'], 1, 15)
+            test_io_five_inputs = io_test_find_all(filename, [r'a1', r'a2', r'a3', r'b1', r'b2'], 1, points=15)
             test_io_five_inputs['name'] += 'Testing for first 5 things you answered questions to show in output.<br>' \
                                            'For example, if you typed in noun1, verb1, noun2, verb2, and adjective' \
                                            '<br> noun1, verb1, noun2, verb2, and adjective should all appear ' \
                                            'in the printout. <br>'
-            if test_io_five_inputs['pass']:
-                score_info['score'] += 15
             tests.append(test_io_five_inputs)
 
             # Check for 3 punctuations
-            test_puncts = io_test_find_string(filename, '(\? | ! | \.) ', 1, 3, 5)
+            test_puncts = io_test(filename, r'(\? | ! | \.) ', 1, points=5, occurrences=3)
             test_puncts['name'] += "Testing for at least 3 punctuations.<br>"
-            if test_puncts['pass']:
-                score_info['score'] += 5
             tests.append(test_puncts)
 
             # Test second 4 inputs for correct spacing
-            test_io_spacing = io_test_find_all(filename, ['(\^ | \s+ ) a2 (\s+ | \? | \. | , | !)',
-                                                          '(\^ | \s+ ) a3 (\s+ | \? | \. | , | !)',
-                                                          '(\^ | \s+ ) b1 (\s+ | \? | \. | , | !)',
-                                                          '(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'],
-                                               1, 10)
+            test_io_spacing = io_test_find_all(filename, [r'(\^ | \s+ ) a2 (\s+ | \? | \. | , | !)',
+                                                          r'(\^ | \s+ ) a3 (\s+ | \? | \. | , | !)',
+                                                          r'(\^ | \s+ ) b1 (\s+ | \? | \. | , | !)',
+                                                          r'(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'],
+                                               1, points=10)
             test_io_spacing['name'] += 'Testing for spacing.  Things you enter should have spaces or punctuations<br>' \
                                        'after them and spaces before them in the printout. <br>'
-            if test_io_spacing['pass']:
-                score_info['score'] += 10
             tests.append(test_io_spacing)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 5)
             tests.append(test_help)
 
             score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2020')
@@ -310,6 +295,7 @@ def feedback_2020():
         if test_io_3['pass']:
             score_info['score'] += 6
         tests.append(test_io_3)
+
 
         # Find number of PEP8 errors
         pep8_max_points = 14

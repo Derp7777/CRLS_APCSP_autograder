@@ -23,7 +23,7 @@ def statement_variables(p_filename_data, p_points):
                                              str(p_test_find_statement_variables['pass']) +
                                              "<br>  Both need to pass.<br> "
                                              "The ENTIRE string inside of input('question here')  needs to be a "
-                                             "variable.  So for example input('Yo sucker ' + variable) will fail."
+                                             "variable.  So for example input('Yo sucker ' + variable) will fail.<br>"
                                              "See question 3 on the assignment if you have no idea what this is.",
                              'points': 0
                              }
