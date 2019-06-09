@@ -45,7 +45,9 @@ def find_loop(p_filename_data, p_points):
     return p_test_loop
 
 
-def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='min'):
+def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='min'
+
+                ):
     """
     This function looks for a regex string within a larger string X times
     :param p_filename_data: The larger string to search

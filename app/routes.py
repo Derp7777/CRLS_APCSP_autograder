@@ -338,7 +338,7 @@ def feedback_2032a():
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string_max(filename_data, 'if', 1, 5)
+        test_ifs = find_string(filename_data, 'if', 1, points=5, minmax=1)
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'
