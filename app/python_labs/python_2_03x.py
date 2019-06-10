@@ -76,7 +76,11 @@ def python_2_032a(p_filename, p_filename_data):
         p_pass_tests['debug'] += '8 '
 
     p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" +\
-                                   "These passed tests translate to a score of " + str(pass_count * 1.5) + "/12.<br>"
+                                   "These passed tests translate to a score of " + str(pass_count * 1.5) +\
+                                   "/12.<br>Hints in case you did not pass all tests:<br>" \
+                                   "The test will input values for 'DC/marvel', age, and power in that order. <br>" \
+                                   "The test will input 'DC' in caps"
+
     p_pass_tests['points'] = pass_count * 1.5
     if pass_count == 8:
         p_pass_tests['pass_message'] = "<h5 style=\"color:green;\">Pass!</h5>" + p_pass_tests['pass_message']
