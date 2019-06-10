@@ -312,7 +312,10 @@ def find_questions(p_filename_data, p_num, p_points):
                              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                                              "Code asks at least " + str(p_num) + " questions ",
                              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                                             "Code does not ask at least " + str(p_num) + " questions .<br>",
+                                             "Code does not ask at least " + str(p_num) + " questions .<br>" +
+                                             "Note: You should not put extra parentheses around the inputs,"
+                                             "as this can confuse coders (who might think it's a tuple, which is "
+                                             "like a list).  Extra parentheses will not score.<br>",
                              "points": 0
                              }
     if matches < p_num and matches_int < p_num and matches_float < p_num:
