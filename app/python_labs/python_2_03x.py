@@ -1,14 +1,20 @@
 def python_2_032a(p_filename, p_filename_data):
-
+    """
+    Function runs the test for python 2.032a lab
+    :param p_filename: name of python code being graded (string)
+    :param p_filename_data: contents of python code, (string)
+    :return: dictionary of test restuls
+    """
+    """ function runs the tests for python 2.032a lab"""
     from app.python_labs.find_items import find_string
     from app.python_labs.io_test import io_test
-    test_and = find_string(p_filename_data, 'and \s+ .+ \s+ and', 1, 0)
-    if test_and:
+    test_and_or = find_string(p_filename_data, r'(and|or) \s+ .+ \s+ (and|or)', 1)
+    if test_and_or['pass']:
         ands = True
     else:
         ands = False
 
-    p_pass_tests = {"name": "8 test cases for 2.032a work (8 points) <br>",
+    p_pass_tests = {"name": "8 test cases for 2.032a work (12 points) <br>",
                     "pass": True,
                     "pass_message": "Pass!  All 8 test cases work",
                     "fail_message": "Fail.  Check your 8 test cases.<br>"
@@ -17,20 +23,32 @@ def python_2_032a(p_filename, p_filename_data):
                                     "As part of this assignment, you should have populated that table.<br>"
                                     "You should test your code with the data from this table.<br>"
                                     "You need to figure out which ones, we do not tell you.<br>",
-                    "score": 0,
+                    "points": 0,
                     "pass_and": ands,
                     "debug": ''
                     }
 
+    if not ands:
+        p_pass_tests['fail_message'] = '<h5 style=\"color:red;\">Fail.</h5>  ' \
+                                       'Program needs to contain either ands or ors and what you have is ' \
+                                       'not correct. <br>' \
+                                       '(We aren\'t telling you which of ands or ors you need).<br>' \
+                                       'Your code should look like this: <br>' \
+                                       'print(2 == 3 and 2 == 4 or 2 == 3) <br>' \
+                                       'That is, 3 tests with' \
+                                       '"and" or "or" in between, with possible parentheses.<br>' \
+                                       'Please edit your python code and try again.<br>'
+        p_pass_tests['pass'] = False
+        return p_pass_tests
     pass_count = 0
-    test_1 = io_test(p_filename, 'False', 1, 0)
-    test_2 = io_test(p_filename, 'False', 2, 0)
-    test_3 = io_test(p_filename, 'True', 3, 0)
-    test_4 = io_test(p_filename, 'False', 4, 0)
-    test_5 = io_test(p_filename, 'False', 5, 0)
-    test_6 = io_test(p_filename, 'False', 6, 0)
-    test_7 = io_test(p_filename, 'False', 7, 0)
-    test_8 = io_test(p_filename, 'False', 8, 0)
+    test_1 = io_test(p_filename, r'False', 1)
+    test_2 = io_test(p_filename, r'False', 2)
+    test_3 = io_test(p_filename, r'True', 3)
+    test_4 = io_test(p_filename, r'False', 4)
+    test_5 = io_test(p_filename, r'False', 5)
+    test_6 = io_test(p_filename, r'False', 6)
+    test_7 = io_test(p_filename, r'False', 7)
+    test_8 = io_test(p_filename, r'False', 8)
 
     if test_1['pass']:
         pass_count += 1
@@ -57,14 +75,11 @@ def python_2_032a(p_filename, p_filename_data):
         pass_count += 1
         p_pass_tests['debug'] += '8 '
 
-    p_pass_tests['score'] = pass_count
-
-    if not test_and:
-        p_pass_tests['fail_message'] += 'Program did not contain some strings required to make it work properly. <br>' \
-                                        '(We aren\'t telling you what they are). Edit the program and try it again.<br>'
-        p_pass_tests['pass'] = False
-    elif p_pass_tests['score'] != 8:
-        p_pass_tests['pass'] = False
+    p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" +\
+                                   "These passed tests translate to a score of " + str(pass_count * 1.5) + "/12.<br>"
+    p_pass_tests['points'] = pass_count * 1.5
+    if pass_count == 8:
+        p_pass_tests['pass_message'] = "<h5 style=\"color:green;\">Pass!</h5>" + p_pass_tests['pass_message']
 
     return p_pass_tests
 

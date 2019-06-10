@@ -45,9 +45,7 @@ def find_loop(p_filename_data, p_points):
     return p_test_loop
 
 
-def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='min'
-
-                ):
+def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='min'):
     """
     This function looks for a regex string within a larger string X times
     :param p_filename_data: The larger string to search
@@ -106,7 +104,7 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
     passed = []
     debug = []
     for p_search_string in p_search_strings:
-        test_find_string = find_string(p_filename_data, p_search_string, 1, 0)
+        test_find_string = find_string(p_filename_data, p_search_string, 1, points=0)
         if test_find_string['pass']:
             passed.append(p_search_string)
             debug.append(test_find_string)
@@ -306,6 +304,7 @@ def find_questions(p_filename_data, p_num, p_points):
 
     matches = len(re.findall(r".{1,2} \s* = \s* input\(", p_filename_data, re.X | re.M | re.S))
     matches_int = len(re.findall(r".{1,2} \s* = \s* int\( input\(", p_filename_data, re.X | re.M | re.S))
+    matches_float = len(re.findall(r".{1,2} \s* = \s* float\( input\(", p_filename_data, re.X | re.M | re.S))
 
     p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " question(s) (" + str(p_points) +
                                      " points)<br>",
@@ -316,7 +315,7 @@ def find_questions(p_filename_data, p_num, p_points):
                                              "Code does not ask at least " + str(p_num) + " questions .<br>",
                              "points": 0
                              }
-    if matches < p_num and matches_int < p_num:
+    if matches < p_num and matches_int < p_num and matches_float < p_num:
         p_test_find_questions['pass'] = False
         p_test_find_questions['fail_message'] += "<br>  Found this many questions: " + str(matches) + ".<br>"
     if p_test_find_questions['pass']:

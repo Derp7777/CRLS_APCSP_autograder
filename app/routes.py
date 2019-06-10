@@ -254,7 +254,9 @@ def feedback_1060():
 @app.route('/feedback_2020')
 def feedback_2020():
 
+    from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.io_test import io_test, io_test_find_all
+    from app.python_labs.find_items import find_questions, find_string
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -270,47 +272,72 @@ def feedback_2020():
     test_filename = filename_test(filename, '2.020')
     tests.append(test_filename)
 
-    if test_filename['pass'] is True:
-
-        # Check that input1 is good (input / 2) 99 / 2 = 49.5
-        test_io_1 = io_test(filename, '49.5', 1, points=15)
-        test_io_1['name'] += "Checks that the number divides by 2 and prints out.  Input 99, " \
-                             "expected 49.5 and 49 in output. <br>"
-        if test_io_1['pass']:
-            score_info['score'] += 15
-        tests.append(test_io_1)
-
-        # Check input2 is good (int(input / 2))
-        test_io_2 = io_test(filename, '49$', 1, points=15)
-        test_io_2['name'] += "Checks that the number divides by 2 and prints out the INTEGER only answer. " \
-                             " Input 99, expected 49 in output. <br>"
-        if test_io_2['pass']:
-            score_info['score'] += 15
-        tests.append(test_io_2)
-
-        # Check input2 is good (int(input / 2))
-        test_io_3 = io_test_find_all(filename, ['49.75', '49$'], 2, points=6)
-        test_io_3['name'] += "Checks that the program works for non-whole inputs. " \
-                             " Input 99.5, expected 49.75 and 49 in output. <br>"
-        if test_io_3['pass']:
-            score_info['score'] += 6
-        tests.append(test_io_3)
-
-        # Find number of PEP8 errors and helps
-        test_pep8 = pep8(filename, 14)
-        tests.append(test_pep8)
-        test_help = helps(filename, 5)
-        tests.append(test_help)
-
-        score_info['finished_scoring'] = True
-        for test in tests:
-            if test['pass']:
-                score_info['score'] += test['points']
-
-        score_info['finished_scoring'] = True
+    if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        # Read in the python file to filename_data
+        filename_data = read_file_contents(filename)
+
+        # Check that there is 1 input questions
+        test_find_question = find_questions(filename_data, 1, 5)
+        test_find_question['name'] += " Checking for at least 1 question. <br> " + \
+                                      " Autograder will not continue if this test fails. <br>"
+        tests.append(test_find_question)
+        if not test_find_question['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            # Test for casting of any sort
+            test_find_casting = find_string(filename_data, r'( int\( | float\( )', 1, points=5)
+            test_find_casting['name'] += 'Checking that there is some casting of any sort to either integer or float.'
+            tests.append(test_find_casting)
+
+            # Test for casting of initial value to float.  Will crash with unknown errors later if casted to int.
+            test_find_casting_2 = find_string(filename_data, r'float\( ', 1)
+            test_find_casting_2['name'] += 'Test your program by manually running it and typing in 55.5 for your ' \
+                                           'number. <br> If you  get an error<br>' \
+                                           'ValueError: invalid literal for int() with base 10:<br>' \
+                                           'This error means you are trying to convert a string that looks like' \
+                                           ' a float into an integer.  ' \
+                                           '<br> If you really want an integer you have to cast the string' \
+                                           ' to a float first. <br> Or else if you are OK with float, cast to float ' \
+                                           'instead of integer.<br> '
+            tests.append(test_find_casting_2)
+            if not test_find_casting_2['pass']:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                # Check that input1 is good (input / 2) 99 / 2 = 49.5
+                test_io_1 = io_test(filename, '49.5', 1, points=10)
+                test_io_1['name'] += "Checks that the number divides by 2 and prints out.  Input 99, " \
+                                     "expected 49.5 and 49 in output. <br>"
+                tests.append(test_io_1)
+
+                # Check input2 is good (int(input / 2))
+                test_io_2 = io_test(filename, '49$', 1, points=10)
+                test_io_2['name'] += "Checks that the number divides by 2 and prints out the INTEGER only answer. " \
+                                     " Input 99, expected 49 in output. <br>"
+                tests.append(test_io_2)
+
+                # Check input2 is good (int(input / 2))
+                test_io_3 = io_test_find_all(filename, ['49.75', '49$'], 2, points=6)
+                test_io_3['name'] += "Checks that the program works for non-whole inputs. " \
+                                     " Input 99.5, expected 49.75 and 49 in output. <br>"
+                tests.append(test_io_3)
+
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 14)
+                tests.append(test_pep8)
+                test_help = helps(filename, 5)
+                tests.append(test_help)
+
+                score_info['finished_scoring'] = True
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
+
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
 
 
 @app.route('/feedback_2032a')
@@ -325,56 +352,52 @@ def feedback_2032a():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 22.5, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 26.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '2.032a')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string(filename_data, 'if', 1, points=5, minmax=1)
+        test_ifs = find_string(filename_data, 'if', 0, points=5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'
-        if test_ifs['pass']:
-            score_info['score'] += 5
         tests.append(test_ifs)
 
-        test_runs = python_2_032a(filename, filename_data)
-        if test_runs['pass_and']:
-            score_info['score'] += test_runs['score']
-        tests.append(test_runs)
+        if not test_ifs['pass']:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
 
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
-        tests.append(test_pep8)
+            test_runs = python_2_032a(filename, filename_data)
+            tests.append(test_runs)
 
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
-        tests.append(test_help)
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
+            tests.append(test_pep8)
+            test_help = helps(filename, 2.5)
+            tests.append(test_help)
 
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_2032b')
 def feedback_2032b():
 
     from app.python_labs.filename_test import filename_test
-    from app.python_labs.find_items import find_string_max
+    from app.python_labs.find_items import find_string
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.python_2_03x import python_2_032b
     from app.python_labs.pep8 import pep8
@@ -395,7 +418,7 @@ def feedback_2032b():
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string_max(filename_data, 'if', 1, 5)
+        test_ifs = find_string_max(filename_data, 'if', 1, points=5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'

@@ -38,7 +38,7 @@ def pep8(p_filename, p_max_points):
                                  "This translates to -" +
                                  str(min(p_max_points, side_errors)) +
                                  " point(s) deduction.<br>" +
-                                 " Warnings/Errors are:" + error_msg,
+                                 " Warnings/Errors are:" + error_msg + ".<br>",
                  "pep8_errors": 0,
                  'points': 0,
                  }
