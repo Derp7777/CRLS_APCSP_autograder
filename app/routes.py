@@ -366,7 +366,7 @@ def feedback_2032a():
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string(filename_data, 'if', 0, points=5, minmax='max')
+        test_ifs = find_string(filename_data, r'if \s', 0, points=5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'
@@ -376,7 +376,9 @@ def feedback_2032a():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
 
-            test_runs = python_2_032a(filename, filename_data)
+            debug_statement = 'Program asks for DC/Marvel, age, and power in that order. <br>' \
+                              'DC must be capitalized.<br>'
+            test_runs = python_2_032a(filename, filename_data, debug_statement=debug_statement)
             tests.append(test_runs)
 
             # Find number of PEP8 errors and helps
@@ -405,50 +407,43 @@ def feedback_2032b():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 22.5, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 26.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '2.032b')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string(filename_data, 'if', 1, points=5, minmax='max')
+        test_ifs = find_string(filename_data, r'if \s ', 1, points=5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'
-        if test_ifs['pass']:
-            score_info['score'] += 5
         tests.append(test_ifs)
 
         # test all 8 cases
-        test_runs = python_2_032b(filename, filename_data)
-        if test_runs['pass_and_or']:
-            score_info['score'] += test_runs['score']
+        debug_statement = 'Program asks for if you are Yuka Kinoshita, your stomach size, and money in that order <br>'\
+                          'If you are failing 2 tests, read example 8 from the presentation.'
+        test_runs = python_2_032b(filename, filename_data, debug_statement=debug_statement)
         tests.append(test_runs)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 7)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 2.5)
         tests.append(test_help)
 
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
+
         score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -478,10 +473,10 @@ def feedback_2040():
         filename_data = read_file_contents(filename)
 
         # Test for prize variables
-        test_prizes = find_all_strings(filename_data, ['prize1 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
-                                                       'prize2 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
-                                                       'prize3 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
-                                                       'prize4 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+', ], 6)
+        test_prizes = find_all_strings(filename_data, [r'prize1 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       r'prize2 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       r'prize3 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
+                                                       r'prize4 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+', ], 6)
         test_prizes['name'] += "Testing for 4 variables names prize1, prize2, prize3, prize4. <br>"
         tests.append(test_prizes)
         if not test_prizes['pass']:
@@ -502,29 +497,23 @@ def feedback_2040():
                 tests.append(test_question)
 
                 # test if, check for at least 1 if statement
-                test_if = find_string(filename_data, '^if', 1, 6)
+                test_if = find_string(filename_data, r'^if', 1, points=6)
                 test_if['name'] += "Testing for at least if statement at BEGINNING of line. <br>" \
                                    "(don't get fancy with functions yet). <br>"
-                if test_if['pass']:
-                    score_info['score'] += 6
                 tests.append(test_if)
 
                 # test else check for at least 1 else statement
-                test_else = find_string(filename_data, '^else', 1, 6)
+                test_else = find_string(filename_data, r'^else:', 1, points=6)
                 test_else['name'] += "Testing for at least else statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
-                if test_else['pass']:
-                    score_info['score'] += 6
                 else:
                     test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
                 tests.append(test_else)
 
                 # test elif check for at least 3
-                test_elif = find_string(filename_data, '^elif', 3, 6)
+                test_elif = find_string(filename_data, r'^elif:', 3, points=6)
                 test_elif['name'] += "Testing for at least 3 elif statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
-                if test_elif['pass']:
-                    score_info['score'] += 6
                 else:
                     test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
                                                  'elif vs if if if. <br>'
@@ -537,18 +526,15 @@ def feedback_2040():
                     test_correct_prizes['fail_message'] += test_correct_prizes['debug']
                 tests.append(test_correct_prizes)
 
-                # Find number of PEP8 errors
-                pep8_max_points = 14
-                test_pep8 = pep8(filename, pep8_max_points)
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 7)
                 tests.append(test_pep8)
-
-                # Check for help comment
-                help_points = 5
-                test_help = helps(filename, help_points)
-                if test_help['pass'] is True:
-                    score_info['score'] += help_points
+                test_help = helps(filename, 2.5)
                 tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
 
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests,
