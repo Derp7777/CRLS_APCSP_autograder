@@ -49,7 +49,7 @@ def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='mi
     """
     This function looks for a regex string within a larger string X times
     :param p_filename_data: The larger string to search
-    :param p_search_string: The regex to ook for
+    :param p_search_string: The regex to look for
     :param p_num: number of times you require regex to appear in larger string
     :param points: points this is worth (int)
     :param minmax: whether you want p_num to be MIN or MAX times string can appear.  Default is min.
@@ -100,7 +100,13 @@ def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='mi
 
 
 def find_all_strings(p_filename_data, p_search_strings, p_points):
-
+    """
+    function looks for all strings
+    :param p_filename_data: The larger string to search
+    :param p_search_strings: The regexes (PLURAL) to look for (string)
+    :param p_points:  points this is worth (int)
+    :return: dictionary of test info
+    """
     passed = []
     debug = []
     for p_search_string in p_search_strings:
@@ -112,12 +118,15 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
     p_test_find_strings = {"name": "Testing that ALL of these strings are there: " + str(p_search_strings) +
                                    " (" + str(p_points) + " points) <br>",
                            "pass": True,
-                           "pass_message": "Pass! Found ALL of these these strings: " + str(p_search_strings) + ".<br>",
-                           "fail_message": "Fail.  Didn't find all strings in " + str(p_search_strings) + ". <br" +
+                           "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Found ALL of these these strings: " + str(p_search_strings) + ".<br>",
+                           "fail_message": "<h5 style=\"color:red;\">Fail.</h5> Didn't find all strings in " + str(p_search_strings) + ". <br" +
                                            " But did find these strings: " + str(passed) + ". <br>",
+                           'points': 0
                            }
     if passed != p_search_strings:
         p_test_find_strings['pass'] = False
+    else:
+        p_test_find_strings['points'] = p_points
     return p_test_find_strings
 
 # Inputs: p_filename_data, contents of the file (string).

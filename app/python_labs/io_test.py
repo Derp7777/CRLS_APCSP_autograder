@@ -97,7 +97,6 @@ def io_test(p_filename, p_string, p_test_num, *, points=0, occurrences=1):
         raise Exception('Failed, trying to run ' + cmd + ".  Try running the program manually to see what is wrong.")
 
     outfile_data = c.out
-    print(c.out)
     p_test_io = {"name": "Testing input/output  (" + str(points) + " points).<br>" +
                          "In output, looking for " + str(p_string) + "<br>",
                  "pass": True,
@@ -108,6 +107,11 @@ def io_test(p_filename, p_string, p_test_num, *, points=0, occurrences=1):
                                  " in this: " + str(outfile_data) + "<br>",
                  "points": 0
                  }
+
+    p_string = p_string.replace(' ', r'\s')
+    p_string = p_string.replace('$', r'\$')
+    p_string = p_string.replace('.', r'\.')
+    p_string = p_string.replace('+', r'\+')
 
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 

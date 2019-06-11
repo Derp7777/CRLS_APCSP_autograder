@@ -477,25 +477,21 @@ def feedback_2040():
                                                        r'prize2 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
                                                        r'prize3 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+',
                                                        r'prize4 \s* = \s* (\'|\")[a-zA-Z0-9!-\.\s]+', ], 6)
-        test_prizes['name'] += "Testing for 4 variables names prize1, prize2, prize3, prize4. <br>"
+        test_prizes['name'] += "Testing for 4 variables names prize1, prize2, prize3, prize4 (not prize_1, prize_2..." \
+                               " <br>"
         tests.append(test_prizes)
         if not test_prizes['pass']:
             test_prizes['fail_message'] += 'Be sure you have 4 variables called  prize1, prize2, prize3, prize4. <br>' \
                                            'Be sure to set their values to be prizes'
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 6
-
             test_question = find_questions(filename_data, 1, 6)
+            tests.append(test_question)
             if not test_question['pass']:
                 test_question['fail_message'] += "You need to ask the user a question about which door to pick. <br>"
-                tests.append(test_question)
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
             else:
-                score_info['score'] += 6
-                tests.append(test_question)
-
                 # test if, check for at least 1 if statement
                 test_if = find_string(filename_data, r'^if', 1, points=6)
                 test_if['name'] += "Testing for at least if statement at BEGINNING of line. <br>" \
@@ -506,36 +502,32 @@ def feedback_2040():
                 test_else = find_string(filename_data, r'^else:', 1, points=6)
                 test_else['name'] += "Testing for at least else statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
-                else:
+                if not test_else['pass']:
                     test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
                 tests.append(test_else)
 
-                # test elif check for at least 3
-                test_elif = find_string(filename_data, r'^elif:', 3, points=6)
+                test_elif = find_string(filename_data, r'^elif', 3, points=6)
                 test_elif['name'] += "Testing for at least 3 elif statement at BEGINNING of line. <br>" \
                                      "(don't get fancy with functions yet). <br>"
-                else:
+                if not test_elif['pass']:
                     test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
                                                  'elif vs if if if. <br>'
                 tests.append(test_elif)
 
                 test_correct_prizes = python_2_040(filename, filename_data)
-                if test_correct_prizes['pass']:
-                    score_info['score'] += 12
-                else:
+                if not test_correct_prizes['pass']:
                     test_correct_prizes['fail_message'] += test_correct_prizes['debug']
                 tests.append(test_correct_prizes)
 
                 # Find number of PEP8 errors and helps
-                test_pep8 = pep8(filename, 7)
+                test_pep8 = pep8(filename, 14)
                 tests.append(test_pep8)
-                test_help = helps(filename, 2.5)
+                test_help = helps(filename, 5)
                 tests.append(test_help)
 
                 for test in tests:
                     if test['pass']:
                         score_info['score'] += test['points']
-
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests,
                                        filename=filename, score_info=score_info)
