@@ -335,21 +335,25 @@ def find_questions(p_filename_data, p_num, p_points):
     return p_test_find_questions
 
 
-# Input parameters: p_filename_data - contains the entire python file (string)
-#                   p_string - regex string that extracts the list you are looking for
-# Output: list of items in the string
-# This module finds a list with a particular name in the code and returns as list to user
-
-
 def find_list_items(p_filename_data, p_string):
-
+    """
+    Looks for a string
+    :param p_filename_data: contains the entire python file (string)
+    :param p_string: The list you are looking for (string)
+    :return: A list, items are items in the list you are searching for
+    """
     import re
-
+    find_this_list = p_string + r' \s* = \s* \[ (.+) \] $ '
+    print(find_this_list)
+    print(p_filename_data)
     p_search_object = re.search(p_string, p_filename_data, re.X | re.M | re.S)
-    match = p_search_object.group(1)
+    match = p_search_object.group(0)
+    print(match)
+
     match = match.replace('"', '')
     match = match.replace("'", '')
     match = re.sub(r",\s+", "~", match)
+    print(match)
     items = match.split('~')
     return items
 

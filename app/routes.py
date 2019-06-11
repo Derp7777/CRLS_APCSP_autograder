@@ -545,12 +545,12 @@ def feedback_2051a():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 15.5, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 32.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '2.051a')
+    test_filename = filename_test(filename, '2.050a')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -559,35 +559,28 @@ def feedback_2051a():
         filename_data = read_file_contents(filename)
 
         # test for a list being created with 4 items
-        test_prizes = find_string(filename_data, 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]', 1, 5)
+        test_prizes = find_string(filename_data, r'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]', 1, points=5)
         test_prizes['name'] += "Testing that there is a variable prizes.  Prizes is a list with exactly 4 items"
+        tests.append(test_prizes)
         if not test_prizes['pass']:
-            test_prizes['fail_message'] += "Looking for variable prizes that is a list with 4 items.  We name lists " \
-                                           "plural to help keep track of what is what.<br>  " \
-                                           "Looked for 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]' " \
-                                           "in this string: <br>" + filename_data
-            tests.append(test_prizes)
+            test_prizes['fail_message'] += r"Looking for variable prizes that is a list with 4 items.  We name lists " \
+                                           r"plural to help keep track of what is what.<br>  " \
+                                           r"Looked for 'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]' " \
+                                           r"in this string: <br>" + filename_data
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 3
-            tests.append(test_prizes)
 
             # Check for question
-            points = 5
-            test_find_input = find_questions(filename_data, 1, points)
-            if test_find_input['pass']:
-                score_info['score'] += points
+            test_find_input = find_questions(filename_data, 1, 5)
             tests.append(test_find_input)
 
             # Test input gives output
             test_runs = python_2_051a(filename, filename_data)
-            if test_runs['pass']:
-                score_info['score'] += test_runs['score']
             tests.append(test_runs)
 
             # Test efficiency
-            test_efficiency = find_all_strings(filename_data, ['prizes\[0\]', 'prizes\[1\]',
-                                                               'prizes\[2\]','prizes\[3\]'], 5)
+            test_efficiency = find_all_strings(filename_data, [r'prizes\[0\]', r'prizes\[1\]',
+                                                               r'prizes\[2\]', r'prizes\[3\]'], 5)
             test_efficiency['name'] += "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>" \
                                        "If you have a variable x which is a number of item in list," \
                                        " list[x-1] will get you the correct item.<br>" \
@@ -599,27 +592,23 @@ def feedback_2051a():
                                        " If this does not make sense, ask a neighbor or the teacher."
             if test_efficiency['pass']:
                 test_efficiency['pass'] = False
+                test_efficiency['points'] = 0
                 test_efficiency['fail_message'] += "You want to use a variable for the list index of prizes."
             else:
                 test_efficiency['pass'] = True
                 test_efficiency['pass_message'] += "(actually, did NOT find prizes[0], prizes[1] prizes[2] prizes[3]"
-            if test_efficiency['pass']:
-                score_info['score'] += 5
+                test_efficiency['points'] = 5
             tests.append(test_efficiency)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 2.5)
             tests.append(test_help)
 
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 

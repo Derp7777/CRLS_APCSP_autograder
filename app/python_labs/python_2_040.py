@@ -41,8 +41,8 @@ def python_2_040(p_filename, p_filename_data):
 
     p_pass_tests = {"name": "4 test cases for 2.040 work (12 points) <br>",
                     "pass": True,
-                    "pass_message": "Pass!  All 4 test cases work",
-                    "fail_message": "Fail.  Check your 4 test cases.<br>"
+                    "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  All 4 test cases work",
+                    "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Check your 4 test cases.<br>"
                                     "If you run the program, and I type '1', it should print out prize1 somehow."
                                     " <br> "
                                     "Same for prize2, prize3, and prize4. <br>"
@@ -50,10 +50,10 @@ def python_2_040(p_filename, p_filename_data):
                                     "that",
                     "points": 0,
                     }
-    test_1 = io_test(p_filename, prize1, 1, points=0)
-    test_2 = io_test(p_filename, prize2, 2, points=0)
-    test_3 = io_test(p_filename, prize3, 3, points=0)
-    test_4 = io_test(p_filename, prize4, 4, points=0)
+    test_1 = io_test(p_filename, prize1, 1)
+    test_2 = io_test(p_filename, prize2, 2)
+    test_3 = io_test(p_filename, prize3, 3)
+    test_4 = io_test(p_filename, prize4, 4)
 
     if test_1['pass']:
         p_pass_tests['points'] += 3
