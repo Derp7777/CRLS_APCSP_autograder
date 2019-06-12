@@ -690,7 +690,7 @@ def feedback_2051b():
 def feedback_3011():
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_questions, find_all_strings, find_list
+    from app.python_labs.find_items import find_string, find_questions, find_all_strings, find_list, find_random
     from app.python_labs.python_3_011 import python_3_011
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -711,14 +711,12 @@ def feedback_3011():
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
-        # test for a list being created with 4 items
-
+        # test for a list being created with 6 items
         test_houses = find_list(filename_data, num_items=6, list_name='houses', points=10)
         tests.append(test_houses)
         if not test_houses['pass']:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-
             # Asks a question, but that is ignore
             test_question = find_questions(filename_data, 1, 5)
             if not test_question['pass']:
@@ -726,34 +724,26 @@ def feedback_3011():
             tests.append(test_question)
 
             # test for importing random
-            test_random = find_string(filename_data, r'(import\s+random|from\s+random\s+import)', 1, points=5)
-            test_random['name'] += "Testing that you are import random in some way.<br>"
+            test_random = find_random(filename_data, 5)
+            tests.append(test_random)
             if not test_random['pass']:
-                tests.append(test_random)
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
             else:
-                score_info['score'] += 5
-                tests.append(test_random)
-
                 # test for importing randint
-                test_randint = find_string(filename_data, 'randint', 1, 5)
-                test_randint['name'] += "Testing that you are using randint - random.choice works, but you " \
-                                        "should learn how to use randint.<br>"
-                if test_randint['pass']:
-                    score_info['score'] += 5
+                test_randint = find_random(filename_data, 5, randint=True)
                 tests.append(test_randint)
 
                 # Check for at least 1 print statement
-                test_find_print = find_string(filename_data, 'print\s*\(', 1, 5)
+                test_find_print = find_string(filename_data, r'print\s*\(', 1, points=5)
                 test_find_print['name'] += "Testing for at least one print statement. <br>"
                 if test_find_print['pass']:
                     score_info['score'] += 5
                 tests.append(test_find_print)
 
                 # Test efficiency
-                test_efficiency = find_all_strings(filename_data, ['houses\[0\]', 'houses\[1\]',
-                                                                   'houses\[2\]', 'houses\[3\]'], 5)
+                test_efficiency = find_all_strings(filename_data, [r'houses\[0\]', r'houses\[1\]',
+                                                                   r'houses\[2\]', r'houses\[3\]'], 5)
                 test_efficiency['name'] += "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>" \
                                            "If you have a variable x which is a number of item in list," \
                                            " list[x-1] will get you the correct item.<br>" \
@@ -780,10 +770,14 @@ def feedback_3011():
                 tests.append(test_runs)
 
             # Find number of PEP8 errors and helps
-            test_pep8 = pep8(filename, 15)
+            test_pep8 = pep8(filename, 14)
             tests.append(test_pep8)
             test_help = helps(filename, 5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)

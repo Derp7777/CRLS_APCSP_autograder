@@ -184,6 +184,41 @@ def find_else(p_filename_data, p_num, p_points, *, minmax='min'):
         p_test_find_questions['points'] = p_points
     return p_test_find_questions
 
+
+def find_random(p_filename_data, p_points, *, randint=False):
+    """
+    find_random - looks for importing random or else from random import.  I
+    :param p_filename_data: string usually containing the python code
+    :param p_points: number of points this is worth
+    :param randint: whether we are looking for randint also
+    :return:
+    """
+    import re
+
+    matches = len(re.findall(r"(import\s+random|from\s+random\s+import)", p_filename_data, re.X | re.M | re.S))
+
+    p_test_random = {"name": "Testing that random is imported (" + str(p_points) + " points)<br>",
+                     "pass": True,
+                     "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  We found that random was imported ",
+                     "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                     "Code does not import random.",
+                     "points": 0
+                     }
+    if matches < 1:
+        p_test_random['pass'] = False
+
+    if randint:
+        matches = len(re.findall(r"randint\(", p_filename_data, re.X | re.M | re.S))
+        p_test_random['name'] += 'AND that randint is used.<br>'
+        p_test_random['pass_message'] += '  AND randint is used.<br>'
+        p_test_random['fail_message'] += '  Or else randint is not used.<br>'
+        if matches < 1:
+            p_test_random['pass'] = False
+    if p_test_random['pass']:
+        p_test_random['points'] = p_points
+    return p_test_random
+
+
 # Inputs: p_filename_data, contents of the file (string).
 # Output: Dictionary of test_loop, created
 # This module finds if there is a loop

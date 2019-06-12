@@ -49,7 +49,7 @@ def python_3_011(p_filename, p_filename_data):
                  "score": 0,
                  }
 
-    houses = find_list_items(p_filename_data, 'houses \s* = \s* \[ (.+) \] $')
+    houses = find_list_items(p_filename_data, 'houses')
 
     answers = []
     for x in range(110):
