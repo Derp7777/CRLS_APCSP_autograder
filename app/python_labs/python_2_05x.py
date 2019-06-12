@@ -45,6 +45,70 @@ def python_2_051a(p_filename, p_filename_data):
     return p_pass_tests
 
 
+def python_2_051b_1(p_filename, points):
+    """
+    Does the tests for 2.051b test 1
+    :param p_filename: filename (string)
+    :param points: Points this is worth(int)
+    :return: A dictionary of test info
+    """
+    from app.python_labs.io_test import io_test
+
+    test_io_1 = io_test(p_filename, r'\[\s*2\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1)
+
+    p_tests = {"name": "Test case #1 for 2.051b works (" +
+                       str(points) +
+                       " points) <br>"
+                       " Human input of C C R L S, should get back [ 2, 1, 1, 1] on screen",
+               "pass": True,
+               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  Test case #1 for 2.051a works!",
+               "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Check your test cases.<br>"
+                               "Be sure your program works with capital letters input from " \
+                                                 "keyboard (i.e. C R L S not c r l s).<br>"
+                               "Be sure you are asking the user for 5 votes.<br>",
+               "points": 0,
+               }
+
+    if test_io_1['pass']:
+        p_tests['points'] += points
+    else:
+        p_tests['pass'] = False
+        p_tests['fail_message'] += test_io_1['fail_message']
+    return p_tests
+
+
+def python_2_051b_2(p_filename, points):
+    """
+    Does the tests for 2.051b test 12
+    :param p_filename: filename (string)
+    :param points: Points this is worth(int)
+    :return: A dictionary of test info
+    """
+    from app.python_labs.io_test import io_test
+
+    test_io = io_test(p_filename, r'\[\s*1\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1)
+
+    p_tests = {"name": "Test case #2 for 2.051b works (" +
+                       str(points) +
+                       " points) <br>"
+                       " Human input of C R L S 'blahblah', should get back [ 1, 1, 1, 1] on screen",
+               "pass": True,
+               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  Test case #2 for 2.051a works!",
+               "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Check your test cases.<br>"
+                               "Be sure your program works with capital letters input from " \
+                                                 "keyboard (i.e. C R L S not c r l s).<br>"
+                               "Be sure you are asking the user for 5 votes.<br>",
+               "points": 0,
+               }
+
+    if test_io['pass']:
+        p_tests['points'] += points
+    else:
+        p_tests['pass'] = False
+        p_tests['fail_message'] += test_io['fail_message']
+    return p_tests
+
+
 if __name__ == "__main__":
     from app.python_labs.read_file_contents import read_file_contents
     print("yes")

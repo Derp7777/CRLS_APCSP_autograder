@@ -607,16 +607,16 @@ def feedback_2051a():
 @app.route('/feedback_2051b')
 def feedback_2051b():
 
-    from app.python_labs.io_test import io_test
     from app.python_labs.find_items import find_if, find_questions, find_list, find_elif, find_else
     from app.python_labs.read_file_contents import read_file_contents
+    from app.python_labs.python_2_05x import python_2_051b_1
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 23, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 32.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -657,8 +657,6 @@ def feedback_2051b():
 
                 # test else check for at least 1 else statement
                 test_else = find_else(filename_data, 1, 4)
-                test_else['name'] += "Testing for at least else statement. <br> " \
-                                     "(don't get fancy with functions yet). <br>"
                 tests.append(test_else)
 
                 # test elif check for at least 3
@@ -666,26 +664,13 @@ def feedback_2051b():
                 tests.append(test_elif)
 
                 # Try C C R L S, should get 2, 1, 1, 1
-                test_1_io = io_test(filename, r'\[\s*2\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1, points=5)
-                test_1_io['name'] += "Ran code with human input of C C R L S, should get back [ 2, 1, 1, 1] on screen"
-                if test_1_io['pass']:
-                    score_info['score'] += 5
-                else:
-                    test_1_io['fail_message'] += " Be sure your program works with capital letters input from " \
-                                                 "keyboard (i.e. C R L S not c r l s)"
+                test_1_io = python_2_051b_1(filename, 5)
                 tests.append(test_1_io)
 
                 # Try C R L S blah blah blah, should get 1, 1, 1, 1
-                test_2_io = io_test(filename, r'\[\s*1\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 2, points=5)
-                test_2_io['name'] += "Ran code with human input of C R L S blahblah, should get back [ 1, 1, 1, 1] " \
-                                     "on screen"
-                if test_2_io['pass']:
-                    score_info['score'] += 5
-                else:
-                    test_2_io['fail_message'] += " Be sure your program works if user types something other than " \
-                                                 "C R L or S."
+                test_2_io = python_2_051b_1(filename, 5)
                 tests.append(test_2_io)
-                
+
                 # Find number of PEP8 errors and helps
                 test_pep8 = pep8(filename, 7)
                 tests.append(test_pep8)
@@ -705,7 +690,7 @@ def feedback_2051b():
 def feedback_3011():
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_questions, find_all_strings
+    from app.python_labs.find_items import find_string, find_questions, find_all_strings, find_list
     from app.python_labs.python_3_011 import python_3_011
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -720,32 +705,24 @@ def feedback_3011():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '3.011')
     tests.append(test_filename)
-    if not test_filename['pass'] is True:
+    if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         # Read in the python file to filename_data
         filename_data = read_file_contents(filename)
 
         # test for a list being created with 4 items
-        test_houses = find_string(filename_data, r'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]', 1,
-                                  points=10)
-        test_houses['name'] += "Testing that there is a list houses.  houses is a list with " \
-                               "6+ items.<br>"
+
+        test_houses = find_list(filename_data, num_items=6, list_name='houses', points=10)
+        tests.append(test_houses)
         if not test_houses['pass']:
-            test_houses['fail_message'] += r"looked for 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]' " \
-                                           "in this string: " + filename_data
-            tests.append(test_houses)
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            tests.append(test_houses)
-            score_info['score'] += 10
 
             # Asks a question, but that is ignore
             test_question = find_questions(filename_data, 1, 5)
             if not test_question['pass']:
                 test_question['fail_message'] += "You need to ask the user a question to try to influence the hat. <br>"
-            else:
-                score_info['score'] += 5
             tests.append(test_question)
 
             # test for importing random
@@ -802,17 +779,10 @@ def feedback_3011():
                     score_info['score'] += 10
                 tests.append(test_runs)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 15)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 5)
             tests.append(test_help)
 
             score_info['finished_scoring'] = True

@@ -14,6 +14,8 @@ def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
         search_string = list_name + r" \s* = \s* \[ ?\]"
     elif num_items == 4:
         search_string = list_name + r" \s* = \s* \[ [^\]]+ , [^\]]+ , [^\]]+ , [^\]]+ .? \]"
+    elif num_items == 6:
+        search_string = list_name + r" \s* = \s* \[ [^\]]+ , [^\]]+ , [^\]]+ , [^\]]+ , [^\]]+, [^\]]+ .? \]"
 
     # test for a list that is created (i.e. abc = [asdf]
     p_search_object = re.search(search_string, p_filename_data, re.X | re.M | re.S)
@@ -24,7 +26,8 @@ def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
                    "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Submitted file has something that looks like "
                                    "a list being created with correct name and number of items.",
                    "fail_message": "<h5 style=\"color:red;\">Fail.</h5>Submitted file does not look like it has list"
-                                   " being created with correct name and number of items.",
+                                   " being created with correct name and number of items.  File is the following:<br>"
+                                   + p_filename_data,
                    'points': 0
                    }
     if p_search_object:
