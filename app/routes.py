@@ -550,7 +550,7 @@ def feedback_2051a():
     # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '2.050a')
+    test_filename = filename_test(filename, '2.051a')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)

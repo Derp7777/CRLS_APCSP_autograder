@@ -343,19 +343,34 @@ def find_list_items(p_filename_data, p_string):
     :return: A list, items are items in the list you are searching for
     """
     import re
-    find_this_list = p_string + r' \s* = \s* \[ (.+) \] $ '
+    find_this_list = p_string + r' \s* = \s* \[ ([^\]]+) \] '
     print(find_this_list)
     print(p_filename_data)
-    p_search_object = re.search(p_string, p_filename_data, re.X | re.M | re.S)
-    match = p_search_object.group(0)
-    print(match)
+    p_search_object = re.search(find_this_list, p_filename_data, re.X | re.M | re.S)
+    match = p_search_object.group(1)
+    print('initial match ' + str(match))
+    new_item = ''
+    on_off = -1
+    reconstructed_list = []
+    quotation = ''
+    for letter in str(match):
+        if letter == '"' or letter == "'":
+            if on_off == -1:
+                on_off *= -1  # turn on
+                quotation = letter
+                new_item = ''
+            else:
+                if quotation == letter:
+                    on_off *= -1  # turn off
+                    reconstructed_list.append(new_item)
+                else:
+                    new_item += letter
+        else:
+            new_item += letter
+    print("reconstructed list")
+    print(reconstructed_list)
 
-    match = match.replace('"', '')
-    match = match.replace("'", '')
-    match = re.sub(r",\s+", "~", match)
-    print(match)
-    items = match.split('~')
-    return items
+    return reconstructed_list
 
 
 if __name__ == "__main__":

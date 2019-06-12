@@ -113,6 +113,10 @@ def io_test(p_filename, p_string, p_test_num, *, points=0, occurrences=1):
     p_string = p_string.replace('.', r'\.')
     p_string = p_string.replace('+', r'\+')
 
+    print("p_string")
+    print(p_string)
+    print("outfile_data")
+    print(outfile_data)
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 
     if p_matches < occurrences:
