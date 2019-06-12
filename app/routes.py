@@ -345,7 +345,7 @@ def feedback_2032a():
 
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string
+    from app.python_labs.find_items import find_if
     from app.python_labs.python_2_03x import python_2_032a
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -366,10 +366,10 @@ def feedback_2032a():
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string(filename_data, r'if \s', 0, points=5, minmax='max')
+        test_ifs = find_if(filename_data, 0, 5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
-                            'If you think this should pass, control-F and search for "if" in your code'
+                            ''
         tests.append(test_ifs)
 
         if not test_ifs['pass']:
@@ -399,7 +399,7 @@ def feedback_2032a():
 def feedback_2032b():
 
     from app.python_labs.filename_test import filename_test
-    from app.python_labs.find_items import find_string
+    from app.python_labs.find_items import find_if
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.python_2_03x import python_2_032b
     from app.python_labs.pep8 import pep8
@@ -421,7 +421,7 @@ def feedback_2032b():
         filename_data = read_file_contents(filename)
 
         # Check for ifs
-        test_ifs = find_string(filename_data, r'if \s ', 1, points=5, minmax='max')
+        test_ifs = find_if(filename_data, 0, 5, minmax='max')
         test_ifs['name'] += 'Testing for ifs.  There should be zero ifs in the code. <br>' \
                             'For example, print(1==1) NOT if (1 == 1): print("True") <br>' \
                             'If you think this should pass, control-F and search for "if" in your code'
@@ -451,7 +451,7 @@ def feedback_2032b():
 def feedback_2040():
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_all_strings, find_questions
+    from app.python_labs.find_items import find_all_strings, find_questions, find_if, find_elif, find_else
     from app.python_labs.python_2_040 import python_2_040
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -493,25 +493,15 @@ def feedback_2040():
                                        score_info=score_info)
             else:
                 # test if, check for at least 1 if statement
-                test_if = find_string(filename_data, r'^if', 1, points=6)
-                test_if['name'] += "Testing for at least if statement at BEGINNING of line. <br>" \
-                                   "(don't get fancy with functions yet). <br>"
-                tests.append(test_if)
+                test_ifs = find_if(filename_data, 1, 6)
+                tests.append(test_ifs)
 
                 # test else check for at least 1 else statement
-                test_else = find_string(filename_data, r'^else:', 1, points=6)
-                test_else['name'] += "Testing for at least else statement at BEGINNING of line. <br>" \
-                                     "(don't get fancy with functions yet). <br>"
-                if not test_else['pass']:
-                    test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
+                test_else = find_else(filename_data, 1, 6)
                 tests.append(test_else)
 
-                test_elif = find_string(filename_data, r'^elif', 3, points=6)
-                test_elif['name'] += "Testing for at least 3 elif statement at BEGINNING of line. <br>" \
-                                     "(don't get fancy with functions yet). <br>"
-                if not test_elif['pass']:
-                    test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
-                                                 'elif vs if if if. <br>'
+                # look for 3 elifs
+                test_elif = find_elif(filename_data, 3, 6)
                 tests.append(test_elif)
 
                 test_correct_prizes = python_2_040(filename, filename_data)
@@ -550,7 +540,7 @@ def feedback_2051a():
     # Test file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '2.051a')
+    test_filename = filename_test(filename, '2.050a')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -560,7 +550,8 @@ def feedback_2051a():
 
         # test for a list being created with 4 items
         test_prizes = find_string(filename_data, r'prizes \s* = \s* \[ .+ , .+ , .+ , .+ \]', 1, points=5)
-        test_prizes['name'] += "Testing that there is a variable prizes.  Prizes is a list with exactly 4 items"
+        test_prizes['name'] += "Testing that there is a variable prizes.  Prizes is a list with exactly 4 items.<br>" \
+                               "Prizes is a named exactly 'prizes' and not something else."
         tests.append(test_prizes)
         if not test_prizes['pass']:
             test_prizes['fail_message'] += r"Looking for variable prizes that is a list with 4 items.  We name lists " \
@@ -617,7 +608,7 @@ def feedback_2051a():
 def feedback_2051b():
 
     from app.python_labs.io_test import io_test
-    from app.python_labs.find_items import find_string, find_questions
+    from app.python_labs.find_items import find_if, find_questions, find_list, find_elif, find_else
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
@@ -639,75 +630,43 @@ def feedback_2051b():
         filename_data = read_file_contents(filename)
 
         # test for a list being created with 4 items
-        test_lcs = find_string(filename_data, 'learning_communities \s* = \s* \[ .+ , .+ , .+ , .+ ,* \]', 1, 3)
-        test_lcs['name'] += "Testing that there is a list learning_communities.  learning_communities is a list with " \
-                            "exactly 4 items, C, R, L, and S.<br>"
+        test_lcs = find_list(filename_data, num_items=4, list_name='learning_communities', points=3)
+        tests.append(test_lcs)
         if not test_lcs['pass']:
-            test_lcs['fail_message'] += "looked for 'learning_communities \s* = \s* \[ .+ , .+ , .+ , .+ ,* \]' " \
-                                           "in this string: " + filename_data
-            tests.append(test_lcs)
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 3
-
             # Read in the python file to filename_data
             filename_data = read_file_contents(filename)
 
-            tests.append(test_lcs)
-            test_scores = find_string(filename_data,
-                                      'scores \s* = \s* \[ \s* 0 \s* , \s* 0 \s* , \s* 0 \s* , \s* 0 \s* ,*\]', 1, 3)
-            test_scores['name'] += "Testing that there is a list scores.  scores is a list, " \
-                                   "corresponding to LCs, initially all zero.<br>"
+            test_scores = find_list(filename_data, num_items=4, list_name='scores', points=3)
+            test_scores['name'] += "All items should be initially all zero (which we do not check right now).<br>"
+            tests.append(test_scores)
             if not test_scores['pass']:
-                test_scores['fail_message'] += \
-                    "looked for scores \s* = \s* \[ \s* 0 \s* , \s* 0 \s* , \s* 0 \s* , \s* 0 \s*, * \] " \
-                    "in this string: " + filename_data
-                tests.append(test_scores)
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
             else:
-                score_info['score'] += 3
-                tests.append(test_scores)
-
                 test_question = find_questions(filename_data, 1, 1)
                 if not test_question['pass']:
-                    test_question[
-                        'fail_message'] += "You need to ask the user a question about which LC to vote for. <br>"
-                else:
-                    score_info['score'] += 1
+                    test_question['fail_message'] += "You need to ask the user a question about which " \
+                                                     "LC to vote for. <br>"
                 tests.append(test_question)
 
                 # test if, check for at least 1 if statement
-                test_if = find_string(filename_data, 'if', 1, 1)
-                test_if['name'] += "Testing for at least if statement . <br>" \
-                                   "(don't get fancy with functions yet). <br>"
-                if test_if['pass']:
-                    score_info['score'] += 1
+                test_if = find_if(filename_data, 1, 1)
                 tests.append(test_if)
 
                 # test else check for at least 1 else statement
-                test_else = find_string(filename_data, 'else', 1, 4)
-                test_else['name'] += "Testing for at least else statement. <br>" \
+                test_else = find_else(filename_data, 1, 4)
+                test_else['name'] += "Testing for at least else statement. <br> " \
                                      "(don't get fancy with functions yet). <br>"
-                if test_else['pass']:
-                    score_info['score'] += 4
-                else:
-                    test_else['fail_message'] += 'The else takes care of cases that do not get caught by ifs'
                 tests.append(test_else)
 
                 # test elif check for at least 3
-                test_elif = find_string(filename_data, 'elif', 3, 1)
-                test_elif['name'] += "Testing for at least 3 elif statement. <br>" \
-                                     "(don't get fancy with functions yet). <br>"
-                if test_elif['pass']:
-                    score_info['score'] += 1
-                else:
-                    test_elif['fail_message'] += 'Review the presentation (example4) for why we use elif elif ' \
-                                                 'elif vs if if if. <br>'
+                test_elif = find_elif(filename_data, 3, 1)
                 tests.append(test_elif)
 
                 # Try C C R L S, should get 2, 1, 1, 1
-                test_1_io = io_test(filename, '\[\s*2\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1, 5)
+                test_1_io = io_test(filename, r'\[\s*2\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 1, points=5)
                 test_1_io['name'] += "Ran code with human input of C C R L S, should get back [ 2, 1, 1, 1] on screen"
                 if test_1_io['pass']:
                     score_info['score'] += 5
@@ -717,7 +676,7 @@ def feedback_2051b():
                 tests.append(test_1_io)
 
                 # Try C R L S blah blah blah, should get 1, 1, 1, 1
-                test_2_io = io_test(filename, '\[\s*1\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 2, 5)
+                test_2_io = io_test(filename, r'\[\s*1\s*,\s*1\s*,\s*1\s*,\s*1\s*\]', 2, points=5)
                 test_2_io['name'] += "Ran code with human input of C R L S blahblah, should get back [ 1, 1, 1, 1] " \
                                      "on screen"
                 if test_2_io['pass']:
@@ -726,19 +685,16 @@ def feedback_2051b():
                     test_2_io['fail_message'] += " Be sure your program works if user types something other than " \
                                                  "C R L or S."
                 tests.append(test_2_io)
-
-                # Find number of PEP8 errors
-                pep8_max_points = 7
-                test_pep8 = pep8(filename, pep8_max_points)
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 7)
                 tests.append(test_pep8)
-
-                # Check for help comment
-                help_points = 2.5
-                test_help = helps(filename, help_points)
-                if test_help['pass'] is True:
-                    score_info['score'] += help_points
+                test_help = helps(filename, 2.5)
                 tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
 
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
@@ -771,11 +727,12 @@ def feedback_3011():
         filename_data = read_file_contents(filename)
 
         # test for a list being created with 4 items
-        test_houses = find_string(filename_data, 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]', 1, 10)
+        test_houses = find_string(filename_data, r'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]', 1,
+                                  points=10)
         test_houses['name'] += "Testing that there is a list houses.  houses is a list with " \
                                "6+ items.<br>"
         if not test_houses['pass']:
-            test_houses['fail_message'] += "looked for 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]' " \
+            test_houses['fail_message'] += r"looked for 'houses \s* = \s* \[ .+ , .+ , .+ , .+ , .+ , .+ ,* .* \]' " \
                                            "in this string: " + filename_data
             tests.append(test_houses)
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -792,7 +749,7 @@ def feedback_3011():
             tests.append(test_question)
 
             # test for importing random
-            test_random = find_string(filename_data, '(import\s+random|from\s+random\s+import)', 1, 5)
+            test_random = find_string(filename_data, r'(import\s+random|from\s+random\s+import)', 1, points=5)
             test_random['name'] += "Testing that you are import random in some way.<br>"
             if not test_random['pass']:
                 tests.append(test_random)

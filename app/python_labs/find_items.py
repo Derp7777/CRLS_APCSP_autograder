@@ -1,25 +1,185 @@
-# Inputs: p_filename_data, contents of the file (string).
-
-# Output: Dictionary of test_list_created
-# This module finds if there is a list
-
-
-def find_list(p_filename_data):
+def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
+    """
+    find_list finds that there is a list with exactly p_num_items items
+    :param p_filename_data: larger string, usually containing the contents of the python file
+    :param num_items: number of items we are looking for (int)
+    :param list_name: Name of list we are looking for (int)
+    :param points: points you can earn (int)
+    :return: a dictionary of the test
+    """
     import re
 
-    # test for a list that is created (i.e. abc = [asdf]
-    p_search_object = re.search(r". \s* = \s* \[ .* \]", p_filename_data, re.X | re.M | re.S)
+    search_string = ''
+    if num_items == 0:
+        search_string = list_name + r" \s* = \s* \[ ?\]"
+    elif num_items == 4:
+        search_string = list_name + r" \s* = \s* \[ [^\]]+ , [^\]]+ , [^\]]+ , [^\]]+ .? \]"
 
-    p_test_list = {"name": "Testing that there is something that looks like a list being created.",
+    # test for a list that is created (i.e. abc = [asdf]
+    p_search_object = re.search(search_string, p_filename_data, re.X | re.M | re.S)
+
+    p_test_list = {"name": "Testing that there is a list named " + list_name + " with " + str(num_items) + " items ("
+                           + str(points) + " points). <br>",
                    "pass": True,
-                   "pass_message": "Pass! Submitted file has something that looks like a list being created.",
-                   "fail_message": "Submitted file does not look like it has a list being created.",
+                   "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Submitted file has something that looks like "
+                                   "a list being created with correct name and number of items.",
+                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5>Submitted file does not look like it has list"
+                                   " being created with correct name and number of items.",
+                   'points': 0
                    }
     if p_search_object:
         p_test_list['pass'] = True
+        p_test_list['points'] += points
     else:
         p_test_list['pass'] = False
     return p_test_list
+
+
+def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
+    """
+    function finds ifs
+    :param p_filename_data: large string with data (usually the python file)
+    :param p_num: number of times we are looking for ifs
+    :param p_points: points
+    :param minmax: minimum or maximum matches
+    :return: a dictionary of the test
+    """
+    import re
+
+    matches = len(re.findall(r"if \s", p_filename_data, re.X | re.M | re.S))
+
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " ifs (" + str(p_points) +
+                                     " points)<br>",
+                             "pass": True,
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                                             "We matched " + str(matches) + " ifs ",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                             "Code does not have at least " + str(p_num) + " ifs.<br>" +
+                                             "Searched for ifs in this string:<br> " + p_filename_data + "<br>" +
+                                             "If you think this should pass, control-F and search for "
+                                             "'if' in your code",
+                             "points": 0
+                             }
+    if minmax == 'max':
+        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " ifs (" + str(p_points) + \
+                                        " points)<br>"
+        print(p_test_find_questions['name'])
+        print(matches)
+        if matches > p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
+                                                     "Code does not have at least " + str(p_num) + " ifs.<br>" +\
+                                                     "Searched for ifs in this string:<br> " + p_filename_data +\
+                                                     "<br>  If you think this should pass, control-F and search for " \
+                                                     "'if' in your code""<br>  Found this many ifs: " + \
+                                                     str(matches) + ".<br>"
+    elif minmax == 'min':
+        if matches < p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<br>  Found this many ifs: " + str(matches) + ".<br>"
+
+    if p_test_find_questions['pass']:
+        p_test_find_questions['points'] = p_points
+    return p_test_find_questions
+
+
+def find_elif(p_filename_data, p_num, p_points, *, minmax='min'):
+    """
+    function finds elifs
+    :param p_filename_data: large string with data (usually the python file)
+    :param p_num: number of times we are looking for ifs
+    :param p_points: points
+    :param minmax: minimum or maximum matches
+    :return: a dictionary of the test
+    """
+    import re
+
+    matches = len(re.findall(r"elif \s", p_filename_data, re.X | re.M | re.S))
+
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " elifs (" + str(p_points) +
+                                     " points)<br>",
+                             "pass": True,
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                                             "We matched " + str(matches) + " elifs ",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                             "Code does not have at least " + str(p_num) + " elifs.<br>" +
+                                             "Searched for elifs in this string:<br> " + p_filename_data + "<br>" +
+                                             "If you think this should pass, control-F and search for "
+                                             "'elif' in your code<br>"
+                                             "Review the 2.05x presentation (example4) for why we use elif elif ' \
+                                                 'elif vs if if if",
+                             "points": 0
+                             }
+    if minmax == 'max':
+        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " ifs (" + str(p_points) + \
+                                        " points)<br>"
+        print(p_test_find_questions['name'])
+        print(matches)
+        if matches > p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
+                                                     "Code does not have at least " + str(p_num) + " elifs.<br>" +\
+                                                     "Searched for elifs in this string:<br> " + p_filename_data +\
+                                                     "<br>  If you think this should pass, control-F and search for " \
+                                                     "'elif' in your code""<br>  Found this many elifs: " + \
+                                                     str(matches) + ".<br>"
+    elif minmax == 'min':
+        if matches < p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<br>  Found this many elifs: " + str(matches) + ".<br>"
+
+    if p_test_find_questions['pass']:
+        p_test_find_questions['points'] = p_points
+    return p_test_find_questions
+
+
+def find_else(p_filename_data, p_num, p_points, *, minmax='min'):
+    """
+    function finds elses
+    :param p_filename_data: large string with data (usually the python file)
+    :param p_num: number of times we are looking for ifs
+    :param p_points: points
+    :param minmax: minimum or maximum matches
+    :return: a dictionary of the test
+    """
+    import re
+
+    matches = len(re.findall(r"else:", p_filename_data, re.X | re.M | re.S))
+
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " elses (" + str(p_points) +
+                                     " points)<br>",
+                             "pass": True,
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                                             "We matched " + str(matches) + " elses ",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                             "Code does not have at least " + str(p_num) + " elses.<br>" +
+                                             "Searched for elses in this string:<br> " + p_filename_data + "<br>" +
+                                             "If you think this should pass, control-F and search for "
+                                             "'elses' in your code<br>"
+                                             "Elses take care of the scenario where we don't match any if or elif.<br>",
+                             "points": 0
+                             }
+    if minmax == 'max':
+        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " elses (" + str(p_points) + \
+                                        " points)<br>"
+        print(p_test_find_questions['name'])
+        print(matches)
+        if matches > p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
+                                                     "Code does not have at least " + str(p_num) + " elses.<br>" +\
+                                                     "Searched for elses in this string:<br> " + p_filename_data +\
+                                                     "<br>  If you think this should pass, control-F and search for " \
+                                                     "'else' in your code""<br>  Found this many elses: " + \
+                                                     str(matches) + ".<br>"
+    elif minmax == 'min':
+        if matches < p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<br>  Found this many elses: " + str(matches) + ".<br>"
+
+    if p_test_find_questions['pass']:
+        p_test_find_questions['points'] = p_points
+    return p_test_find_questions
 
 # Inputs: p_filename_data, contents of the file (string).
 # Output: Dictionary of test_loop, created
