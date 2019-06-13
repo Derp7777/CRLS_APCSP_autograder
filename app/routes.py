@@ -883,19 +883,15 @@ def feedback_3020():
                     score_info['score'] += 4
                 tests.append(test_run_ten_cards)
 
-                # Find number of PEP8 errors
-                pep8_max_points = 14
-                test_pep8 = pep8(filename, pep8_max_points)
-                if test_pep8['pass'] is False:
-                    score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 14)
                 tests.append(test_pep8)
-
-                # Check for help comment
-                help_points = 5
-                test_help = helps(filename, help_points)
-                if test_help['pass'] is True:
-                    score_info['score'] += help_points
+                test_help = helps(filename, 5)
                 tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
 
                 score_info['finished_scoring'] = True
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
@@ -984,19 +980,15 @@ def feedback_3026():
                 score_info['score'] += 5
             tests.append(test_function_4)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 2.5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1009,7 +1001,6 @@ def feedback_3026():
 
 @app.route('/feedback_4011')
 def feedback_4011():
-
     import re
     from app.python_labs.function_test import function_test, extract_single_function,\
         extract_all_functions, create_testing_file
@@ -1091,19 +1082,15 @@ def feedback_4011():
                 score_info['score'] += 5
             tests.append(test_ifs)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1184,19 +1171,15 @@ def feedback_4021():
                 score_info['score'] += 5
             tests.append(test_function_3)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 2.5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1277,20 +1260,15 @@ def feedback_4022():
                 score_info['score'] += 5
             tests.append(test_function_3)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 7
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 2.5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 2.5)
             tests.append(test_help)
 
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
@@ -1580,18 +1558,15 @@ def feedback_6011():
                 score_info['score'] += 5
             tests.append(test_ifs)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1698,19 +1673,15 @@ def feedback_6021():
                 score_info['score'] += 5
             tests.append(test_function_4)
 
-            # Find number of PEP8 errors
-            pep8_max_points = 14
-            test_pep8 = pep8(filename, pep8_max_points)
-            if test_pep8['pass'] is False:
-                score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
             tests.append(test_pep8)
-
-            # Check for help comment
-            help_points = 5
-            test_help = helps(filename, help_points)
-            if test_help['pass'] is True:
-                score_info['score'] += help_points
+            test_help = helps(filename, 5)
             tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1826,20 +1797,15 @@ def feedback_6031():
                     score_info['score'] += 5
                 tests.append(test_loop)
 
-                # Find number of PEP8 errors
-                pep8_max_points = 14
-                test_pep8 = pep8(filename, pep8_max_points)
-                if test_pep8['pass'] is False:
-                    score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 14)
                 tests.append(test_pep8)
-
-                # Check for help comment
-                help_points = 5
-                test_help = helps(filename, help_points)
-                if test_help['pass'] is True:
-                    score_info['score'] += help_points
+                test_help = helps(filename, 5)
                 tests.append(test_help)
-                score_info['finished_scoring'] = True
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
 
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
@@ -1915,19 +1881,15 @@ def feedback_6041():
             score_info['score'] += 5
         tests.append(test_removal)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 14)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -2007,19 +1969,15 @@ def feedback_7021():
             score_info['score'] += 5
         tests.append(test_function_run)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 14)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
 
@@ -2068,19 +2026,15 @@ def feedback_7031():
             score_info['score'] += 10
         tests.append(test_function_3)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 7)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 2.5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -2139,19 +2093,15 @@ def feedback_7034():
             score_info['score'] += 5
         tests.append(unit_test_5)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 7
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 7)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 2.5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 2.5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
@@ -2229,19 +2179,15 @@ def feedback_4031():
             score_info['score'] += 7.5
         tests.append(unit_test_8)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 14)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -2310,19 +2256,15 @@ def feedback_4036():
             score_info['score'] += 10
         tests.append(unit_test_4)
 
-        # Find number of PEP8 errors
-        pep8_max_points = 14
-        test_pep8 = pep8(filename, pep8_max_points)
-        if test_pep8['pass'] is False:
-            score_info['score'] += max(0, int(pep8_max_points) - test_pep8['pep8_errors'])
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 14)
         tests.append(test_pep8)
-
-        # Check for help comment
-        help_points = 5
-        test_help = helps(filename, help_points)
-        if test_help['pass'] is True:
-            score_info['score'] += help_points
+        test_help = helps(filename, 5)
         tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
