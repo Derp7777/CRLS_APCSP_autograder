@@ -690,8 +690,8 @@ def feedback_2051b():
 def feedback_3011():
 
     from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_questions, find_all_strings, find_list, find_random
-    from app.python_labs.python_3_011 import python_3_011
+    from app.python_labs.find_items import find_questions, find_list, find_random, find_print
+    from app.python_labs.python_3_011 import python_3_011_2, python_3_011_1
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -735,38 +735,14 @@ def feedback_3011():
                 tests.append(test_randint)
 
                 # Check for at least 1 print statement
-                test_find_print = find_string(filename_data, r'print\s*\(', 1, points=5)
-                test_find_print['name'] += "Testing for at least one print statement. <br>"
-                if test_find_print['pass']:
-                    score_info['score'] += 5
+                test_find_print = find_print(filename_data, 1, 5)
                 tests.append(test_find_print)
 
                 # Test efficiency
-                test_efficiency = find_all_strings(filename_data, [r'houses\[0\]', r'houses\[1\]',
-                                                                   r'houses\[2\]', r'houses\[3\]'], 5)
-                test_efficiency['name'] += "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>" \
-                                           "If you have a variable x which is a number of item in list," \
-                                           " list[x-1] will get you the correct item.<br>" \
-                                           "<br>  This technique saves a lot of lines of code over a big if/elif  " \
-                                           "and scales to big numbers.  " \
-                                           "<br>That is, a list with 10,000 items will need " \
-                                           "just one line to print out the list item whereas with a big if/else, " \
-                                           "you will need 20,000 lines of code.<br>" \
-                                           " If this does not make sense, ask a neighbor or the teacher."
-                if test_efficiency['pass']:
-                    test_efficiency['pass'] = False
-                    test_efficiency['fail_message'] += "You want to use a variable for the list index of houses."
-                else:
-                    test_efficiency['pass'] = True
-                    test_efficiency[
-                        'pass_message'] += "(actually, did NOT find houses[0], houses[1] houses[2] houses[3]"
-                if test_efficiency['pass']:
-                    score_info['score'] += 5
+                test_efficiency = python_3_011_1(filename_data, 5)
                 tests.append(test_efficiency)
 
-                test_runs = python_3_011(filename, filename_data)
-                if test_runs['pass']:
-                    score_info['score'] += 10
+                test_runs = python_3_011_2(filename, filename_data, 10)
                 tests.append(test_runs)
 
             # Find number of PEP8 errors and helps

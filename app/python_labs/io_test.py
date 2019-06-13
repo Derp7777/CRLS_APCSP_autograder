@@ -44,8 +44,7 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
     import delegator
     import re
 
-
-    var_dir = _var_dir()
+    var_dir = var_dir()
     var_filename = _var_filename(p_filename, p_test_num)
 
     cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + var_filename

@@ -1,52 +1,59 @@
-def python_3_011(p_filename, p_filename_data):
-    from app.python_labs.io_test import io_test
-    from app.python_labs.find_items import find_list_items, find_all_strings
-    import sys
-    import os
+def python_3_011_1(p_filename_data, p_points):
+    """
+    Tests to see if there are ifs or elifs (more than 3) in code.  If so, not efficient.
+    :param p_filename_data: large string with data (usually the python file)
+    :param p_points: Number of points for this test (int)
+    :return:  a dictionary of the test
+    """
+    from app.python_labs.find_items import find_if
+
+    # test if, check for max 3 if statement
+    test_if = find_if(p_filename_data, 3, 1, minmax='max')
+
+    # test elif, check for max 3 if statement
+    test_elif = find_if(p_filename_data, 3, 1, minmax='max')
+
+    test = {'name': "Testing efficiency.  Do NOT want to have a big if/elif/else.<br>"
+                    "If you have a variable x which is a number of item in list,"
+                    " printing list[x-1] directly will get you the correct item.<br>"
+                    "A big if/elif/elif/elif etc.... will scale poorly as your list gets huge."
+                    "<br>  If this does not make sense, ask a neighbor or the teacher.",
+            "pass": True,
+            "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  Did not find a ton of ifs or elifs.<br>",
+            'fail_message': "<h5 style=\"color:red;\">Fail.</h5> "
+                            "Code has more than 3 ifs or elifs.<br>" +
+                            "Searched for ifs/elifs in this string:<br> " + p_filename_data + "<br>",
+            'points': 0
+            }
+    if not test_if['pass'] or not test_elif['pass']:
+        test['pass'] = False
+    else:
+        test['points'] += p_points
+    return test
+
+
+def python_3_011_2(p_filename, p_filename_data, p_points):
+    from app.python_labs.find_items import find_list_items
+    from app.python_labs.io_test import _var_filename, _var_dir
 
     import delegator
     import re
 
-    from app.python_labs import YEAR
-    from app.python_labs.read_file_contents import read_file_contents
-
-    if sys.platform == 'darwin':
-        var_dir = '/Users/dimmyfinster/PycharmProjects/CRLS_APCSP_autograder/var'
-        # This is Eric's home computer
-    else:
-        var_dir = '/home/ewu/CRLS_APCSP_autograder/var'
-    if os.path.isdir(var_dir) is False:
-        raise Exception("Cannot find the var dir")
-
-    p_var_filename = re.sub('/tmp/', '', p_filename)
-    p_var_filename = re.sub(YEAR + '_', '', p_var_filename)
-    p_var_filename = re.sub('.py', '.in', p_var_filename)
-    p_var_filename = re.sub('.+_', '', p_var_filename)
-    p_var_filename = re.sub('\.in', '-1.in', p_var_filename)
-
-    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename
+    var_dir = _var_dir()
+    var_filename = _var_filename(p_filename, 1)
+    cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + var_filename
     c = delegator.run(cmd)
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
 
-    # cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + p_var_filename + ' > ' + p_filename_output
-    # c = delegator.run(cmd)
-    # if c.err:
-    #     raise Exception('Failed, trying to run ' + cmd)
-    #
-    # outfile_data = read_file_contents(p_filename_output)
-    # p_string = p_string.replace(' ', '\s')
-    # p_string = p_string.replace('$', '\$')
-    # p_string = p_string.replace('+', '\+')
-
     p_io_test = {"name": "Run the code 300 times.  Through 120 runs, should get at least one of each house "
                          "(10 points) <br>",
                  "pass": True,
-                 "pass_message": "Pass!  After 120 runs, got at least one of each house",
-                 "fail_message": "Fail. Didn't get all of the houses. <br>"
-                                 "For example, if you have 7 houses in your list, after 120 runs, every house should"
-                                 "come up at least once <br>.",
-                 "score": 0,
+                 "pass_message": "<h5 style=\"color:green;\">Pass!</h5> After 120 runs, got at least one of each house",
+                 "fail_message": "<h5 style=\"color:red;\">Fail.</h5> Didn't get all of the houses. <br>"
+                                 "For example, if you have 7 houses in your list, after 120 runs, every house should "
+                                 "come up at least once. <br>",
+                 "points": 0,
                  }
 
     houses = find_list_items(p_filename_data, 'houses')
@@ -65,5 +72,7 @@ def python_3_011(p_filename, p_filename_data):
     for house in houses:
         if house not in answers:
             p_io_test['pass'] = False
-            p_io_test['fail_message'] += "Did not find this house in 300 runs of answers: " + house + ". <br>"
+            p_io_test['fail_message'] += "Did not find this house in 120 runs of answers: " + house + ". <br>"
+    if p_io_test['pass']:
+        p_io_test['points'] += p_points
     return p_io_test

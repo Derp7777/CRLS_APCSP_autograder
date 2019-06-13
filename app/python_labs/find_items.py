@@ -185,6 +185,53 @@ def find_else(p_filename_data, p_num, p_points, *, minmax='min'):
     return p_test_find_questions
 
 
+def find_print(p_filename_data, p_num, p_points, *, minmax='min'):
+    """
+    function finds prints
+    :param p_filename_data: large string with data (usually the python file)
+    :param p_num: number of times we are looking for prints
+    :param p_points: points
+    :param minmax: minimum or maximum matches
+    :return: a dictionary of the test
+    """
+    import re
+
+    matches = len(re.findall(r"print\(", p_filename_data, re.X | re.M | re.S))
+
+    p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " prints (" + str(p_points) +
+                                     " points)<br>",
+                             "pass": True,
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                                             "We matched " + str(matches) + " prints ",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                                             "Code does not have at least " + str(p_num) + " prints.<br>" +
+                                             "Searched for prints in this string:<br> " + p_filename_data + "<br>" +
+                                             "If you think this should pass, control-F and search for "
+                                             "'print' in your code",
+                             "points": 0
+                             }
+    if minmax == 'max':
+        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " prints (" + str(p_points) + \
+                                        " points)<br>"
+
+        if matches > p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
+                                                     "Code does not have at least " + str(p_num) + " prints.<br>" +\
+                                                     "Searched for prints in this string:<br> " + p_filename_data +\
+                                                     "<br>  If you think this should pass, control-F and search for " \
+                                                     "'print' in your code""<br>  Found this many prints: " + \
+                                                     str(matches) + ".<br>"
+    elif minmax == 'min':
+        if matches < p_num:
+            p_test_find_questions['pass'] = False
+            p_test_find_questions['fail_message'] += "<br>  Found this many prints: " + str(matches) + ".<br>"
+
+    if p_test_find_questions['pass']:
+        p_test_find_questions['points'] = p_points
+    return p_test_find_questions
+
+
 def find_random(p_filename_data, p_points, *, randint=False):
     """
     find_random - looks for importing random or else from random import.  I
@@ -522,7 +569,10 @@ def find_questions(p_filename_data, p_num, p_points):
                                              "Code does not ask at least " + str(p_num) + " questions .<br>" +
                                              "Note: You should not put extra parentheses around the inputs,"
                                              "as this can confuse coders (who might think it's a tuple, which is "
-                                             "like a list).  Extra parentheses will not score.<br>",
+                                             "like a list).  Extra parentheses will not score.<br>"
+                                             "You also need to save your answer in a variable.  That is, "
+                                             "input('my question') will not score, you need"
+                                             " answer = input('my question')<br>",
                              "points": 0
                              }
     if matches < p_num and matches_int < p_num and matches_float < p_num:
