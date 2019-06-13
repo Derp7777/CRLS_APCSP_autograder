@@ -103,13 +103,12 @@ def extract_single_function(p_orig_file, p_function):
     import re
     function_file = p_orig_file.replace('.py', '.functions.py')
     extracted_function = ''
-    print("wuttt")
     with open(function_file, 'r', encoding='utf8') as infile:
         line = True
         while line:
             print("looking for this function : " + p_function)
             line = infile.readline()
-            start_def = re.search("^(def|class) \s+ " + p_function , line,  re.X | re.M | re.S)
+            start_def = re.search(r"^(def|class) \s+ " + p_function , line,  re.X | re.M | re.S)
             if start_def:
                 print("entering function!")
                 print('writing this' + str(line))
@@ -119,7 +118,7 @@ def extract_single_function(p_orig_file, p_function):
                 while inside_function:
                     print('reading this ' + str(line))
                     line = infile.readline()
-                    inside_function = re.search("^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
+                    inside_function = re.search(r"^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
                     if inside_function:
                         print("writing this inside function " + str(line))
                         extracted_function += line

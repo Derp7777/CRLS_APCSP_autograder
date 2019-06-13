@@ -762,7 +762,7 @@ def feedback_3011():
 @app.route('/feedback_3020')
 def feedback_3020():
 
-    from app.python_labs.find_items import find_function, function_called, find_string
+    from app.python_labs.find_items import find_function, function_called, find_string, find_list
     from app.python_labs.function_test import extract_all_functions, extract_single_function, \
         function_test, create_testing_file
     from app.python_labs.python_3_020 import ten_runs, check_random
@@ -772,7 +772,6 @@ def feedback_3020():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-
     score_info = {'score': 0, 'max_score': 61, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
@@ -838,24 +837,10 @@ def feedback_3020():
 
                 cards_function = extract_single_function(filename, 'pick_card')
 
-                test_find_cards = find_string(cards_function, r"\s+ cards \s* = \s* \[ .+ , .+ , .+ , .* \]", 1, 2)
-                test_find_cards['name'] += ("<h5 style=\"color:blue;\">Looking for a variable named cards that"
-                                            " is a list"
-                                            " with at least 4 items."
-                                            "<br>This variable must be inside "
-                                            "find_cards function.</p><br>")
-                if test_find_cards['pass']:
-                    score_info['score'] += 2
+                test_find_cards = find_list(cards_function, num_items=4, list_name='cards', points=2)
                 tests.append(test_find_cards)
 
-                test_find_suits = find_string(cards_function, r"\s+ suits \s* = \s* \[ .+ , .+ , .+ , .+ \]", 1, 2)
-                test_find_suits['name'] += (
-                    "<h5 style=\"color:blue;\">Looking for a variable named suits that is a list"
-                    " with 4 items."
-                    "<br>This variable must be inside "
-                    "find_cards function.</p><br>")
-                if test_find_suits['pass']:
-                    score_info['score'] += 2
+                test_find_suits = find_list(cards_function, num_items=4, list_name='suits', points=2)
                 tests.append(test_find_suits)
 
                 # function test 4
