@@ -374,36 +374,38 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
         p_test_find_strings['points'] = p_points
     return p_test_find_strings
 
-# Inputs: p_filename_data, contents of the file (string).
-#         p_function_name, function name I am looking for (string)
-#         p_num_parameters, number of parameters I expect (integer)
-#         p_points, points this is worth (int)
-# Output: Dictionary of test_function_exists
-# This module finds if there is a function with a certain name and certain parameters
 
-
-def find_function(p_filename, p_function_name, p_num_parameters, p_points):
+def find_function(p_filename, p_function_name, p_num_parameters, *, points=0):
+    """
+    find function finds if a particular function exists
+    :param p_filename: name of python file to check
+    :param p_function_name: function to find
+    :param p_num_parameters: number of parameters this function should have
+    :param points: number points this test is worth
+    :return:
+    """
     import delegator
 
     # Check for function return_min
     cmd_string = ''
     if p_num_parameters == 0:
-        cmd_string = 'grep "^def ' + p_function_name + '(\s*):"'
+        cmd_string = r'grep "^def ' + p_function_name + r'(\s*):"'
     elif p_num_parameters == 1:
-        cmd_string = 'grep "^def ' + p_function_name + '(\s*[a-zA-Z_]\+[^,]\s*)"'
+        cmd_string = r'grep "^def ' + p_function_name + r'(\s*[a-zA-Z_]\+[^,]\s*)"'
     elif p_num_parameters == 2:
-        cmd_string = 'grep "^def ' + p_function_name + '(\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+[^,]\s*)"'
+        cmd_string = r'grep "^def ' + p_function_name + r'(\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+[^,]\s*)"'
     elif p_num_parameters == 3:
-        cmd_string = 'grep "^def ' + p_function_name + '(\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+[^,])\s*"'
+        cmd_string = r'grep "^def ' + p_function_name + r'(\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+,\s*[a-zA-Z_]\+[^,])\s*"'
 
     p_test_function_exists = {"name": "Testing that there is a function " + p_function_name +
-                                      " with " + str(p_num_parameters) + " input parameters. (" + str(p_points) +
+                                      " with " + str(p_num_parameters) + " input parameters. (" + str(points) +
                                       " points). <br>",
                               "pass": True,
                               "pass_message": "Pass! There is a function " + p_function_name +
                                               " with " + str(p_num_parameters) + " input parameters. <br>",
                               "fail_message": "There is NOT a function " + p_function_name +
                                               " with " + str(p_num_parameters) + " input parameters. <br>",
+                              'points': 0
                               }
 
     cmd = cmd_string + ' ' + p_filename
@@ -413,6 +415,7 @@ def find_function(p_filename, p_function_name, p_num_parameters, p_points):
         p_test_function_exists['fail_message'] += "Error message: " + c.err
     elif c.out:
         p_test_function_exists['pass_message'] += "Found this: " + c.out
+        p_test_function_exists['points'] += points
     else:
         p_test_function_exists['pass'] = False
         cmd = 'grep "def" ' + p_filename
@@ -464,7 +467,8 @@ def find_class(p_filename, p_class_name, p_parent, p_points):
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def function_called(p_filename, p_class_name, p_times, p_points):
+def object_created(p_filename, p_class_name, p_times, *, p_points):
+
 
     from app.python_labs.read_file_contents import read_file_contents
     import re
@@ -509,7 +513,7 @@ def function_called(p_filename, p_class_name, p_times, p_points):
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def object_created(p_filename, p_function_name, p_times, p_points):
+def function_called(p_filename, p_function_name, p_times, p_points):
 
     from app.python_labs.read_file_contents import read_file_contents
     import re

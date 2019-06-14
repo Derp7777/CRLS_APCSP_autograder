@@ -762,13 +762,13 @@ def feedback_3011():
 @app.route('/feedback_3020')
 def feedback_3020():
 
-    from app.python_labs.find_items import find_function, function_called, find_string, find_list
-    from app.python_labs.function_test import extract_all_functions, extract_single_function, \
-        function_test, create_testing_file
-    from app.python_labs.python_3_020 import ten_runs, check_random
-    from app.python_labs.pep8 import pep8
-    from app.python_labs.helps import helps
+    from app.python_labs.find_items import find_function, function_called, find_list
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import extract_all_functions, extract_single_function, run_unit_test, \
+        create_testing_file
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.python_3_020 import ten_runs, check_random
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -783,9 +783,7 @@ def feedback_3020():
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
 
-        test_find_function_1 = find_function(filename, 'birthday_song', 1, 4)
-        if test_find_function_1['pass']:
-            score_info['score'] += 4
+        test_find_function_1 = find_function(filename, 'birthday_song', 1, points=4)
         tests.append(test_find_function_1)
 
         # Only continue if you have a birthday_song_function
@@ -804,27 +802,27 @@ def feedback_3020():
             create_testing_file(filename)
 
             # function test 1
-            test_function_1 = function_test('3.020', 1, 5)
+            test_function_1 = run_unit_test('3.020', 1, 5)
             test_function_1['name'] += " (prints out 'birthday' somewhere) "
             if test_function_1['pass']:
                 score_info['score'] += 4
             tests.append(test_function_1)
 
             # function test 2
-            test_function_2 = function_test('3.020', 2, 5)
+            test_function_2 = run_unit_test('3.020', 2, 5)
             test_function_2['name'] += " (prints out input parameter somewhere) "
             if test_function_2['pass']:
                 score_info['score'] += 5
             tests.append(test_function_2)
 
             # function test 3
-            test_function_3 = function_test('3.020', 3, 8)
+            test_function_3 = run_unit_test('3.020', 3, 8)
             test_function_3['name'] += " (output looks good) "
             if test_function_3['pass']:
                 score_info['score'] += 8
             tests.append(test_function_3)
 
-            test_find_function_2 = find_function(filename, 'pick_card', 0, 4)
+            test_find_function_2 = find_function(filename, 'pick_card', 0, points=4)
             if test_find_function_2['pass']:
                 score_info['score'] += 4
             tests.append(test_find_function_2)
@@ -844,7 +842,7 @@ def feedback_3020():
                 tests.append(test_find_suits)
 
                 # function test 4
-                test_function_4 = function_test('3.020', 4, 5)
+                test_function_4 = run_unit_test('3.020', 4, 5)
                 test_function_4['name'] += " (function picks 1 card) "
                 if test_function_4['pass']:
                     score_info['score'] += 5
@@ -875,6 +873,10 @@ def feedback_3020():
                 tests.append(test_help)
 
                 for test in tests:
+                    print(test['name'])
+                    print(test['pass'])
+                    print(test['points'])
+
                     if test['pass']:
                         score_info['score'] += test['points']
 

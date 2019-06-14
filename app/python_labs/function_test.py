@@ -1,10 +1,11 @@
-# Input parameters: lab i.e. 3.026 (string)
-#                   test number (1,2,3,4)
-# Output: Dictionary of test_list_created
-# This module runs tests
-
-
-def function_test(p_lab, p_test_number, p_points):
+def run_unit_test(p_lab, p_test_number, p_points):
+    """
+    unit test runs the unit tests.  It assumes that there is a file /tmp/<lab number>.test.py and runs one test
+    :param p_lab: lab number (str) i.e. 4.021
+    :param p_test_number: test number within the test suite to run
+    :param p_points: number of points this is worth
+    :return: test dictionary
+    """
     import delegator
     import re
 
