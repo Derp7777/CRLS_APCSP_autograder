@@ -5,6 +5,7 @@ from contextlib import redirect_stdout
 import re
 import random
 
+
 class testAutograde(unittest.TestCase):
     def test_1(self):
         f = io.StringIO()
@@ -13,7 +14,7 @@ class testAutograde(unittest.TestCase):
         birthday_song_output = f.getvalue()
         birthday_song_output = birthday_song_output.rstrip()
         birthday_song_output = birthday_song_output.lower()
-        found = re.search("birthday" , birthday_song_output,  re.X | re.M | re.S)
+        found = re.search("birthday", birthday_song_output,  re.X | re.M | re.S)
         self.assertTrue(found, "<br>Extracted function birthday_song, ran 'birthday_song('joe'), "
                                "looked for 'birthday' in output, but didn't find it.<br>"
                                "Here is what the output was: <br>" + birthday_song_output)
@@ -52,7 +53,7 @@ class testAutograde(unittest.TestCase):
                         " times.<br> "
                         "Looked for 'Happy Birthday dear joe'.  Did I find it? " +
                         str(happy_birthday_to_you) + "<br>Here is what the output was: <br>" +
-                        birthday_song_output)
+                        birthday_song_output + "<br><br> Capitalization matters.<br>")
 
     def test_4(self):
         f = io.StringIO()
@@ -63,7 +64,7 @@ class testAutograde(unittest.TestCase):
 
         matches = len(re.findall(r"\s of \s", pick_card_output, re.X | re.M | re.S))
         self.assertTrue(matches > 0 and matches < 2, "<br>Running the pick_card function should give ONE card and there"
-                                                     "should be a printout with 'of' in it.  For example, 2 of hearts."
+                                                     " should be a printout with 'of' in it.  For example, 2 of hearts."
                                                      "<br>We do NOT want to pick all five cards here because that makes"
                                                      " the program less reusable.  For example, if your pick_card picks"
                                                      " one card, you can reuse it for poker, blackjack, and any other "

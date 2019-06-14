@@ -23,11 +23,13 @@ def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
     p_test_list = {"name": "Testing that there is a list named " + list_name + " with " + str(num_items) + " items ("
                            + str(points) + " points). <br>",
                    "pass": True,
-                   "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Submitted file has something that looks like "
+                   "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Submitted string has something"
+                                   " that looks like "
                                    "a list being created with correct name and number of items.",
-                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5>Submitted file does not look like it has list"
-                                   " being created with correct name and number of items.  File is the following:<br>"
-                                   + p_filename_data,
+                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5>Submitted string does not look like it has list"
+                                   " being created with correct name and number of items.  String is the following:<br>"
+                                   + p_filename_data + "<br> List must given the name in the instructions EXACTLY."
+                                                       "<br>",
                    'points': 0
                    }
     if p_search_object:
@@ -401,9 +403,11 @@ def find_function(p_filename, p_function_name, p_num_parameters, *, points=0):
                                       " with " + str(p_num_parameters) + " input parameters. (" + str(points) +
                                       " points). <br>",
                               "pass": True,
-                              "pass_message": "Pass! There is a function " + p_function_name +
+                              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
+                                              " There is a function " + p_function_name +
                                               " with " + str(p_num_parameters) + " input parameters. <br>",
-                              "fail_message": "There is NOT a function " + p_function_name +
+                              "fail_message": "<h5 style=\"color:red;\">Fail.</h5>"
+                                              "There is NOT a function " + p_function_name +
                                               " with " + str(p_num_parameters) + " input parameters. <br>",
                               'points': 0
                               }
@@ -469,7 +473,6 @@ def find_class(p_filename, p_class_name, p_parent, p_points):
 
 def object_created(p_filename, p_class_name, p_times, *, p_points):
 
-
     from app.python_labs.read_file_contents import read_file_contents
     import re
     p_test_function_called = {"name": "Testing that there are objects of type  " + p_class_name +
@@ -484,7 +487,7 @@ def object_created(p_filename, p_class_name, p_times, *, p_points):
                                               " does NOT have enough objects of that type in the program. <br>"
                                               " If this doesn't make sense, look at the presentations for help"
                                               " <br>",
-                              "score" : p_points
+                              "score": p_points
                               }
     regex = r"[a-zA-Z0-9]\s*=\s*" + p_class_name
     matches = 0
@@ -498,40 +501,41 @@ def object_created(p_filename, p_class_name, p_times, *, p_points):
         p_test_function_called['pass'] = True
     else:
         p_test_function_called['score'] = 0
-        filename_data = read_file_contents(p_filename)
+        p_filename_data = read_file_contents(p_filename)
         p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
                                                   " of objects of class type:" + p_class_name + \
-                                                  " in file with this data: <br> " + filename_data
+                                                  " in file with this data: <br> " + p_filename_data
     return p_test_function_called
 
 
-# Inputs: p_filename, contents of the file (string).
-#         p_function_name, function name I am looking for (string)
-#         p_times, number of times function needs to be called, minimum
-#         p_points, points this is worth (int)
-# Output: Dictionary of test_function_called
-# This module finds if there is a function with a certain name and certain parameters
-
-
-def function_called(p_filename, p_function_name, p_times, p_points):
-
+def function_called(p_filename, p_function_name, p_times, *, points=0):
+    """
+    tests to see if function is called p_num of times
+    :param p_filename: contents of python code
+    :param p_function_name: function name to look for
+    :param p_times: number of times you are calling
+    :param points:  points it is worth
+    :return:
+    """
     from app.python_labs.read_file_contents import read_file_contents
     import re
     p_test_object_created = {"name": "Testing that there is a function " + p_function_name +
-                                      " that gets called in the main program at least " +
-                                      str(p_times) + " times.  (" + str(p_points) + " points).<br>"
-                                      + "). <br>",
-                              "pass": False,
-                              "pass_message": "Pass! There is a function " + p_function_name +
-                                              " that gets called in the main program (i.e. not part of a function). "
-                                              "<br>",
-                              "fail_message": "Fail.  The function " + p_function_name +
-                                              " is NOT called in the main program enough times. <br>"
-                                              " If this doesn't make sense, look"
-                                              "in the presentation examples 1-6 to see calling functions in action."
-                                              " <br>",
-                              "score" : p_points
-                              }
+                                     " that gets called in the main program at least " +
+                                     str(p_times) + " times.  (" + str(points) + " points).<br>"
+                                     + "). <br>",
+                             "pass": False,
+                             "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
+                                             " There is a function " + p_function_name +
+                                             " that gets called in the main program (i.e. not part of a function). "
+                                             "<br>",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5>"
+                                             "  The function " + p_function_name +
+                                             " is NOT called in the main program enough times. <br>"
+                                             " If this doesn't make sense, look"
+                                             "in the presentation examples 1-6 to see calling functions in action."
+                                             " <br>",
+                             "score": points
+                             }
     regex = r"(?<!def \s)" + p_function_name
     matches = 0
     with open(p_filename) as infile:
@@ -540,14 +544,16 @@ def function_called(p_filename, p_function_name, p_times, p_points):
             if match:
                 matches += 1
     infile.close()
+
     if matches >= p_times:
         p_test_object_created['pass'] = True
+        p_test_object_created['points'] = points
     else:
         p_test_object_created['score'] = 0
-        filename_data = read_file_contents(p_filename)
+        p_filename_data = read_file_contents(p_filename)
         p_test_object_created["fail_message"] += "Found this many matches: " + str(matches) + \
-                                                  " of " + p_function_name + \
-                                                  " in file with this data: <br> " + filename_data
+                                                 " of " + p_function_name + \
+                                                 " in file with this data: <br> " + p_filename_data
     return p_test_object_created
 
 
