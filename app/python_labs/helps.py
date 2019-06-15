@@ -8,7 +8,7 @@ def helps(p_filename, p_points):
     import delegator
 
     # Check for help comment
-    cmd = 'grep "#" ' + p_filename + ' | grep help | grep -vi wu|grep -vi martinez |grep -vi atwood|  wc -l  '
+    cmd = 'grep "#" ' + p_filename + ' | grep -i help | grep -vi wu|grep -vi martinez |grep -vi atwood|  wc -l  '
     c = delegator.run(cmd)
     help_comments = int(c.out)
     p_test_help = {"name": "Testing that you got a help and documented it as a comment (" + str(p_points) + " points)",

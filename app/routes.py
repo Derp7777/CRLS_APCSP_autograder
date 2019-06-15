@@ -1069,8 +1069,8 @@ def feedback_4021():
 
                 # test1 for the_rock_says
                 test_function_1 = run_unit_test('4.021', 1, 5)
-                test_function_1['name'] += " (Testing calling the_rock_says with list ['eggs', 'apple'] returns a list " \
-                                           "['The Rock says eggs', 'The Rock says apple']) "
+                test_function_1['name'] += " (Testing calling the_rock_says with list ['eggs', 'apple'] returns a " \
+                                           "list ['The Rock says eggs', 'The Rock says apple']) "
                 tests.append(test_function_1)
 
                 # test2 for the_rock_says
@@ -1082,8 +1082,9 @@ def feedback_4021():
 
                 # test3 for the_rock_says
                 test_function_3 = run_unit_test('4.021', 3, 5)
-                test_function_3['name'] += " (Testing calling the_rock_says with list ['smog', 'smells', 'smashmouth'] " \
-                                           "returns ['Do you smell what The Rock is cooking', " \
+                test_function_3['name'] += " (Testing calling the_rock_says with list " \
+                                           "['smog', 'smells', 'smashmouth'] returns ['Do you smell what The Rock is" \
+                                           " cooking', " \
                                            "'Do you smellell what The Rock is cooking', " \
                                            "'Do you smellellellellellellell what The Rock is cooking'] <br> "
                 tests.append(test_function_3)
@@ -1099,94 +1100,85 @@ def feedback_4021():
                         score_info['score'] += test['points']
 
                 score_info['finished_scoring'] = True
-                return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
 
 
 @app.route('/feedback_4022')
 def feedback_4022():
+    from app.python_labs.filename_test import filename_test
     from app.python_labs.find_items import find_function, function_called, find_loop
     from app.python_labs.function_test import run_unit_test, extract_all_functions, \
         extract_single_function, create_testing_file
-    from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
-    from app.python_labs.filename_test import filename_test
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 37,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '4.022')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
-        # Check for function the_rock_says
-        test_find_function = find_function(filename, 'bad_lossy_compression', 1, 5)
+        # Check for function
+        test_find_function = find_function(filename, 'bad_lossy_compression', 1, points=5)
         tests.append(test_find_function)
-        if not test_find_function['pass']:
+        if test_find_function['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
-        # Only continue if you have a bad_lossy_compression function
-        if test_find_function['pass']:
-
-            # Check that function is called 3x
-            test_function_run = function_called(filename, 'bad_lossy_compression', 3, points=5)
-            if test_function_run['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_run)
-
             # extract functions and create python test file
             extract_all_functions(filename)
             function_data = extract_single_function(filename, 'bad_lossy_compression')
             create_testing_file(filename)
 
             # Check for a loop of some sort (for or while)
-            test_loop = find_loop(function_data, 5)
+            test_loop = find_loop(function_data, 2.5)
             test_loop['name'] += "Testing there is a loop in the bad_lossy_compression function.<br>"
-            if test_loop['pass']:
-                score_info['score'] += 5
             tests.append(test_loop)
 
-            # test1
-            test_function_1 = run_unit_test('4.022', 1, 5)
-            test_function_1['name'] += " (Testing calling bad_lossy_compression with 'The rain in spain falls mainly" \
-                                       " in the plain' returns 'The ain n spin flls ainl in he pain') "
-            if test_function_1['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_1)
+            if test_loop['pass'] is False:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                # Check that function is called 3x
+                test_function_run = function_called(filename, 'bad_lossy_compression', 3, points=5)
+                tests.append(test_function_run)
 
-            # test2 for the_rock_says
-            test_function_2 = run_unit_test('4.022', 2, 5)
-            test_function_2['name'] += " (Testing calling bad_lossy_compression with " \
-                                       "'I am sick and tired of these darned snakes on this darned plane'" \
-                                       " returns 'I a sik ad tredof hes danedsnaes n tis arnd pane' <br> "
-            if test_function_2['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_2)
+                # test1
+                test_function_1 = run_unit_test('4.022', 1, 5)
+                test_function_1['name'] += " (Testing calling bad_lossy_compression with 'The rain in spain falls " \
+                                           "mainly in the plain' returns 'The ain n spin flls ainl in he pain') "
+                tests.append(test_function_1)
 
-            # test3 for the_rock_says
-            test_function_3 = run_unit_test('4.022', 3, 5)
-            test_function_3['name'] += "Testing calling bad_lossy_compression with 'Madness?!?!?!?!" \
-                                       " THIS IS SPARTA!!!!'" \
-                                       " returns 'Madess!?!!?!THI ISSPATA!!!' <br> "
-            if test_function_3['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_3)
+                # test2 for the_rock_says
+                test_function_2 = run_unit_test('4.022', 2, 5)
+                test_function_2['name'] += " (Testing calling bad_lossy_compression with " \
+                                           "'I am sick and tired of these darned snakes on this darned plane'" \
+                                           " returns 'I a sik ad tredof hes danedsnaes n tis arnd pane' <br> "
+                tests.append(test_function_2)
 
-            # Find number of PEP8 errors and helps
-            test_pep8 = pep8(filename, 7)
-            tests.append(test_pep8)
-            test_help = helps(filename, 2.5)
-            tests.append(test_help)
+                # test3 for the_rock_says
+                test_function_3 = run_unit_test('4.022', 3, 5)
+                test_function_3['name'] += "Testing calling bad_lossy_compression with 'Madness?!?!?!?!" \
+                                           " THIS IS SPARTA!!!!'" \
+                                           " returns 'Madess!?!!?!THI ISSPATA!!!' <br> "
+                tests.append(test_function_3)
 
-            for test in tests:
-                if test['pass']:
-                    score_info['score'] += test['points']
-            score_info['finished_scoring'] = True
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 7)
+                tests.append(test_pep8)
+                test_help = helps(filename, 2.5)
+                tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
+                score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
     
