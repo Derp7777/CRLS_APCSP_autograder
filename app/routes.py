@@ -862,13 +862,12 @@ def feedback_3020():
 
 @app.route('/feedback_3026')
 def feedback_3026():
-
     from app.python_labs.filename_test import filename_test
-    from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.find_items import find_string, find_function, function_called
-    from app.python_labs.function_test import run_unit_test, create_testing_file, extract_all_functions
-    from app.python_labs.pep8 import pep8
+    from app.python_labs.find_items import find_string, find_function, function_called, find_loop
+    from app.python_labs.function_test import run_unit_test, create_testing_file, extract_all_functions, \
+        extract_single_function
     from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -879,35 +878,34 @@ def feedback_3026():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '3.026')
     tests.append(test_filename)
-    if test_filename['pass'] is True:
-
-        # Read in the python file to filename_data
-        filename_data = read_file_contents(filename)
-
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
         # Check for function return_min
         test_find_function = find_function(filename, 'return_min', 1, points=5)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
         # Only continue if you have a return_min_function
-        if test_find_function['pass']:
+        if test_find_function['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            return_min_function = extract_single_function(filename, 'return_min')
 
             # Check that function is called 1x
             test_function_run = function_called(filename, 'return_min', 1, points=5)
-            if test_function_run['pass']:
-                score_info['score'] += 5
             tests.append(test_function_run)
 
             # find string return (return in the function)
-            test_return = find_string(filename_data, r'return \s .+', 1, points=5)
-            extra_string = " (There is a return in the code)"
-            test_return["name"] += extra_string
-            test_return["pass_message"] += extra_string
-            test_return["fail_message"] += extra_string
-            if test_return['pass'] is True:
-                score_info['score'] += 5
+            test_return = find_string(return_min_function, r'return \s .+', 1, points=2.5)
+            test_return["name"] += " (There is a return in the function)"
+            test_return["fail_message"] += " (There is a return in the function)"
             tests.append(test_return)
+
+            # find loop in function
+            test_loop = find_loop(return_min_function, 2.5)
+            test_loop["name"] += " (There is a loop in the code)"
+            test_loop["fail_message"] += " (There is a loop in the function)"
+            tests.append(test_loop)
 
             # extract functions and create python test file
             extract_all_functions(filename)
@@ -916,30 +914,22 @@ def feedback_3026():
             # function test 1
             test_function_1 = run_unit_test('3.026', 1, 5)
             test_function_1['name'] += " (return_min with list [-1, 3, 5, 99] returns -1) "
-            if test_function_1['pass']:
-                score_info['score'] += 5
             tests.append(test_function_1)
 
             # function test 2
             test_function_2 = run_unit_test('3.026', 2, 5)
             test_function_2['name'] += " (return_min with list [-1, 3, 5, -99] returns -99) "
-            if test_function_1['pass']:
-                score_info['score'] += 5
             tests.append(test_function_2)
 
             # function test 3
             test_function_3 = run_unit_test('3.026', 3, 5)
             test_function_3['name'] += " (return_min with list [5] returns 5) "
-            if test_function_1['pass']:
-                score_info['score'] += 5
             tests.append(test_function_3)
 
             # function test 4
             test_function_4 = run_unit_test('3.026', 4, 5)
             test_function_4['name'] += " (return_min with list [5, 4, 99, -11, 44, -241, -444, -999, 888, -2] " \
                                        "returns -444) "
-            if test_function_1['pass']:
-                score_info['score'] += 5
             tests.append(test_function_4)
 
             # Find number of PEP8 errors and helps
@@ -955,22 +945,15 @@ def feedback_3026():
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-        else:
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-    else:
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
-
 
 @app.route('/feedback_4011')
 def feedback_4011():
-    import re
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_function, find_loop, function_called, find_if
     from app.python_labs.function_test import run_unit_test, extract_single_function,\
         extract_all_functions, create_testing_file
-    from app.python_labs.find_items import find_function, find_loop, function_called
-    from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
-    from app.python_labs.filename_test import filename_test
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -981,81 +964,61 @@ def feedback_4011():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '4.011')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
 
         # Check for function
         test_find_function = find_function(filename, 'could_it_be_a_martian_word', 1, points=5)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
-        if not test_find_function['pass']:
+        if test_find_function['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
             extract_all_functions(filename)
             function_data = extract_single_function(filename, 'could_it_be_a_martian_word')
             create_testing_file(filename)
-            filename_data = read_file_contents(filename)
 
             # Check for a loop of some sort (for or while)
             test_loop = find_loop(function_data, 5)
             test_loop['name'] += "Testing there is a loop in the could_it_be_a_martian_word function.<br>"
-            if test_loop['pass']:
-                score_info['score'] += 5
             tests.append(test_loop)
 
-            # Check that function is called 3x
-            test_function_run = function_called(filename, 'could_it_be_a_martian_word', 3, points=5)
-            if test_function_run['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_run)
-
-            test_function_1 = run_unit_test('4.011', 1, 10)
-            test_function_1['name'] += " (could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []) "
-            if test_function_1['pass']:
-                score_info['score'] += 10
-            tests.append(test_function_1)
-
-            test_function_2 = run_unit_test('4.011', 2, 10)
-            test_function_2['name'] += " (could_it_be_a_martian_word with 'ba' returns ['a']) "
-            if test_function_2['pass']:
-                score_info['score'] += 10
-            tests.append(test_function_2)
-
-            test_function_3 = run_unit_test('4.011', 3, 10)
-            test_function_3['name'] += " (could_it_be_a_martian_word with 'baa' returns ['a']) "
-            if test_function_3['pass']:
-                score_info['score'] += 10
-            tests.append(test_function_3)
-
-            matches = len(re.findall(r"[^l]if \s", filename_data, re.X | re.M | re.S))
-            test_ifs = {"name": "Testing that code is efficient, not too many if if if (5 points)",
-                        "pass": True,
-                        "pass_message": "Pass! Code appears to be efficient<br>",
-                        "fail_message": "Fail. Code is not efficient! if if if is not the way to go<br>",
-                        "score": 5
-                        }
-            if matches > 3:
-                test_ifs['pass'] = False
-                test_ifs['score'] = 0
+            if test_loop['pass'] is False:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
             else:
-                score_info['score'] += 5
-            tests.append(test_ifs)
+                # Check that function is called 3x
+                test_function_run = function_called(filename, 'could_it_be_a_martian_word', 3, points=5)
+                tests.append(test_function_run)
 
-            # Find number of PEP8 errors and helps
-            test_pep8 = pep8(filename, 14)
-            tests.append(test_pep8)
-            test_help = helps(filename, 5)
-            tests.append(test_help)
+                test_function_1 = run_unit_test('4.011', 1, 10)
+                test_function_1['name'] += " (could_it_be_a_martian_word with 'bcdefgijnpqrstuvwxyz' returns []) "
+                tests.append(test_function_1)
 
-            for test in tests:
-                if test['pass']:
-                    score_info['score'] += test['points']
+                test_function_2 = run_unit_test('4.011', 2, 10)
+                test_function_2['name'] += " (could_it_be_a_martian_word with 'ba' returns ['a']) "
+                tests.append(test_function_2)
 
-            score_info['finished_scoring'] = True
-            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+                test_function_3 = run_unit_test('4.011', 3, 10)
+                test_function_3['name'] += " (could_it_be_a_martian_word with 'baa' returns ['a']) "
+                tests.append(test_function_3)
+
+                test_ifs = find_if(function_data, 3, 5, minmax='max')
+                tests.append(test_ifs)
+
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 14)
+                tests.append(test_pep8)
+                test_help = helps(filename, 5)
+                tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
 
 
 @app.route('/feedback_4021')

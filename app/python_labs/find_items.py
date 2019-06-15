@@ -274,6 +274,12 @@ def find_random(p_filename_data, p_points, *, randint=False):
 
 
 def find_loop(p_filename_data, p_points):
+    """
+    find_loop - looks for a loop in a string
+    :param p_filename_data: string with code in it (string)
+    :param p_points: number of points this is worth
+    :return: a test dictionary
+    """
     import re
 
     # test for a list that is created (i.e. abc = [asdf]
@@ -281,12 +287,14 @@ def find_loop(p_filename_data, p_points):
 
     p_test_loop = {"name": "Testing that there is a loop. (" + str(p_points) + " points)<br>",
                    "pass": True,
-                   "pass_message": "Pass! There is a loop in the code selection",
-                   "fail_message": "Fail.  There is not a loop in the selected code.  Selected code is this:<br>"
+                   "pass_message": "<h5 style=\"color:green;\">Pass!</h5> There is a loop in the code selection",
+                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5> There is not a loop in the selected code.  Selected code is this:<br>"
                                    "" + p_filename_data,
+                   'points': 0
                    }
     if p_search_object:
         p_test_loop['pass'] = True
+        p_test_loop['points'] += p_points
     else:
         p_test_loop['pass'] = False
     return p_test_loop
@@ -531,9 +539,8 @@ def function_called(p_filename, p_function_name, p_times, *, points=0):
                              "fail_message": "<h5 style=\"color:red;\">Fail.</h5>"
                                              "  The function " + p_function_name +
                                              " is NOT called in the main program enough times. <br>"
-                                             " If this doesn't make sense, look"
-                                             "in the presentation examples 1-6 to see calling functions in action."
-                                             " <br>",
+                                             " If this doesn't make sense, look in the presentation for 3.020, "
+                                             "examples 1-6 to see calling functions in action.  <br>",
                              "score": points
                              }
     regex = r"(?<!def \s)" + p_function_name
