@@ -1354,15 +1354,12 @@ def feedback_6011():
 
 @app.route('/feedback_6_021')
 def feedback_6021():
-    import re
-
-    from app.python_labs.find_items import find_function, function_called
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_function, function_called, find_dictionary
     from app.python_labs.function_test import extract_all_functions, extract_single_function, \
         create_testing_file, run_unit_test
-    from app.python_labs.read_file_contents import read_file_contents
-    from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
-    from app.python_labs.filename_test import filename_test
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -1373,84 +1370,45 @@ def feedback_6021():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.021')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         # Read in the python file to filename_data
-        filename_data = read_file_contents(filename)
-        martinez_function = extract_single_function(filename, 'martinez_dictionary')
         extract_all_functions(filename)
         create_testing_file(filename)
 
+
         test_find_function = find_function(filename, 'martinez_dictionary', 1, points=5)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
-        # Check that function is called
+        # Check that function is called 3x
         test_function_run = function_called(filename, 'martinez_dictionary', 3, points=5)
-        if test_function_run['pass']:
-            score_info['score'] += 5
         tests.append(test_function_run)
 
         # extract martinez_dictionary functions and look for dictionary
-        test_martinez_dictionary_dictionary = {"name": "Testing that martinez_dictionary function has a blank"
-                                                       " dictionary to initialize(5 points)",
-                                               "pass": True,
-                                               "pass_message": "Pass.  martinez_dictionary function has a blank "
-                                                               "dictionary to initialize.  <br>",
-                                               "fail_message": "Fail.  martinez_dictionary function does not have a"
-                                                               " blank dictionary in it to initialize. <br>"
-                                               }
         martinez_function = extract_single_function(filename, 'martinez_dictionary')
-        search_object = re.search(r"{  }", martinez_function, re.X | re.M | re.S)
-        if search_object:
-            score_info['score'] += 5
-        else:
-            test_martinez_dictionary_dictionary['pass'] = False
-        tests.append(test_martinez_dictionary_dictionary)
+        test_dictionary = find_dictionary(martinez_function, num_items=0, points=5)
+        tests.append(test_dictionary)
 
         # Martinez test 1
         test_function_1 = run_unit_test('6.021', 1, 10)
-        test_function_1['name'] += "Test for martinez_list, ['Goku', 'Goku', 'Goku', 'Goku', 'Goku'], expect back" \
-                                   "{'Goku': 500}' <br>"
-        if test_function_1['pass']:
-            score_info['score'] += 10
         tests.append(test_function_1)
 
         # Martinez test 2
         test_function_2 = run_unit_test('6.021', 2, 10)
-        test_function_2['name'] += "Test for martinez_list, " \
-                                   "['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'], expect back" \
-                                   "{'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100}' <br>"
-        if test_function_2['pass']:
-            score_info['score'] += 10
         tests.append(test_function_2)
 
         test_find_function = find_function(filename, 'data_generator', 2, points=5)
         tests.append(test_find_function)
-        if not test_find_function['pass']:
+        if test_find_function['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
-            tests.append(test_find_function)
-
             # Martinez test 3
             test_function_3 = run_unit_test('6.021', 3, 5)
-            test_function_3['name'] += "Checking data_generator, send in " \
-                                       "['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ] twice, " \
-                                       "The two lists should be different (test of random)  <br>"
-            if test_function_3['pass']:
-                score_info['score'] += 5
             tests.append(test_function_3)
 
             # Martinez test 4
-            test_function_4 = run_unit_test('6.021', 2, 10)
-            test_function_4['name'] += "Checking data_generator, send in " \
-                                       "['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]  " \
-                                       "n=100, they should all show up once at least}' <br>"
-            if test_function_4['pass']:
-                score_info['score'] += 5
+            test_function_4 = run_unit_test('6.021', 4, 5)
             tests.append(test_function_4)
 
             # Find number of PEP8 errors and helps
@@ -1462,6 +1420,8 @@ def feedback_6021():
             for test in tests:
                 if test['pass']:
                     score_info['score'] += test['points']
+                flash(test['name'])
+                flash(score_info['score'])
 
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)

@@ -53,7 +53,7 @@ def find_dictionary(p_filename_data, *, num_items=0, dict_name='', points=0):
 
     search_string = ''
     if num_items == 0:
-        search_string = dict_name + r" \s* = \s* \[ ?\]"
+        search_string = dict_name + r"{ \s* }"
     elif num_items == 3:
         search_string = dict_name + r"{ [^:},]+ : .+ , [^:},]+ : .+ , [^:},]+ : .+ [^}]+}"
 
