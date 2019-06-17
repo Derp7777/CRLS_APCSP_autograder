@@ -1285,7 +1285,7 @@ def feedback_4025():
 @app.route('/feedback_6_011')
 def feedback_6011():
     from app.python_labs.filename_test import filename_test
-    from app.python_labs.find_items import find_function, find_if
+    from app.python_labs.find_items import find_function, find_elif, find_dictionary
     from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
@@ -1313,19 +1313,7 @@ def feedback_6011():
             # Test for dictionary with 3+ items
             filename_data = read_file_contents(filename)
 
-            search_object = re.search(r"{ .+ : .+ , .+ : .+ , .+ : .+ }", filename_data, re.X | re.M | re.S)
-            test_dictionary = {"name": "Testing that there is a dictionary with 3+ key/value pairs(10 points)",
-                               "pass": True,
-                               "pass_message": "Pass! "
-                                               "Submitted file looks like it has a dictionary with 3+ key/value pairs.",
-                               "fail_message": "Fail. Submitted file does not look like it has a dictionary with 3+ "
-                                               "key/value pairs. ",
-                               }
-
-            if not search_object:
-                test_dictionary['pass'] = False
-            else:
-                score_info['score'] += 10
+            test_dictionary = find_dictionary(filename_data, num_items=3, points=10)
             tests.append(test_dictionary)
 
             # extract functions and create python test file
@@ -1348,8 +1336,8 @@ def feedback_6011():
             tests.append(test_function_3)
 
             # Check for 3 ifs on different lines
-            test_ifs = find_if(filename_data,3, 5)
-            tests.append(test_ifs)
+            test_elifs = find_elif(filename_data, 3, 5, minmax='max')
+            tests.append(test_elifs)
 
             # Find number of PEP8 errors and helps
             test_pep8 = pep8(filename, 14)
@@ -1360,7 +1348,6 @@ def feedback_6011():
             for test in tests:
                 if test['pass']:
                     score_info['score'] += test['points']
-
             score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 

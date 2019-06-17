@@ -40,6 +40,49 @@ def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
     return p_test_list
 
 
+def find_dictionary(p_filename_data, *, num_items=0, dict_name='', points=0):
+    """
+    find_dictionaryfinds that there is a dictionary with  p_num_items items
+    :param p_filename_data: larger string, usually containing the contents of the python file
+    :param num_items: number of items we are looking for (int)
+    :param dict_name: Name of list we are looking for (int)
+    :param points: points you can earn (int)
+    :return: a dictionary of the test
+    """
+    import re
+
+    search_string = ''
+    if num_items == 0:
+        search_string = dict_name + r" \s* = \s* \[ ?\]"
+    elif num_items == 3:
+        search_string = dict_name + r"{ [^:},]+ : .+ , [^:},]+ : .+ , [^:},]+ : .+ [^}]+}"
+
+    # test for a dictionary that is created (i.e. abc = [asdf]
+    p_search_object = re.search(search_string, p_filename_data, re.X | re.M | re.S)
+
+    p_test_dictionary = {"name": "Testing that there is a dictionary named " + dict_name + " with " +
+                                 str(num_items) + " items (" + str(points) + " points). <br>",
+                         "pass": True,
+                         "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Submitted string has something"
+                                         " that looks like "
+                                         "a dictionary being created with correct name and number of items.",
+                         "fail_message": "<h5 style=\"color:red;\">Fail.</h5>Submitted string does not look "
+                                         "like it has a dictionary"
+                                         " being created with correct name and number of items.  String is the "
+                                         "following:<br>"
+                                         + p_filename_data + "<br> Dictionary must given the name in the instructions "
+                                                             "EXACTLY."
+                                                             "<br>",
+                         'points': 0
+                         }
+    if p_search_object:
+        p_test_dictionary['pass'] = True
+        p_test_dictionary['points'] += points
+    else:
+        p_test_dictionary['pass'] = False
+    return p_test_dictionary
+
+
 def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
     """
     function finds ifs
@@ -116,7 +159,7 @@ def find_elif(p_filename_data, p_num, p_points, *, minmax='min'):
                              "points": 0
                              }
     if minmax == 'max':
-        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " ifs (" + str(p_points) + \
+        p_test_find_questions['name'] = "Testing that there is MAX  " + str(p_num) + " elifs (" + str(p_points) + \
                                         " points)<br>"
         print(p_test_find_questions['name'])
         print(matches)
