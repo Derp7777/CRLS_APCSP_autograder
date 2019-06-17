@@ -1377,7 +1377,6 @@ def feedback_6021():
         extract_all_functions(filename)
         create_testing_file(filename)
 
-
         test_find_function = find_function(filename, 'martinez_dictionary', 1, points=5)
         tests.append(test_find_function)
 
@@ -1429,11 +1428,8 @@ def feedback_6021():
 
 @app.route('/feedback_6_031')
 def feedback_6031():
-    import re
-    import delegator
-
     from app.python_labs.function_test import extract_all_functions, run_unit_test, create_testing_file
-    from app.python_labs.find_items import find_function
+    from app.python_labs.find_items import find_function, find_loop, find_dictionary
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1447,108 +1443,68 @@ def feedback_6031():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '6.031')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
         filename_data = read_file_contents(filename)
 
-        search_object = re.search(r"{ \s* }", filename_data, re.X | re.M | re.S)
-        test_dictionary = {"name": "Testing that there is an empty dictionary(5 points)",
-                           "pass": True,
-                           "pass_message": "Pass! "
-                                           "Submitted file looks like it has an empty dictionary ",
-                           "fail_message": "Fail. Submitted file does not look like it has an empty dictionary",
-                           }
-        if not search_object:
-            test_dictionary['pass'] = False
-        else:
-            score_info['score'] += 5
+        test_dictionary = find_dictionary(filename_data, num_items=0, points=5)
         tests.append(test_dictionary)
-
-        # Check for function add with 2 inputs
-        test_find_function = find_function(filename, 'add', 2, points=5)
-        tests.append(test_find_function)
-        if not test_find_function['pass']:
+        if test_dictionary['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            score_info['score'] += 5
 
-            extract_all_functions(filename)
-            create_testing_file(filename)
-
-            # function test 1
-            test_function_1 = run_unit_test('6.031', 1, 5)
-            test_function_1['name'] += "Checking mcglathery_dictionary 1.  " \
-                                       "Adding 'fire' and 'charmander' , expect output {'fire':'charmander'} <br>"
-            if test_function_1['pass']:
-                score_info['score'] += 5
-            tests.append(test_function_1)
-
-            # function test 2
-            test_function_2 = run_unit_test('6.031', 2, 10)
-            test_function_2['name'] += "Checking mcglathery_dictionary 2.  Adding 'ice' and 'iceperson2' to " \
-                                       "{'fire':['charmander'], 'ice':['iceperson']}." \
-                                       " Expect output {['fire':['charmander'], 'ice':['iceperson','iceperson2']} <br>"
-            if test_function_2['pass']:
-                score_info['score'] += 10
-            tests.append(test_function_2)
-
-            # Check for function add with 2 inputs
-            test_find_function = find_function(filename, 'get', 2, 5)
+            # Check for function add with 3 inputs
+            test_find_function = find_function(filename, 'add', 3, points=5)
             tests.append(test_find_function)
-            if not test_find_function['pass']:
+            if test_find_function['pass'] is False:
                 return render_template('feedback.html', user=user, tests=tests, filename=filename,
                                        score_info=score_info)
             else:
-                score_info['score'] += 5
 
-                # function test 3
-                test_function_3 = run_unit_test('6.031', 3, 5)
-                test_function_3['name'] += "Checking mcglathery_dictionary 3.  testing get function with input  " \
-                                           "{'fire':['charmander']} expecting something with 'fire'  <br>"
-                if test_function_3['pass']:
-                    score_info['score'] += 5
-                tests.append(test_function_3)
+                extract_all_functions(filename)
+                create_testing_file(filename)
 
-                # function test 3
-                test_function_4 = run_unit_test('6.031', 3, 10)
-                test_function_4['name'] += "Checking mcglathery_dictionary 4.  testing get function with input  " \
-                                           "{'fire':['charmander','fireperson'} expecting something" \
-                                           "with 'fire' and 'fireperson   <br>"
-                if test_function_4['pass']:
-                    score_info['score'] += 10
-                tests.append(test_function_4)
+                # function test 1
+                test_function_1 = run_unit_test('6.031', 1, 5)
+                tests.append(test_function_1)
 
-                # Check for a loop of some sort (for or while)
-                cmd = 'grep -E "for|while"  ' + filename + ' | wc -l  '
-                c = delegator.run(cmd)
-                loop = int(c.out)
-                test_loop = {"name": "Testing that program has a loop. (5 points)",
-                             "pass": True,
-                             "pass_message": "Pass.  Testing that program has a loop.  <br>",
-                             "fail_message": "Fail.  Testing that program has a loop "
-                                             "(assume a while or for means you have a loop) <br>"
-                                             "The program needs a while or a for. <br>"
-                                             "Fix code and resubmit. <br>",
-                             }
-                if loop == 0:
-                    test_loop['pass'] = False
+                # function test 2
+                test_function_2 = run_unit_test('6.031', 2, 10)
+                tests.append(test_function_2)
+
+                # Check for function add with 2 inputs
+                test_find_function = find_function(filename, 'get', 2, points=5)
+                tests.append(test_find_function)
+                if test_find_function['pass'] is False:
+                    return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                           score_info=score_info)
                 else:
-                    score_info['score'] += 5
-                tests.append(test_loop)
+                    # function test 3
+                    test_function_3 = run_unit_test('6.031', 3, 5)
+                    tests.append(test_function_3)
 
-                # Find number of PEP8 errors and helps
-                test_pep8 = pep8(filename, 14)
-                tests.append(test_pep8)
-                test_help = helps(filename, 5)
-                tests.append(test_help)
+                    # function test 3
+                    test_function_4 = run_unit_test('6.031', 4, 10)
+                    tests.append(test_function_4)
 
-                for test in tests:
-                    if test['pass']:
-                        score_info['score'] += test['points']
+                    # Check for a loop of some sort (for or while)
+                    test_loop = find_loop(filename_data, 5)
+                    tests.append(test_loop)
 
-                return render_template('feedback.html', user=user, tests=tests, filename=filename,
-                                       score_info=score_info)
+                    # Find number of PEP8 errors and helps
+                    test_pep8 = pep8(filename, 14)
+                    tests.append(test_pep8)
+                    test_help = helps(filename, 5)
+                    tests.append(test_help)
+
+                    for test in tests:
+                        if test['pass']:
+                            score_info['score'] += test['points']
+
+                    score_info['finished_scoring'] = True
+                    return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                           score_info=score_info)
 
 
 @app.route('/feedback_6_041')

@@ -33,7 +33,9 @@ def run_unit_test(p_lab, p_test_number, p_points):
         p_unit_test['fail_message'] += formatted_cout + "<br>"
     elif error:
         p_unit_test['pass'] = False
-        p_unit_test['fail_message'] += "Function didn't run at all.  Check for coding errors. <br>"
+        p_unit_test['fail_message'] += "Function didn't run at all.  Check for coding errors. <br>" \
+                                       "You should also check to see that function returns something (if it's " \
+                                       "supposed to return"
         p_unit_test['fail_message'] += formatted_cout + "<br>"
     else:
         p_unit_test['points'] += p_points
