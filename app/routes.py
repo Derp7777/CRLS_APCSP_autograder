@@ -1901,7 +1901,7 @@ def feedback_4031():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '7.034')
+    test_filename = filename_test(filename, '4.031')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1913,50 +1913,35 @@ def feedback_4031():
 
         # unit test 1
         unit_test_1 = run_unit_test('4.031', 1, 2.5)
-        if unit_test_1['pass']:
-            score_info['score'] += 2.5
         tests.append(unit_test_1)
 
         # unit test 2
         unit_test_2 = run_unit_test('4.031', 2, 2.5)
-        if unit_test_2['pass']:
-            score_info['score'] += 2.5
         tests.append(unit_test_2)
 
         # unit test 3
         unit_test_3 = run_unit_test('4.031', 3, 2.5)
-        if unit_test_3['pass']:
-            score_info['score'] += 2.5
         tests.append(unit_test_3)
 
         # unit test 4
-        unit_test_4 = run_unit_test('4.031', 4, 2.5)
-        if unit_test_4['pass']:
-            score_info['score'] += 5
+        unit_test_4 = run_unit_test('4.031', 4, 5)
         tests.append(unit_test_4)
 
         # unit test 5
-        unit_test_5 = run_unit_test('4.031', 5, 2.5)
-        if unit_test_5['pass']:
-            score_info['score'] += 5
+        unit_test_5 = run_unit_test('4.031', 5, 5)
         tests.append(unit_test_5)
 
         # unit test 6
-        unit_test_6 = run_unit_test('4.031', 6, 2.5)
-        if unit_test_6['pass']:
-            score_info['score'] += 5
+        unit_test_6 = run_unit_test('4.031', 6, 5)
         tests.append(unit_test_6)
 
         # unit test 7
-        unit_test_7 = run_unit_test('4.031', 7, 2.5)
-        if unit_test_7['pass']:
-            score_info['score'] += 5
+        unit_test_7 = run_unit_test('4.031', 7, 5)
         tests.append(unit_test_7)
 
         # unit test 8
-        unit_test_8 = run_unit_test('4.031', 8, 2.5)
-        if unit_test_8['pass']:
-            score_info['score'] += 7.5
+        unit_test_8 = run_unit_test('4.031', 8, 7.5)
+
         tests.append(unit_test_8)
 
         # Find number of PEP8 errors and helps
