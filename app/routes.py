@@ -1592,76 +1592,59 @@ def feedback_7021():
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '7.021')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
 
         # Check for class Collectible
-        test_class = find_class(filename, 'Collectible', 'object', 5)
-        if test_class['pass']:
-            score_info['score'] += 5
+        test_class = find_class(filename, 'Collectible', 'object', points=5)
         tests.append(test_class)
 
-        # extract functions and create python test file
-        extract_all_functions(filename)
-        create_testing_file(filename)
+        if test_class['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
 
-        # function test 2
-        test_function_1 = run_unit_test('7.021', 1, 15)
-        if test_function_1['pass']:
-            score_info['score'] += 15
-        tests.append(test_function_1)
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
 
-        # Check for function existence
-        test_find_function = find_function(filename, 'collectible_printer', 1, points=5)
-        tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
-        tests.append(test_find_function)
+            # function test 2
+            test_function_1 = run_unit_test('7.021', 1, 15)
+            tests.append(test_function_1)
 
-        # test 2
-        test_function_2 = run_unit_test('7.021', 2, 5)
-        if test_function_2['pass']:
-            score_info['score'] += 5
-        tests.append(test_function_2)
+            # Check for function existence
+            test_find_function = find_function(filename, 'collectible_printer', 1, points=5)
+            tests.append(test_find_function)
 
-        # test 2
-        test_function_2 = run_unit_test('7.021', 2, 5)
-        if test_function_2['pass']:
-            score_info['score'] += 5
-        tests.append(test_function_2)
+            # test 2
+            test_function_2 = run_unit_test('7.021', 2, 5)
+            tests.append(test_function_2)
 
-        # test 3
-        test_function_3 = run_unit_test('7.021', 3, 10)
-        if test_function_3['pass']:
-            score_info['score'] += 10
-        tests.append(test_function_3)
+            # test 3
+            test_function_3 = run_unit_test('7.021', 3, 10)
+            tests.append(test_function_3)
 
-        # Check for all objects
-        test_objects = object_created(filename, 'Collectible', 3, points=5)
-        if test_objects['pass']:
-            score_info['score'] += 5
-        tests.append(test_objects)
+            # Check for all objects
+            test_objects = object_created(filename, 'Collectible', 3, points=5)
+            tests.append(test_objects)
 
-        # Check that function is called
-        test_function_run = function_called(filename, 'collectible_printer', 1, points=5)
-        if test_function_run['pass']:
-            score_info['score'] += 5
-        tests.append(test_function_run)
+            # Check that function is called
+            test_function_run = function_called(filename, 'collectible_printer', 1, points=5)
+            tests.append(test_function_run)
 
-        # Find number of PEP8 errors and helps
-        test_pep8 = pep8(filename, 14)
-        tests.append(test_pep8)
-        test_help = helps(filename, 5)
-        tests.append(test_help)
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
+            tests.append(test_pep8)
+            test_help = helps(filename, 5)
+            tests.append(test_help)
 
-        for test in tests:
-            if test['pass']:
-                score_info['score'] += test['points']
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
 
-        score_info['finished_scoring'] = True
+            score_info['finished_scoring'] = True
 
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_7_031')

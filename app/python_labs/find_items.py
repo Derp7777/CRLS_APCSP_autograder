@@ -331,7 +331,8 @@ def find_loop(p_filename_data, p_points):
     p_test_loop = {"name": "Testing that there is a loop. (" + str(p_points) + " points)<br>",
                    "pass": True,
                    "pass_message": "<h5 style=\"color:green;\">Pass!</h5> There is a loop in the code selection",
-                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5> There is not a loop in the selected code.  Selected code is this:<br>"
+                   "fail_message": "<h5 style=\"color:red;\">Fail.</h5> There is not a loop in the selected code.  "
+                                   "Selected code is this:<br>"
                                    "" + p_filename_data,
                    'points': 0
                    }
@@ -416,8 +417,10 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
     p_test_find_strings = {"name": "Testing that ALL of these strings are there: " + str(p_search_strings) +
                                    " (" + str(p_points) + " points) <br>",
                            "pass": True,
-                           "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Found ALL of these these strings: " + str(p_search_strings) + ".<br>",
-                           "fail_message": "<h5 style=\"color:red;\">Fail.</h5> Didn't find all strings in " + str(p_search_strings) + ". <br" +
+                           "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Found ALL of these these strings: "
+                                           "" + str(p_search_strings) + ".<br>",
+                           "fail_message": "<h5 style=\"color:red;\">Fail.</h5> Didn't find all strings in "
+                                           "" + str(p_search_strings) + ". <br" +
                                            " But did find these strings: " + str(passed) + ". <br>",
                            'points': 0
                            }
@@ -488,30 +491,43 @@ def find_function(p_filename, p_function_name, p_num_parameters, *, points=0):
 # Output: Dictionary of test_class_exists
 # This module finds if there is a class with a certain name and certain parameters
 
-def find_class(p_filename, p_class_name, p_parent, p_points):
+def find_class(p_filename, p_class_name, p_parent, *, points=0):
+    """
+    find class finds if a particular class with a particular name is there
+    :param p_filename: name of the python code file
+    :param p_class_name:  name of class you are looking for
+    :param p_parent: parent (object, or else the parent class)
+    :param points: points this is worth
+    :return: dictionary of test info
+    """
     import delegator
+    from app.python_labs.read_file_contents import read_file_contents
 
-    # Check for function return_min
-    cmd_string = 'grep "^class " + p_class_name + " \(" + p_parent + "object\)"'
+    filename_data = read_file_contents(p_filename)
+
+    cmd_string = 'grep "^class ' + p_class_name + r"(" + p_parent + r')"'
 
     cmd = cmd_string + ' ' + p_filename
     c = delegator.run(cmd)
-    p_test_class_exists = {}
-    p_test_class_exists['name'] = "Looking for this class " + p_class_name + " with this parent " + " p_parent (" + \
-                        p_points +  " points). "
+    p_test_class_exists = {"name": "Looking for this class " + p_class_name + " with this parent " + " p_parent (" +
+                                   str(points) + " points). ",
+                           "pass": True,
+                           'pass_message': "<h5 style=\"color:green;\">Pass!</h5>",
+                           'fail_message': "<h5 style=\"color:red;\">Fail.</h5>",
+                           'points': 0}
     if c.err:
         p_test_class_exists['pass'] = False
         p_test_class_exists['fail_message'] += "Error message: " + c.err
     elif c.out:
         p_test_class_exists['pass_message'] += "Found this: " + c.out
-        p_test_class_exists['score'] = p_points
+        p_test_class_exists['points'] = points
     else:
         p_test_class_exists['pass'] = False
         cmd = 'grep "class" ' + p_filename
         c = delegator.run(cmd)
-        p_test_class_exists['fail_message'] += "The file " + p_filename + " has these classes: <br> " +\
-                                                  c.out + "<br>" + " but not " + p_class_name + " with" +\
-                                                  " this parent " + str(p_parent) + " input parameter(s). <br>"
+        p_test_class_exists['fail_message'] += "The file " + p_filename + " contents is this: : <br> " + \
+                                               filename_data + "<br>" + " but not " + p_class_name + "("\
+                                               + str(p_parent) + "). <br>"
     return p_test_class_exists
 
 # Inputs: p_filename, contents of the file (string).
@@ -522,23 +538,23 @@ def find_class(p_filename, p_class_name, p_parent, p_points):
 # This module finds if there is a function with a certain name and certain parameters
 
 
-def object_created(p_filename, p_class_name, p_times, *, p_points):
+def object_created(p_filename, p_class_name, p_times, *, points=0):
 
     from app.python_labs.read_file_contents import read_file_contents
     import re
     p_test_function_called = {"name": "Testing that there are objects of type  " + p_class_name +
                                       " that gets created in the main program at least " +
-                                      str(p_times) + " times.  (" + str(p_points) + " points).<br>"
+                                      str(p_times) + " times.  (" + str(points) + " points).<br>"
                                       + "). <br>",
                               "pass": False,
-                              "pass_message": "Pass! There is object of type " + p_class_name +
+                              "pass_message": "<h5 style=\"color:green;\">Pass!</h5> There is object of type " + p_class_name +
                                               " that gets created enough times "
                                               "<br>",
-                              "fail_message": "Fail.  The class " + p_class_name +
+                              "fail_message": "<h5 style=\"color:red;\">Fail</h5>  The class " + p_class_name +
                                               " does NOT have enough objects of that type in the program. <br>"
                                               " If this doesn't make sense, look at the presentations for help"
                                               " <br>",
-                              "score": p_points
+                              "points": points
                               }
     regex = r"[a-zA-Z0-9]\s*=\s*" + p_class_name
     matches = 0
@@ -551,7 +567,7 @@ def object_created(p_filename, p_class_name, p_times, *, p_points):
     if matches >= p_times:
         p_test_function_called['pass'] = True
     else:
-        p_test_function_called['score'] = 0
+        p_test_function_called['points'] = 0
         p_filename_data = read_file_contents(p_filename)
         p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
                                                   " of objects of class type:" + p_class_name + \
