@@ -22,7 +22,6 @@ def run_unit_test(p_lab, p_test_number, p_points):
     cmd = 'python3 /tmp/' + str(p_lab) + '.test.py testAutograde.test_' + str(p_test_number) + " 2>&1 "
     c = delegator.run(cmd)
 
-    print(cmd)
     error = re.search('Error', c.out, re.X | re.M | re.S)
     failed_assertion = re.search('AssertionError', c.out, re.X | re.M | re.S)
     ok = re.search(r'^OK$', c.out, re.X | re.M | re.S)
@@ -85,24 +84,17 @@ def extract_all_functions(orig_file):
     import re
     outfile_name = orig_file.replace('.py', '.functions.py')
     outfile = open(outfile_name, 'w')
-    print("starting now! " + str(outfile_name))
-    print("starting now! " + str(orig_file))
 
     with open(orig_file, 'r', encoding='utf8') as infile:
         line = True
 
         while line:
-            print("aaa " + str(line))
             line = infile.readline()
-            print("aaa " + str(line))
-
             start_def = re.search(r"^(def|class) \s+ .+ ", line,  re.X | re.M | re.S)
-            print(start_def)
-
+            # print(start_def)
             empty_counter = 0
             if start_def:
 
-                print("aaa " + str(line))
                 outfile.write(line)
                 in_function = True
                 # counter = 0
@@ -132,7 +124,6 @@ def extract_all_functions(orig_file):
                     # print("in fucntion start_def " + str(in_function) + " " + str(start_def))
 
 
-
 def extract_single_function(p_orig_file, p_function):
     import re
     function_file = p_orig_file.replace('.py', '.functions.py')
@@ -140,22 +131,22 @@ def extract_single_function(p_orig_file, p_function):
     with open(function_file, 'r', encoding='utf8') as infile:
         line = True
         while line:
-            print("looking for this function : " + p_function)
+            # print("looking for this function : " + p_function)
             line = infile.readline()
             start_def = re.search(r"^(def|class) \s+ " + p_function , line,  re.X | re.M | re.S)
             if start_def:
-                print("entering function!")
-                print('writing this' + str(line))
+                # print("entering function!")
+                # print('writing this' + str(line))
                 extracted_function += line
-                print("reading this" + str(line))
+                #print("reading this" + str(line))
                 inside_function = True
                 while inside_function:
-                    print('reading this ' + str(line))
+                #     print('reading this ' + str(line))
                     line = infile.readline()
                     inside_function = re.search(r"^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
                     if inside_function:
-                        print("writing this inside function " + str(line))
+                        # print("writing this inside function " + str(line))
                         extracted_function += line
                 extracted_function += line
-    print(extracted_function)
+    # print(extracted_function)
     return extracted_function
