@@ -1649,10 +1649,10 @@ def feedback_7021():
 
 @app.route('/feedback_7_031')
 def feedback_7031():
-    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
-    from app.python_labs.pep8 import pep8
-    from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -1699,10 +1699,10 @@ def feedback_7031():
 
 @app.route('/feedback_7_034')
 def feedback_7034():
-    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
-    from app.python_labs.pep8 import pep8
-    from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
@@ -1722,32 +1722,22 @@ def feedback_7034():
 
         # unit test 1
         unit_test_1 = run_unit_test('7.034', 1, 5)
-        if unit_test_1['pass']:
-            score_info['score'] += 5
         tests.append(unit_test_1)
 
         # unit test 2
-        unit_test_2 = run_unit_test('7.034', 1, 5)
-        if unit_test_2['pass']:
-            score_info['score'] += 5
+        unit_test_2 = run_unit_test('7.034', 2, 5)
         tests.append(unit_test_2)
 
         # unit test 3
-        unit_test_3 = run_unit_test('7.034', 1, 5)
-        if unit_test_3['pass']:
-            score_info['score'] += 5
+        unit_test_3 = run_unit_test('7.034', 3, 5)
         tests.append(unit_test_3)
 
         # unit test 4
-        unit_test_4 = run_unit_test('7.034', 1, 5)
-        if unit_test_4['pass']:
-            score_info['score'] += 5
+        unit_test_4 = run_unit_test('7.034', 4, 5)
         tests.append(unit_test_4)
 
         # unit test 5
-        unit_test_5 = run_unit_test('7.034', 1, 5)
-        if unit_test_5['pass']:
-            score_info['score'] += 5
+        unit_test_5 = run_unit_test('7.034', 5, 5)
         tests.append(unit_test_5)
 
         # Find number of PEP8 errors and helps
