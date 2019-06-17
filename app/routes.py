@@ -1585,7 +1585,7 @@ def feedback_7021():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1656,14 +1656,14 @@ def feedback_7031():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
     test_filename = filename_test(filename, '7.031')
     tests.append(test_filename)
-    if not test_filename['pass']:
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
 
@@ -1673,20 +1673,14 @@ def feedback_7031():
 
         # unit test 1
         test_function_1 = run_unit_test('7.031', 1, 5)
-        if test_function_1['pass']:
-            score_info['score'] += 5
         tests.append(test_function_1)
 
         # unit test 2
-        test_function_2 = run_unit_test('7.031', 1, 10)
-        if test_function_2['pass']:
-            score_info['score'] += 10
+        test_function_2 = run_unit_test('7.031', 2, 10)
         tests.append(test_function_2)
 
         # unit test 3
-        test_function_3 = run_unit_test('7.031', 1, 10)
-        if test_function_3['pass']:
-            score_info['score'] += 10
+        test_function_3 = run_unit_test('7.031', 3, 10)
         tests.append(test_function_3)
 
         # Find number of PEP8 errors and helps
