@@ -1509,17 +1509,17 @@ def feedback_6031():
 
 @app.route('/feedback_6_041')
 def feedback_6041():
-
+    from app.python_labs.filename_test import filename_test
     from app.python_labs.find_items import find_function, find_string
     from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
-    from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
-    from app.python_labs.filename_test import filename_test
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.python_6_041 import five_loop
     from app.python_labs.read_file_contents import read_file_contents
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 64, 'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1531,64 +1531,48 @@ def feedback_6041():
     else:
         filename_data = read_file_contents(filename)
 
-        # Check for function add with 2 inputs
-        test_find_function = find_function(filename, 'item_list_to_dictionary', 2, points=5)
+        # Check for function add with 1 inputs
+        test_find_function = find_function(filename, 'item_list_to_dictionary', 1, points=5)
         tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
-        tests.append(test_find_function)
+        if test_find_function['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
 
-        # extract functions and create python test file
-        extract_all_functions(filename)
-        create_testing_file(filename)
+            # function test 1
+            test_function_1 = run_unit_test('6.041', 1, 10)
+            tests.append(test_function_1)
 
-        # function test 1
-        test_function_1 = run_unit_test('6.041', 1, 10)
-        test_function_1['name'] += "Checking that item_list_to_dictionary works.   Input " \
-                                   "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', " \
-                                   "'noodles noodles', " \
-                                   "'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] " \
-                                   " expected {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2," \
-                                   "'Gooey gelato':1}) <br>"
-        if test_function_1['pass']:
-            score_info['score'] += 10
-        tests.append(test_function_1)
+            # Check for function 1 inputs
+            test_find_function_2 = find_function(filename, 'min_item', 1, points=5)
+            tests.append(test_find_function_2)
 
-        # Check for function add with 2 inputs
-        test_find_function = find_function(filename, 'min_item', 2, points=5)
-        tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
-        tests.append(test_find_function)
+            # unit test 2
+            test_function_2 = run_unit_test('6.041', 2, 20)
+            tests.append(test_function_2)
 
-        # unit test 2
-        test_function_2 = run_unit_test('6.041', 1, 10)
-        test_function_2['name'] += "Call min_item with input" \
-                                   " {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2, " \
-                                   "'Gooey gelato':99}.<br> " \
-                                   "expect output 'garlic bread'). <br>"
-        if test_function_2['pass']:
-            score_info['score'] += 20
-        tests.append(test_function_2)
-                    
-        # Check that removes, just look for del or pop
-        test_removal = find_string(filename_data, r"\.pop\( | del", 1, points=5)
-        if test_removal:
-            score_info['score'] += 5
-        tests.append(test_removal)
+            # Check that removes, just look for del or pop
+            test_removal = find_string(filename_data, r"\.pop\( | del", 1, points=5)
+            tests.append(test_removal)
 
-        # Find number of PEP8 errors and helps
-        test_pep8 = pep8(filename, 14)
-        tests.append(test_pep8)
-        test_help = helps(filename, 5)
-        tests.append(test_help)
+            # Check that it's run 5x
+            test_five_times = five_loop(filename_data)
+            tests.append(test_five_times)
 
-        for test in tests:
-            if test['pass']:
-                score_info['score'] += test['points']
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
+            tests.append(test_pep8)
+            test_help = helps(filename, 5)
+            tests.append(test_help)
 
-        score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_7_021')
