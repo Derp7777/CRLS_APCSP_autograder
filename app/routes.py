@@ -1889,14 +1889,15 @@ def feedback_7034():
 
 @app.route('/feedback_4031')
 def feedback_4031():
-    from app.python_labs.function_test import create_testing_file, extract_all_functions, run_unit_test
-    from app.python_labs.pep8 import pep8
-    from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import create_testing_file, extract_all_functions, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.python_4_03x import python_4_031_double_loops, python_4_031_good_prints
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 54, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1941,8 +1942,15 @@ def feedback_4031():
 
         # unit test 8
         unit_test_8 = run_unit_test('4.031', 8, 7.5)
-
         tests.append(unit_test_8)
+
+        # Check for double loops
+        test_loop = python_4_031_double_loops(filename)
+        tests.append(test_loop)
+
+        # Check for double loops
+        test_prints = python_4_031_good_prints(filename)
+        tests.append(test_prints)
 
         # Find number of PEP8 errors and helps
         test_pep8 = pep8(filename, 14)
