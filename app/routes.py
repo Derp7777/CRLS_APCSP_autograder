@@ -1848,7 +1848,7 @@ def feedback_4036():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '7.034')
+    test_filename = filename_test(filename, '4.036')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1867,33 +1867,23 @@ def feedback_4036():
 
         # unit test 1
         unit_test_1 = run_unit_test('4.036', 1, 10)
-        if unit_test_1['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_1)
 
         # unit test 2
         unit_test_2 = run_unit_test('4.036', 2, 10)
-        if unit_test_2['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_2)
 
         # Check for function existence
         test_find_function = find_function(filename, 'fried_chicken_problem_2', 2, points=5)
         tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
         # unit test 3
         unit_test_3 = run_unit_test('4.036', 3, 10)
-        if unit_test_3['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_3)
 
         # unit test 4
         unit_test_4 = run_unit_test('4.036', 4, 10)
-        if unit_test_4['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_4)
 
         # Find number of PEP8 errors and helps
