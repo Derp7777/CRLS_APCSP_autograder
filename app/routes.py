@@ -30,54 +30,11 @@ def index():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
-            if request.form['lab'] == '1.040':
-                return redirect(url_for('feedback_1040', filename=filename))
-            elif request.form['lab'] == '1.060':
-                return redirect(url_for('feedback_1060', filename=filename))
-            elif request.form['lab'] == '2.020':
-                return redirect(url_for('feedback_2020', filename=filename))
-            elif request.form['lab'] == '2.032a':
-                return redirect(url_for('feedback_2032a', filename=filename))
-            elif request.form['lab'] == '2.032b':
-                return redirect(url_for('feedback_2032b', filename=filename))
-            elif request.form['lab'] == '2.040':
-                return redirect(url_for('feedback_2040', filename=filename))
-            elif request.form['lab'] == '2.051a':
-                return redirect(url_for('feedback_2051a', filename=filename))
-            elif request.form['lab'] == '2.051b':
-                return redirect(url_for('feedback_2051b', filename=filename))
-            elif request.form['lab'] == '3.011':
-                return redirect(url_for('feedback_3011', filename=filename))
-            elif request.form['lab'] == '3.020':
-                return redirect(url_for('feedback_3020', filename=filename))
-            elif request.form['lab'] == '3.026':
-                return redirect(url_for('feedback_3026', filename=filename))
-            elif request.form['lab'] == '4.011':
-                return redirect(url_for('feedback_4011', filename=filename))
-            elif request.form['lab'] == '4.021':
-                return redirect(url_for('feedback_4021', filename=filename))
-            elif request.form['lab'] == '4.022':
-                return redirect(url_for('feedback_4022', filename=filename))
-            elif request.form['lab'] == '4.025':
-                return redirect(url_for('feedback_4025', filename=filename))
-            elif request.form['lab'] == '4.031':
-                return redirect(url_for('feedback_4031', filename=filename))
-            elif request.form['lab'] == '4.036':
-                return redirect(url_for('feedback_4036', filename=filename))
-            elif request.form['lab'] == '6.011':
-                return redirect(url_for('feedback_6011', filename=filename))
-            elif request.form['lab'] == '6.021':
-                return redirect(url_for('feedback_6021', filename=filename))
-            elif request.form['lab'] == '6.031':
-                return redirect(url_for('feedback_6031', filename=filename))
-            elif request.form['lab'] == '6.041':
-                return redirect(url_for('feedback_6041', filename=filename))
-            elif request.form['lab'] == '7.021':
-                return redirect(url_for('feedback_7021', filename=filename))
-            elif request.form['lab'] == '7.031':
-                return redirect(url_for('feedback_7031', filename=filename))
-            elif request.form['lab'] == '7.034':
-                return redirect(url_for('feedback_7034', filename=filename))
+            if request.form['lab'] in ['1.040', '1.060', '2.020', '2.032a', '2.032b', '2.040', '2.050a', '2.050b',
+                                       '3.011', '3.020', '3.026', '4.011', '4.021', '4.022', '4.025', '4.031',
+                                       '4.036', '6.011', '6.021', '6.031', '6.041', '7.021', '7.031', '7.034', ]:
+                return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
+
     form = UploadForm()
     user = {'username': 'CRLS Scholar!!!'}
     return render_template('index.html', title='Home', user=user, form=form)
@@ -1848,7 +1805,7 @@ def feedback_4036():
     # Test 1: file name
     filename = request.args['filename']
     filename = '/tmp/' + filename
-    test_filename = filename_test(filename, '7.034')
+    test_filename = filename_test(filename, '4.036')
     tests.append(test_filename)
     if not test_filename['pass']:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -1867,33 +1824,23 @@ def feedback_4036():
 
         # unit test 1
         unit_test_1 = run_unit_test('4.036', 1, 10)
-        if unit_test_1['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_1)
 
         # unit test 2
         unit_test_2 = run_unit_test('4.036', 2, 10)
-        if unit_test_2['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_2)
 
         # Check for function existence
         test_find_function = find_function(filename, 'fried_chicken_problem_2', 2, points=5)
         tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
         # unit test 3
         unit_test_3 = run_unit_test('4.036', 3, 10)
-        if unit_test_3['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_3)
 
         # unit test 4
         unit_test_4 = run_unit_test('4.036', 4, 10)
-        if unit_test_4['pass']:
-            score_info['score'] += 10
         tests.append(unit_test_4)
 
         # Find number of PEP8 errors and helps
