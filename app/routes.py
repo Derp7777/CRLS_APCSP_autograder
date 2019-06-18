@@ -1663,7 +1663,7 @@ def feedback_7034():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1721,7 +1721,7 @@ def feedback_4031():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1800,7 +1800,7 @@ def feedback_4036():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 89,  'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1813,9 +1813,6 @@ def feedback_4036():
 
         # Check for function existence
         test_find_function = find_function(filename, 'fried_chicken_problem_1', 2, points=5)
-        tests.append(test_find_function)
-        if test_find_function['pass']:
-            score_info['score'] += 5
         tests.append(test_find_function)
 
         # extract functions and create python test file
@@ -1832,7 +1829,6 @@ def feedback_4036():
 
         # Check for function existence
         test_find_function = find_function(filename, 'fried_chicken_problem_2', 2, points=5)
-        tests.append(test_find_function)
         tests.append(test_find_function)
 
         # unit test 3
