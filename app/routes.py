@@ -67,6 +67,26 @@ def scratch():
     return render_template('index.html', title='Home', user=user, form=form)
 
 
+@app.route('/scratch/scratch_feedback_13')
+def scratch_feedback_13():
+    from app.scratch_labs.scratch import scratch_filename_test
+
+    user = {'username': 'CRLS Scraach Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '1.3')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
 @app.route('/feedback_1040')
 def feedback_1040():
 
