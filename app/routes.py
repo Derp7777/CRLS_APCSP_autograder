@@ -1,6 +1,6 @@
 from flask import render_template, url_for, request, redirect, flash
 from app import app
-from app.forms import UploadForm
+from app.forms import UploadForm, UploadScratchForm
 from werkzeug.utils import secure_filename
 import os
 
@@ -37,6 +37,33 @@ def index():
 
     form = UploadForm()
     user = {'username': 'CRLS Scholar!!!'}
+    return render_template('index.html', title='Home', user=user, form=form)
+
+
+@app.route('/scratch', methods=['GET', 'POST'])
+def scratch():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('Please select a file')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No file selected')
+            return redirect(request.url)
+        if not allowed_file(file.filename):
+            flash('This type of file not allowed.  Only files ending in .py.'
+                  '  In particular, Google doc and text files are not allowed.'
+                  'You have to turn in a Scratch 3 file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash(file.filename + ' uploaded')
+            if request.form['lab'] in ['1.3', ]:
+                return redirect(url_for('scratch_feedback_' + request.form['lab'].replace(".", ""), filename=filename))
+
+    form = UploadScratchForm()
+    user = {'username': 'CRLS Scratch Scholar!!'}
     return render_template('index.html', title='Home', user=user, form=form)
 
 
