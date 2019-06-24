@@ -69,7 +69,8 @@ def scratch():
 
 @app.route('/scratch/scratch_feedback_13')
 def scratch_feedback_13():
-    from app.scratch_labs.scratch import scratch_filename_test
+    import json
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks
 
     user = {'username': 'CRLS Scraach Scholar'}
     tests = list()
@@ -83,7 +84,23 @@ def scratch_feedback_13():
     if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
     else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        abc = json.dumps(json_data, indent=4)
+        print(abc)
+        test_help = find_help(json_data, 5)
+        tests.append(test_help)
         score_info['finished_scoring'] = True
+        abc = arrange_blocks(json_data)
+        for key in abc:
+            print("KEY")
+            print(key)
+            print("VALUE")
+            print(abc[key])
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -156,7 +173,6 @@ def feedback_1040():
             score_info['finished_scoring'] = True
             for test in tests:
                 if test['pass']:
-                    print(test['pass_message'])
                     score_info['score'] += test['points']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 

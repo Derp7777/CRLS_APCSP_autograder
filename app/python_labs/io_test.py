@@ -164,7 +164,6 @@ def io_test_find_all(p_filename, p_strings, p_test_num, *, points=0):
     return p_test_io
 
 
-
 if __name__ == "__main__":
     print("yes")
     #  abc = io_test('/Users/dimmyfinster/PycharmProjects/untitled5/2019_ewu_1.040.py', 1, 'asdfsdf', 5)
