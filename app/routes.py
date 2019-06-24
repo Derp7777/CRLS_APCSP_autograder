@@ -71,6 +71,7 @@ def scratch():
 def scratch_feedback_13():
     import json
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks
+    from app.scratch_labs.scratch_1_3 import press_zero
 
     user = {'username': 'CRLS Scraach Scholar'}
     tests = list()
@@ -92,6 +93,8 @@ def scratch_feedback_13():
         tests.append(test_help)
         score_info['finished_scoring'] = True
         abc = arrange_blocks(json_data)
+        test_zero = press_zero(abc, 10)
+        tests.append(test_zero)
         for key in abc:
             print("KEY")
             print(key)

@@ -171,6 +171,42 @@ def arrange_blocks(p_json):
     return scripts
 
 
+def match_string(regex, p_json, *, points=0):
+    """
+    Tries to match regex inside the json.
+    :param regex: Regex we are looking for
+    :param p_json: json of all blocks in the code(dict).
+    :param points: How many points this is worth (int).
+    :return: Dictionary of the test
+    """
+    import json
+    import re
+
+    print("IN MATCH")
+    print(p_json)
+
+    formatted_json = json.dumps(p_json, indent=4)
+    found = len(re.findall(regex, str(p_json), re.X | re.M | re.S))
+
+    p_test = {"name": "Looking for a string in code (" + str(points) + " points)<br>",
+              "pass": True,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "We found the string in the code!<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Code does not find string we were looking for.<br>"
+                              "Looked for this string: " + str(regex) + "<br>" +
+                              "Looked in this code: " + str(p_json) + "<br>" +
+                              "Found this many matches : " + str(found),
+              "points": 0
+              }
+    if found > 0:
+        p_test['points'] += points
+    else:
+        p_test['pass'] = False
+    print("FOUND" + str(found))
+    return p_test
+
+
 #
 # abc = [{'opcode': 'event_whenkeypressed', 'inputs': {}, 'fields': {'KEY_OPTION': ['2', None]}},
 #        {'opcode': 'control_repeat', 'inputs': {'TIMES': [1, [6, '4']], 'SUBSTACK': [2, 'OXRKfvlR06`]@|XXen9}',
