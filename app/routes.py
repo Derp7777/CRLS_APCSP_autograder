@@ -69,13 +69,12 @@ def scratch():
 
 @app.route('/scratch/scratch_feedback_13')
 def scratch_feedback_13():
-    import json
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks
-    from app.scratch_labs.scratch_1_3 import press_zero
+    from app.scratch_labs.scratch_1_3 import press_zero, press_one, press_two, press_four, press_five
 
     user = {'username': 'CRLS Scraach Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 5.5, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 65, 'manually_scored': 15, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
@@ -87,23 +86,31 @@ def scratch_feedback_13():
     else:
         unzip_sb3(filename)
         json_data = read_json_file()
-        abc = json.dumps(json_data, indent=4)
-        print(abc)
-        test_help = find_help(json_data, 5)
-        tests.append(test_help)
-        score_info['finished_scoring'] = True
-        abc = arrange_blocks(json_data)
-        test_zero = press_zero(abc, 10)
+        scripts = arrange_blocks(json_data)
+        test_zero = press_zero(scripts, 10)
         tests.append(test_zero)
-        for key in abc:
-            print("KEY")
-            print(key)
-            print("VALUE")
-            print(abc[key])
-
-        for test in tests:
-            if test['pass']:
-                score_info['score'] += test['points']
+        if test_zero['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_one = press_one(scripts, 10)
+            tests.append(test_one)
+            test_two = press_two(scripts, 10)
+            tests.append(test_two)
+            test_four = press_four(scripts, 15)
+            tests.append(test_four)
+            test_five = press_five(scripts, 15)
+            tests.append(test_five)
+            for key in scripts:
+                print("KEY")
+                print(key)
+                print("VALUE")
+                print(scripts[key])
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 

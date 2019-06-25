@@ -179,13 +179,11 @@ def match_string(regex, p_json, *, points=0):
     :param points: How many points this is worth (int).
     :return: Dictionary of the test
     """
-    import json
     import re
 
-    print("IN MATCH")
+    print("MATCHING NOW")
+    print(regex)
     print(p_json)
-
-    formatted_json = json.dumps(p_json, indent=4)
     found = len(re.findall(regex, str(p_json), re.X | re.M | re.S))
 
     p_test = {"name": "Looking for a string in code (" + str(points) + " points)<br>",
@@ -206,6 +204,39 @@ def match_string(regex, p_json, *, points=0):
     print("FOUND" + str(found))
     return p_test
 
+
+def extract_move_steps(p_json):
+    """
+    Extracts the steps inside the block.
+    Will match the all integers.
+    :param p_json:  - json of the block you are looking at
+    :return: all matches, as a list of integers
+    """
+    import re
+
+    regex = r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'(\d+)']]}"
+    matches = re.findall(regex, str(p_json), re.X | re.M | re.S)
+    if matches:
+        return matches
+    else:
+        return []
+
+
+def extract_turn_degrees(p_json):
+    """
+    Extracts the turn degrees inside the block.
+    Will match the all integers integer.
+    :param p_json:  - json of the block you are looking at
+    :return: all matches, as a list of integers
+    """
+    import re
+
+    regex = r"{'opcode':\s+'motion_turn(right|left)',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'(\d+)']]}"
+    matches = re.findall(regex, str(p_json), re.X | re.M | re.S)
+    if matches:
+        return matches
+    else:
+        return []
 
 #
 # abc = [{'opcode': 'event_whenkeypressed', 'inputs': {}, 'fields': {'KEY_OPTION': ['2', None]}},
