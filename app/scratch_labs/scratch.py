@@ -166,17 +166,18 @@ def arrange_blocks(p_json):
     for key in scripts:
         for block in scripts[key]:
             _clean_block(block)
-        # print("KEY!!")
-        # print(scripts[key])
+        print("arrange blocks KEY!!")
+        print(scripts[key])
     return scripts
 
 
-def match_string(regex, p_json, *, points=0):
+def match_string(regex, p_json, *, points=0, num_matches=1):
     """
     Tries to match regex inside the json.
     :param regex: Regex we are looking for
     :param p_json: json of all blocks in the code(dict).
     :param points: How many points this is worth (int).
+    :param num_matches: how many times you want to match (int).
     :return: Dictionary of the test
     """
     import re
@@ -194,11 +195,10 @@ def match_string(regex, p_json, *, points=0):
                               "Found this many matches : " + str(found) + "<br>",
               "points": 0
               }
-    if found > 0:
+    if found >= num_matches:
         p_test['points'] += points
     else:
         p_test['pass'] = False
-    print("FOUND" + str(found))
     return p_test
 
 
@@ -243,10 +243,83 @@ def count_sprites(p_json):
     :return: all matches, as a list of integers
     """
     num_sprites = 0
-    print(p_json)
     for target in p_json['targets']:
         if target['isStage'] is True:
             pass
         else:
             num_sprites += 1
     return num_sprites
+
+
+def count_stage_changes(p_json):
+    """
+    Finds the number of times backdrop changes happen (does not work for repeats)
+    :param p_json:  - json of all code
+    :return: all matches, as a list of integers
+    """
+    import re
+    for target in p_json['targets']:
+        if target['isStage'] is True:
+            matches = len(re.findall(r'(looks_switchcostumeto|looks_nextbackdrop)', str(p_json), re.X | re.M | re.S))
+    return matches
+
+
+def every_sprite_green_flag(p_json, p_points):
+    """
+    Verifies that every sprite has a green flag.
+    :param p_json:  - json of all code
+    :param p_points:  - points this is worth(int)
+    :return: test dictionary
+    """
+    p_test = {"name": "Checking that every sprite has a green flag (" + str(p_points) + " points)<br>",
+              "pass": True,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Every sprite has a green flag.  The green flag "
+                              "will help you always start at the same place.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Every sprite does not have a green flag.  "
+                              "The green flag will help you always start at the same place. <br>",
+              "points": 0
+              }
+    for target in p_json['targets']:
+        if target['isStage'] is True:
+            pass
+        else:
+            if match_string(r'event_whenflagclicked', target)['pass'] is False:
+                p_test['pass'] = False
+                p_test['fail_message'] += 'This sprite does not have a green flag: ' + target['name'] + '<br>'
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test
+
+
+def every_sprite_broadcast_and_receive(p_json, p_points):
+    """
+    Verifies that every sprite has at least one broadcast and one receive.
+    :param p_json:  - json of all code
+    :param p_points:  - points this is worth(int)
+    :return: test dictionary
+    """
+    p_test = {"name": "Checking that every sprite has a least one broadcast and one receive"
+                      " (" + str(p_points) + " points)<br>",
+              "pass": True,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Every sprite has at least one broadcast and one receive.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Not every sprite has a broadcast and receive.<br>"
+                              "You should use broadcasts and receives instead of waits.  Broadcasts and receives will "
+                              "work more reliably if you change your code around.<br>",
+              "points": 0
+              }
+    for target in p_json['targets']:
+        if target['isStage'] is True:
+            pass
+        else:
+            if match_string(r'event_broadcast', target)['pass'] is False or \
+                    match_string(r'event_whenbroadcastreceived', target)['pass'] is False:
+                p_test['pass'] = False
+                p_test['fail_message'] += 'This sprite does not have a broadcast AND a receive: ' + \
+                                          target['name'] + '<br>'
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test

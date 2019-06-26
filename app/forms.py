@@ -18,5 +18,6 @@ class UploadForm(FlaskForm):
 
 class UploadScratchForm(FlaskForm):
     file = FileField('Select file')
-    lab = SelectField('Lab?', choices=[('1.3', '1.3'), ('1.4_1.5', '1.4_1.5'), ])
+    lab = SelectField('Lab?', choices=[('1.3', '1.3'), ('1.4_1.5', '1.4_1.5'),
+                                       ('1.x_family_migration_story', '1.x_family_migration_story'), ])
     submit = SubmitField('Submit for autograding')

@@ -59,7 +59,7 @@ def scratch():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
-            if request.form['lab'] in ['1.3', '1.4_1.5', ]:
+            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', ]:
                 return redirect(url_for('scratch_feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
     form = UploadScratchForm()
@@ -112,11 +112,11 @@ def scratch_feedback_13():
 @app.route('/scratch/scratch_feedback_14_15')
 def scratch_feedback_14_15():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks, \
-        match_string
+        match_string, every_sprite_green_flag, every_sprite_broadcast_and_receive
     from app.scratch_labs.scratch_1_4_1_5 import min_two_sprites, show_and_hide
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 65, 'manually_scored': 15, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 45, 'manually_scored': 35, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
@@ -131,27 +131,90 @@ def scratch_feedback_14_15():
         scripts = arrange_blocks(json_data)
         test_num_sprites = min_two_sprites(json_data, 5)
         tests.append(test_num_sprites)
-        test_find_move = match_string(r'motion_movesteps', scripts, points=4)
-        if test_find_move['pass'] is False:
-            test_find_move['fail_message'] += 'At least one of the sprites should move. <br>'
-        tests.append(test_find_move)
-        test_find_rotate = match_string(r'(motion_turnleft|motion_turnright)', scripts, points=5)
-        if test_find_rotate['pass'] is False:
-            test_find_rotate['fail_message'] += 'At least one of the sprites should rotate. <br>'
-        tests.append(test_find_rotate)
-        test_change_costume = match_string(r'(looks_nextcostume|looks_switchcostumeto)', scripts, points=5)
-        if test_change_costume['pass'] is False:
-            test_change_costume['fail_message'] += 'At least one of the sprites should change a costume. <br>'
-        tests.append(test_change_costume)
-        test_show_and_hide = show_and_hide(scripts, 5)
-        tests.append(test_show_and_hide)
-        test_help = find_help(json_data, 5)
-        tests.append(test_help)
-        score_info['finished_scoring'] = True
-        for test in tests:
-            if test['pass']:
-                    score_info['score'] += test['points']
+        test_green_flag = every_sprite_green_flag(json_data, 5)
+        tests.append(test_green_flag)
+        test_broadcast_receive = every_sprite_broadcast_and_receive(json_data, 10)
+        tests.append(test_broadcast_receive)
+        if test_broadcast_receive['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_find_move = match_string(r'motion_movesteps', scripts, points=5)
+            if test_find_move['pass'] is False:
+                test_find_move['fail_message'] += 'At least one of the sprites should move. <br>'
+            tests.append(test_find_move)
+            test_find_rotate = match_string(r'(motion_turnleft|motion_turnright)', scripts, points=5)
+            if test_find_rotate['pass'] is False:
+                test_find_rotate['fail_message'] += 'At least one of the sprites should rotate. <br>'
+            tests.append(test_find_rotate)
+            test_change_costume = match_string(r'(looks_nextcostume|looks_switchcostumeto)', scripts, points=5)
+            if test_change_costume['pass'] is False:
+                test_change_costume['fail_message'] += 'At least one of the sprites should change a costume. <br>'
+            tests.append(test_change_costume)
+            test_show_and_hide = show_and_hide(scripts, 5)
+            tests.append(test_show_and_hide)
+
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                        score_info['score'] += test['points']
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/scratch_feedback_1x_family_migration_story')
+def scratch_feedback_1x_family_migration_story():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks, \
+        match_string, every_sprite_green_flag, every_sprite_broadcast_and_receive
+    from app.scratch_labs.scratch_1_4_1_5 import min_two_sprites, show_and_hide
+    from app.scratch_labs.scratch_1x_family_migration_story import min_two_stages
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 40, 'manually_scored': 40, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '1.x_family_migration_story')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        scripts = arrange_blocks(json_data)
+        test_num_sprites = min_two_sprites(json_data, 5)
+        tests.append(test_num_sprites)
+        test_green_flag = every_sprite_green_flag(json_data, 4)
+        tests.append(test_green_flag)
+        test_broadcast_receive = every_sprite_broadcast_and_receive(json_data, 5)
+        tests.append(test_broadcast_receive)
+        if test_broadcast_receive['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_find_move = match_string(r'motion_movesteps', scripts, points=4)
+            if test_find_move['pass'] is False:
+                test_find_move['fail_message'] += 'At least one of the sprites should move. <br>'
+            tests.append(test_find_move)
+            test_find_rotate = match_string(r'(motion_turnleft|motion_turnright)', scripts, points=4)
+            if test_find_rotate['pass'] is False:
+                test_find_rotate['fail_message'] += 'At least one of the sprites should rotate. <br>'
+            tests.append(test_find_rotate)
+            test_change_costume = match_string(r'(looks_nextcostume|looks_switchcostumeto)', scripts, points=4)
+            if test_change_costume['pass'] is False:
+                test_change_costume['fail_message'] += 'At least one of the sprites should change a costume. <br>'
+            tests.append(test_change_costume)
+            test_show_and_hide = show_and_hide(scripts, 4)
+            tests.append(test_show_and_hide)
+            test_change_stage = min_two_stages(json_data, 5)
+            tests.append(test_change_stage)
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                        score_info['score'] += test['points']
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_1040')

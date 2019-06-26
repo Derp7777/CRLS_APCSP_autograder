@@ -7,19 +7,19 @@ def min_two_sprites(p_json, p_points):
     """
     from app.scratch_labs.scratch import count_sprites
     num_sprites = count_sprites(p_json)
-    p_test = {"name": "Checking that there are at least two sprites (" + str(p_points) + " points)<br>",
+    p_test = {"name": "Checking that there is at least two sprites (" + str(p_points) + " points)<br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found at least two sprites in the code!<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "Code does not have at least two sprites.<br>",
+                              "Code does not have at least two spries.<br>",
               "points": 0
               }
     if num_sprites >= 2:
         p_test['points'] += p_points
     else:
         p_test['pass'] = False
-        p_test['fail_message'] += "Found this many non-background sprites: " + str(num_sprites)
+        p_test['fail_message'] += "Found this many sprites: " + str(num_sprites)
     return p_test
 
 

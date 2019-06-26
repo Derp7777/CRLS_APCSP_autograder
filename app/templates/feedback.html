@@ -9,7 +9,7 @@
       Score will be calculated when lab mostly done.</h3>
     {% else %}
        <h3> Score {{ score_info.score }} / {{ score_info.max_score }} </h3>
-       <h4> Manually graded points: {{score_info.manually_scored}}</h4>
+       <h4> Manually graded points (to be graded later): {{score_info.manually_scored}}</h4>
        <h5> All autograder results are subject to overturn upon review.</h5>
     {% endif %}
 
