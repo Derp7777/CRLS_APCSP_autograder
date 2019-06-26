@@ -181,20 +181,17 @@ def match_string(regex, p_json, *, points=0):
     """
     import re
 
-    print("MATCHING NOW")
-    print(regex)
-    print(p_json)
     found = len(re.findall(regex, str(p_json), re.X | re.M | re.S))
 
     p_test = {"name": "Looking for a string in code (" + str(points) + " points)<br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
-                              "We found the string in the code!<br>",
+                              "We found this string in the code:  " + str(regex) + "<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
                               "Code does not find string we were looking for.<br>"
                               "Looked for this string: " + str(regex) + "<br>" +
                               "Looked in this code: " + str(p_json) + "<br>" +
-                              "Found this many matches : " + str(found),
+                              "Found this many matches : " + str(found) + "<br>",
               "points": 0
               }
     if found > 0:
@@ -238,29 +235,18 @@ def extract_turn_degrees(p_json):
     else:
         return []
 
-#
-# abc = [{'opcode': 'event_whenkeypressed', 'inputs': {}, 'fields': {'KEY_OPTION': ['2', None]}},
-#        {'opcode': 'control_repeat', 'inputs': {'TIMES': [1, [6, '4']], 'SUBSTACK': [2, 'OXRKfvlR06`]@|XXen9}',
-#                                                                                     [
-#                                                                                         {'opcode': 'motion_movesteps', 'inputs': {'STEPS': [1, [4, '100']]}, 'fields': {}},
-#                                                                                         {'opcode': 'motion_turnright', 'inputs': {'DEGREES': [1, [4, '90']]}, 'fields': {}},
-#                                                                                         {'opcode': 'looks_say', 'inputs': {'MESSAGE': [1, [10, 'Hello!']]}, 'fields': {}},
-#                                                                                         {'opcode': 'looks_think', 'inputs': {'MESSAGE': [1, [10, 'Hmm...']]}, 'fields': {}}
-#                                                                                     ]
-#                                                                                     ]
-#                                                },
-#         'fields': {}
-#         },
-#        {'opcode': 'looks_changesizeby', 'inputs': {'CHANGE': [1, [4, '10']]}, 'fields': {}},
-#        {'opcode': 'looks_say', 'inputs': {'MESSAGE': [1, [10, 'Hello!']]}, 'fields': {}}]
-#
-# def = [{'opcode': 'event_whenkeypressed', 'inputs': {}, 'fields': {'KEY_OPTION': ['3', None]}},
-#        {'opcode': 'control_repeat', 'inputs': {'TIMES': [1, [6, '2']], 'SUBSTACK': [2, 'p0Tz(va{*U$l$FsD/0ai',
-#                                                                                     [{'opcode': 'control_repeat', 'inputs': {'TIMES': [1, [6, '2']], 'SUBSTACK': [2, '+Teeb|F1KHh7}3DM%6RO',
-#                                                                                                                                                                   [{'opcode': 'motion_movesteps', 'inputs': {'STEPS': [1, [4, '100']]}, 'fields': {}},
-#                                                                                                                                                                    {'opcode': 'motion_turnright', 'inputs': {'DEGREES': [1, [4, '90']]}, 'fields': {}}]]
-#                                                                                                                              }, 'fields': {}},
-#                                                                                      {'opcode': 'looks_changesizeby', 'inputs': {'CHANGE': [1, [4, '10']]}, 'fields': {}},
-#                                                                                      {'opcode': 'looks_say', 'inputs': {'MESSAGE': [1, [10, 'Hello!']]}, 'fields': {}}]]}, 'fields': {}},
-#        {'opcode': 'looks_changesizeby', 'inputs': {'CHANGE': [1, [4, '10']]}, 'fields': {}},
-#        {'opcode': 'looks_say', 'inputs': {'MESSAGE': [1, [10, 'Hello!']]}, 'fields': {}}]
+
+def count_sprites(p_json):
+    """
+    Finds the number of sprites that are NOT background
+    :param p_json:  - json of all code
+    :return: all matches, as a list of integers
+    """
+    num_sprites = 0
+    print(p_json)
+    for target in p_json['targets']:
+        if target['isStage'] is True:
+            pass
+        else:
+            num_sprites += 1
+    return num_sprites
