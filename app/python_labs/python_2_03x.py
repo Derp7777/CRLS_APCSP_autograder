@@ -10,10 +10,7 @@ def python_2_032a(p_filename, p_filename_data, *, debug_statement=''):
     from app.python_labs.find_items import find_string
     from app.python_labs.io_test import io_test
     test_and_or = find_string(p_filename_data, r'(and|or) \s+ .+ \s+ (and|or)', 1)
-    if test_and_or['pass']:
-        ands = True
-    else:
-        ands = False
+    ands = test_and_or['pass']
 
     p_pass_tests = {"name": "8 test cases for 2.032a work (12 points) <br>",
                     "pass": True,
@@ -42,40 +39,16 @@ def python_2_032a(p_filename, p_filename_data, *, debug_statement=''):
         p_pass_tests['pass'] = False
         return p_pass_tests
     pass_count = 0
-    test_1 = io_test(p_filename, r'False', 1)
-    test_2 = io_test(p_filename, r'False', 2)
-    test_3 = io_test(p_filename, r'True', 3)
-    test_4 = io_test(p_filename, r'False', 4)
-    test_5 = io_test(p_filename, r'False', 5)
-    test_6 = io_test(p_filename, r'False', 6)
-    test_7 = io_test(p_filename, r'False', 7)
-    test_8 = io_test(p_filename, r'False', 8)
-
-    if test_1['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '1 '
-    if test_2['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '2 '
-    if test_3['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '3 '
-    if test_4['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '4 '
-    if test_5['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '5 '
-    if test_6['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '6 '
-    if test_7['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '7 '
-    if test_8['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '8 '
-
+    tests = [io_test(p_filename, r'False', 1),
+    io_test(p_filename, r'False', 2),
+    io_test(p_filename, r'True', 3),
+    io_test(p_filename, r'False', 4),
+    io_test(p_filename, r'False', 5),
+    io_test(p_filename, r'False', 6),
+    io_test(p_filename, r'False', 7),
+    io_test(p_filename, r'False', 8)]
+    
+    pass_count = [x['pass'] for x in tests].count(True)
     p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" +\
                                    "These passed tests translate to a score of " + str(pass_count * 1.5) +\
                                    "/12.<br>Hints in case you did not pass all tests:<br>"
@@ -100,10 +73,7 @@ def python_2_032b(p_filename, p_filename_data, *, debug_statement=''):
     from app.python_labs.find_items import find_string
     from app.python_labs.io_test import io_test
     test_and_or = find_string(p_filename_data, r'(and|or) \s+ .+ \s+ (and|or)', 1)
-    if test_and_or['pass']:
-        ands_or = True
-    else:
-        ands_or = False
+    ands_or = test_and_or['pass']
 
     p_pass_tests = {"name": "8 test cases for 2.032b work (8 points) <br>",
                     "pass": True,
@@ -133,39 +103,16 @@ def python_2_032b(p_filename, p_filename_data, *, debug_statement=''):
         return p_pass_tests
 
     pass_count = 0
-    test_1 = io_test(p_filename, 'True', 1)
-    test_2 = io_test(p_filename, 'False', 2)
-    test_3 = io_test(p_filename, 'True', 3)
-    test_4 = io_test(p_filename, 'False', 4)
-    test_5 = io_test(p_filename, 'True', 5)
-    test_6 = io_test(p_filename, 'False', 6)
-    test_7 = io_test(p_filename, 'False', 7)
-    test_8 = io_test(p_filename, 'False', 8)
-
-    if test_1['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '1 '
-    if test_2['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '2 '
-    if test_3['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '3 '
-    if test_4['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '4 '
-    if test_5['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '5 '
-    if test_6['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '6 '
-    if test_7['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '7 '
-    if test_8['pass']:
-        pass_count += 1
-        p_pass_tests['debug'] += '8 '
+    tests = [io_test(p_filename, 'True', 1),
+    io_test(p_filename, 'False', 2),
+    io_test(p_filename, 'True', 3),
+    io_test(p_filename, 'False', 4),
+    io_test(p_filename, 'True', 5),
+    io_test(p_filename, 'False', 6),
+    io_test(p_filename, 'False', 7),
+    io_test(p_filename, 'False', 8)]
+    pass_count = [x['pass'] for x in tests].count(True)
+    
 
     p_pass_tests['score'] = pass_count
 
