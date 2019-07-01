@@ -153,7 +153,7 @@ def arrange_blocks(p_json):
                     if target['blocks'][block_id]['parent'] is None:                   # Do parent blocks
                         script = _order_blocks(block_id, target)
                         scripts[block_id] = script
-                    else:  # Do repeat blocks
+                    else:  # Do nested repeat blocks
                         parent_id = target['blocks'][block_id]['parent']
                         if target['blocks'][parent_id]['inputs']:
                             if 'SUBSTACK' in target['blocks'][parent_id]['inputs']:
