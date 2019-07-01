@@ -33,7 +33,6 @@ def find_list(p_filename_data, *, num_items=0, list_name='', points=0):
                    'points': 0
                    }
     if p_search_object:
-        p_test_list['pass'] = True
         p_test_list['points'] += points
     else:
         p_test_list['pass'] = False
@@ -76,7 +75,6 @@ def find_dictionary(p_filename_data, *, num_items=0, dict_name='', points=0):
                          'points': 0
                          }
     if p_search_object:
-        p_test_dictionary['pass'] = True
         p_test_dictionary['points'] += points
     else:
         p_test_dictionary['pass'] = False
@@ -101,11 +99,7 @@ def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
                              "pass": True,
                              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                                              "We matched " + str(matches) + " ifs ",
-                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                                             "Code does not have at least " + str(p_num) + " ifs.<br>" +
-                                             "Searched for ifs in this string:<br> " + p_filename_data + "<br>" +
-                                             "If you think this should pass, control-F and search for "
-                                             "'if' in your code",
+                             "fail_message": "<h5 style=\"color:red;\">Fail.</h5> ",
                              "points": 0
                              }
     if minmax == 'max':
@@ -115,8 +109,7 @@ def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
         print(matches)
         if matches > p_num:
             p_test_find_questions['pass'] = False
-            p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
-                                                     "Code does not have at least " + str(p_num) + " ifs.<br>" +\
+            p_test_find_questions['fail_message'] += "Code has over " + str(p_num) + " ifs.<br>" +\
                                                      "Searched for ifs in this string:<br> " + p_filename_data +\
                                                      "<br>  If you think this should pass, control-F and search for " \
                                                      "'if' in your code""<br>  Found this many ifs: " + \
@@ -124,7 +117,11 @@ def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
     elif minmax == 'min':
         if matches < p_num:
             p_test_find_questions['pass'] = False
-            p_test_find_questions['fail_message'] += "<br>  Found this many ifs: " + str(matches) + ".<br>"
+            p_test_find_questions['fail_message'] += "Code does not have at least " + str(p_num) + " ifs.<br>" + \
+                                                     "Searched for ifs in this string:<br> " + p_filename_data + "<br>" + \
+                                                     "If you think this should pass, control-F and search for " + \
+                                                     "'if' in your code" + \
+                                                     "<br>  Found this many ifs: " + str(matches) + ".<br>"
 
     if p_test_find_questions['pass']:
         p_test_find_questions['points'] = p_points
@@ -337,7 +334,6 @@ def find_loop(p_filename_data, p_points):
                    'points': 0
                    }
     if p_search_object:
-        p_test_loop['pass'] = True
         p_test_loop['points'] += p_points
     else:
         p_test_loop['pass'] = False
@@ -370,15 +366,9 @@ def find_string(p_filename_data, p_search_string, p_num, *, points=0, minmax='mi
                           'points': 0
                           }
     if minmax == 'max':
-        if p_matches <= p_num:
-            passed = True
-        else:
-            passed = False
+        passed = p_matches <= p_num
     elif minmax == 'min':
-        if p_matches >= p_num:
-            passed = True
-        else:
-            passed = False
+        passed = p_matches >= p_num
     else:
         raise Exception("variable minmax must be either 'min' or 'max'")
 
@@ -567,7 +557,7 @@ def object_created(p_filename, p_class_name, p_times, *, points=0):
     if matches >= p_times:
         p_test_function_called['pass'] = True
     else:
-        p_test_function_called['points'] = 0
+        p_test_function_called['points'] = 0  # ???
         p_filename_data = read_file_contents(p_filename)
         p_test_function_called["fail_message"] += "Found this many matches: " + str(matches) + \
                                                   " of objects of class type:" + p_class_name + \
@@ -654,7 +644,7 @@ def find_questions(p_filename_data, p_num, p_points):
     if matches < p_num and matches_int < p_num and matches_float < p_num:
         p_test_find_questions['pass'] = False
         p_test_find_questions['fail_message'] += "<br>  Found this many questions: " + str(matches) + ".<br>"
-    if p_test_find_questions['pass']:
+    else:
         p_test_find_questions['points'] = p_points
     return p_test_find_questions
 
