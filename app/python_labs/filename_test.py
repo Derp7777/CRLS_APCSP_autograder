@@ -13,7 +13,7 @@ def filename_test(p_filename, p_lab):
     find_lab = re.search(p_lab, p_filename)
     find_all = re.search(YEAR + r"_ .+ _ " + p_lab + r".py", p_filename, re.X | re.M | re.S)
     p_test_filename = {"name": "Testing that file is named correctly",
-                       "pass": True,
+                       "pass": find_year and find_lab and find_all,
                        "pass_message": "<h5 style=\"color:green;\">Pass!</h5> File name looks correct "
                                        "(i.e. something like 2019_luismartinez_" + p_lab +
                                        ".py)",
@@ -27,8 +27,4 @@ def filename_test(p_filename, p_lab):
                                        " Other tests not run. They will be run after filename is fixed.<br>",
                        'points': 0,
                        }
-    if find_year and find_lab and find_all:
-        p_test_filename['pass'] = True
-    else:
-        p_test_filename['pass'] = False
     return p_test_filename
