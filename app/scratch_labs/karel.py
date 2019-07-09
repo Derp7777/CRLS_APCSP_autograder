@@ -167,6 +167,33 @@ def karel2a(p_moves, p_points):
     return p_test
 
 
+def karel2b(p_moves, p_points):
+    barriers = []
+    beepers = [[50, 10], [30, 30], [50, 30], [20, 40], [40, 40],
+               [60, 40], [80, 40], [30, 50], [50, 50], [70, 50],
+               [40, 60], [60, 60], [50, 70], ]
+    karel = robot(10, 10, 1, barriers, beepers)
+    success = True
+    print("BBB ABOUT TO START MOVING NOW!")
+    karel_result = do_karel(karel, p_moves, success)
+    p_test = {"name": "Testing that karel2 works (" + str(p_points) + " points) <br>",
+              "pass": True,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
+                              "Karel picked up all beepers."
+                              " <br> ",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  ",
+              'points': 0
+              }
+    if karel.num_beepers == 16:
+        p_test['points'] += p_points
+    else:
+        p_test['pass'] = False
+        p_test['fail_message'] += "Karel needed to pick up 16 beepers.  Karel picked up this many: <br>" \
+                                  "" + str(karel.num_beepers)
+    print(f"x{karel.x} y {karel.y} beepers {karel.num_beepers}")
+    print(f"success? {karel_result}")
+    return p_test
+
 def _check_block(p_main_script, p_repeat_blocks, p_blocks):
     """
     Loops over main script
