@@ -60,7 +60,7 @@ def scratch():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
             if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', 'karel1', 'karel2a', 'karel2b',
-                                       'karel3a',
+                                       'karel3a', 'karel3b', 'karel3c', 'karel3d',
                                        ]:
                 return redirect(url_for('scratch_feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
@@ -239,8 +239,6 @@ def scratch_feedback_karel1():
         unzip_sb3(filename)
         json_data = read_json_file()
         coder_json = extract_coder_json(json_data)
-        #print(f"CODE JSON {coder_js
-        # on}")
         [moves, user_blocks, repeat_scripts] = arrange_karel_blocks(coder_json)
         test_turnright = find_turnright(user_blocks, 5)
         tests.append(test_turnright)
@@ -258,8 +256,7 @@ def scratch_feedback_karel1():
 
 @app.route('/scratch/karel2a')
 def scratch_feedback_karel2a():
-    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
-        match_string, every_sprite_green_flag, every_sprite_broadcast_and_receive
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
     from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright, find_repeatfive, \
         karel2a
     user = {'username': 'CRLS Scratch Scholar'}
@@ -296,8 +293,7 @@ def scratch_feedback_karel2a():
 
 @app.route('/scratch/karel2b')
 def scratch_feedback_karel2b():
-    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
-        match_string, every_sprite_green_flag, every_sprite_broadcast_and_receive
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
     from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright, find_repeatfour, \
         karel2b
     user = {'username': 'CRLS Scratch Scholar'}
@@ -334,8 +330,7 @@ def scratch_feedback_karel2b():
 
 @app.route('/scratch/karel3a')
 def scratch_feedback_karel3a():
-    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
-        match_string, every_sprite_green_flag, every_sprite_broadcast_and_receive
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
     from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright,  \
         karel3a_1, karel3a_2, karel_final_spot
     user = {'username': 'CRLS Scratch Scholar'}
@@ -358,9 +353,9 @@ def scratch_feedback_karel3a():
         tests.append(test_turnright)
         test_karel = karel3a_1(moves, 15)
         tests.append(test_karel)
-        test_karel_2 = karel3a_2(moves, 15)
-        tests.append(test_karel)
-        test_final_spot = karel_final_spot(moves, 5)
+        test_karel_2 = karel3a_2(moves, 17.5)
+        tests.append(test_karel_2)
+        test_final_spot = karel_final_spot(moves, 2.5)
         tests.append(test_final_spot)
 
         test_help = find_help(json_data, 5)
@@ -371,6 +366,120 @@ def scratch_feedback_karel3a():
                     score_info['score'] += test['points']
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
+
+@app.route('/scratch/karel3b')
+def scratch_feedback_karel3b():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
+    from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright,  \
+        karel3b_1, karel3b_2, karel_final_spot
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 45, 'manually_scored': 0, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, 'karel3b')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        coder_json = extract_coder_json(json_data)
+        [moves, user_blocks, repeat_scripts] = arrange_karel_blocks(coder_json)
+        test_turnright = find_turnright(user_blocks, 5)
+        tests.append(test_turnright)
+        test_karel = karel3b_1(moves, 15)
+        tests.append(test_karel)
+        test_karel_2 = karel3b_2(moves, 17.5)
+        tests.append(test_karel_2)
+        test_final_spot = karel_final_spot(moves, 2.5)
+        tests.append(test_final_spot)
+
+        test_help = find_help(json_data, 5)
+        tests.append(test_help)
+        score_info['finished_scoring'] = True
+        for test in tests:
+            if test['pass']:
+                    score_info['score'] += test['points']
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/karel3c')
+def scratch_feedback_karel3c():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
+    from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright,  \
+        karel3c_1, karel3c_2, karel_final_spot
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 45, 'manually_scored': 0, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, 'karel3c')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        coder_json = extract_coder_json(json_data)
+        [moves, user_blocks, repeat_scripts] = arrange_karel_blocks(coder_json)
+        test_turnright = find_turnright(user_blocks, 5)
+        tests.append(test_turnright)
+        test_karel = karel3c_1(moves, 15)
+        tests.append(test_karel)
+        test_karel_2 = karel3c_2(moves, 17.5)
+        tests.append(test_karel_2)
+        test_final_spot = karel_final_spot(moves, 2.5)
+        tests.append(test_final_spot)
+
+        test_help = find_help(json_data, 5)
+        tests.append(test_help)
+        score_info['finished_scoring'] = True
+        for test in tests:
+            if test['pass']:
+                    score_info['score'] += test['points']
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/karel3d')
+def scratch_feedback_karel3d():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
+    from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright,  \
+        karel3d_1, karel3d_2, karel_final_spot
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 45, 'manually_scored': 0, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, 'karel3d')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        coder_json = extract_coder_json(json_data)
+        [moves, user_blocks, repeat_scripts] = arrange_karel_blocks(coder_json)
+        test_turnright = find_turnright(user_blocks, 5)
+        tests.append(test_turnright)
+        test_karel = karel3d_1(moves, 17.5)
+        tests.append(test_karel)
+        test_karel_2 = karel3d_2(moves, 17.5)
+        tests.append(test_karel_2)
+
+        test_help = find_help(json_data, 5)
+        tests.append(test_help)
+        score_info['finished_scoring'] = True
+        for test in tests:
+            if test['pass']:
+                    score_info['score'] += test['points']
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_1040')
