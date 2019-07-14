@@ -224,6 +224,8 @@ def scratch_feedback_1x_family_migration_story():
 def scratch_feedback_24_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks,\
         find_variable, find_question, find_set_variable, arrange_blocks_v2, match_string
+    from app.scratch_labs.scratch_2_4_alternate import green_flag, test_color_change, one_question, two_question, \
+        name_variable_x4
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -239,6 +241,7 @@ def scratch_feedback_24_alternate():
         unzip_sb3(filename)
         json_data = read_json_file()
         scripts = arrange_blocks_v2(json_data)
+        print("scripts {}".format(scripts))
         test_question = find_question(json_data, 'name', 5)
         tests.append(test_question)
         test_name = find_variable(json_data, 'name', 5)
@@ -246,6 +249,8 @@ def scratch_feedback_24_alternate():
         if test_name['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
+            test_flag = green_flag(scripts, 5)
+            tests.append(test_flag)
             test_name_variable = find_set_variable(json_data, 'name', 'answer', points=5)
             tests.append(test_name_variable)
             test_question_color = find_question(json_data, 'color', 5)
@@ -254,16 +259,14 @@ def scratch_feedback_24_alternate():
             tests.append(test_color)
             test_color_variable = find_set_variable(json_data, 'color', 'answer', points=5)
             tests.append(test_color_variable)
-            test_name = match_string(r'VARIABLE_name', scripts, points=5, num_matches=5)
-            if test_name['pass'] is False:
-                test_name['fail_message'] += "Expected to see you use the variable 'name' in every question " \
-                                             "(so it should" \
-                                            "show up 4 times in 'say' statements, and again when you set the value" \
-                                             ".<br>"
-            else:
-                test_name['pass_message'] += "Found the variable 'name' show up 4 times in 'say' statements, and once" \
-                                             " again when you set the value."
-            tests.append(test_name)
+            test_stage = test_color_change(scripts, 5)
+            tests.append(test_stage)
+            test_q1 = one_question(scripts, 10)
+            tests.append(test_q1)
+            test_q2 = two_question(scripts, 10)
+            tests.append(test_q2)
+            test_name_usage = name_variable_x4(scripts, 5)
+            tests.append(test_name_usage)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True

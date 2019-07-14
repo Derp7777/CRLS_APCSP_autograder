@@ -105,19 +105,21 @@ def find_variable(p_json, variable_name, p_points):
     :param p_points: Number of points this test is worth
     :return: test dictionary
     """
-    p_test = {"name": "Testing that variable " +
+    p_test = {"name": "Testing that variable '" +
                       variable_name +
-                      " is in the Scratch program "
+                      "' is in the Scratch program "
                       "(" + str(p_points) + " points)",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
-                              "Variable " +
+                              "Variable '" +
                               variable_name +
-                              " is in the Scratch program. <br>",
+                              "' is in the Scratch program. <br>",
               "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
-                              "Did not find a variable " +
+                              "Did not find a variable '" +
                               variable_name +
-                              " in your code. <br>",
+                              "' in your code.  You must name the variable EXACTLY '" +
+                              variable_name +
+                              "' with correct spelling and capitalization.  <br>",
               'points': 0
               }
 
@@ -316,7 +318,15 @@ def build_scratch_script(starting_block_id, p_blocks):
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
         print(f"aaa {current_block_id}")
-        if current_block['opcode'] == 'control_repeat' or \
+        if current_block['opcode'] == 'event_whenflagclicked':
+            script.append('event_whenflagclicked')
+        if current_block['opcode'] == 'event_broadcast':
+            message = current_block['inputs']['BROADCAST_INPUT'][1][1]
+            script.append(['event_broadcast', message])
+        if current_block['opcode'] == 'event_whenbroadcastreceived':
+            message = current_block['fields']['BROADCAST_OPTION'][0]
+            script.append(['event_whenbroadcastreceived', message])
+        elif current_block['opcode'] == 'control_repeat' or \
                 current_block['opcode'] == 'control_forever':
             substack_id = current_block['inputs']['SUBSTACK'][1]
             repeat_script = build_scratch_script(substack_id, p_blocks)
@@ -325,8 +335,18 @@ def build_scratch_script(starting_block_id, p_blocks):
             else:
                 times = current_block['inputs']['TIMES'][1][1]
             script.append(['control_repeat', times, repeat_script])
+        elif current_block['opcode'] == 'control_repeat_until':
+            substack_id = current_block['inputs']['SUBSTACK'][1]
+            condition_id = current_block['inputs']['CONDITION'][1]
+            repeat_script = build_scratch_script(substack_id, p_blocks)
+            condition_script = build_scratch_script(condition_id, p_blocks)
+            script.append(['control_repeat_until', condition_script, repeat_script])
         elif current_block['opcode'] == 'sensing_askandwait':
-            question = current_block['inputs']['QUESTION'][1][1]
+            if len(current_block['inputs']['QUESTION']) == 2:
+                question = current_block['inputs']['QUESTION'][1][1]
+            else:
+                join_block = current_block['inputs']['QUESTION'][1]
+                question = build_scratch_script(join_block, p_blocks)
             script.append(['sensing_askandwait', question])
         elif current_block['opcode'] == 'looks_sayforsecs':
             if len(current_block['inputs']['MESSAGE']) == 3:
@@ -369,12 +389,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             else_script = build_scratch_script(substack_2_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if_else', condition_script, if_script, else_script])
-        elif current_block['opcode'] == 'control_repeat_until':
-            substack_id = current_block['inputs']['SUBSTACK'][1]
-            condition_id = current_block['inputs']['CONDITION'][1]
-            repeat_script = build_scratch_script(substack_id, p_blocks)
-            condition_script = build_scratch_script(condition_id, p_blocks)
-            script.append(['control_repeat_until', condition_script, repeat_script])
         elif current_block['opcode'] == 'operator_equals':
             if len(current_block['inputs']['OPERAND1']) == 2:
                 operand1 = current_block['inputs']['OPERAND1'][1][1]
@@ -399,6 +413,8 @@ def build_scratch_script(starting_block_id, p_blocks):
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
             script = ['looks_switchbackdropto', backdrop]
+        elif current_block['opcode'] == 'looks_nextbackdrop':
+            script = 'looks_nextbackdrop'
         elif current_block['opcode'] == 'looks_backdrops':
             backdrop = current_block['fields']['BACKDROP'][0]
             script = [backdrop]
@@ -489,7 +505,6 @@ def arrange_blocks_v2(p_json):
                     print(f"yyy {block_id} doing things without parents now.")
                     script = build_scratch_script(block_id, blocks)
                     scripts[block_id] = script
-                    print(f"aaa {script}" )
     return scripts
 
 
@@ -584,6 +599,7 @@ def count_stage_changes(p_json):
         if target['isStage'] is True:
             matches = len(re.findall(r'(looks_switchcostumeto|looks_nextbackdrop)', str(p_json), re.X | re.M | re.S))
     return matches
+
 
 def every_sprite_green_flag(p_json, p_points):
     """
