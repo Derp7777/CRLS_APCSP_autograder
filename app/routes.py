@@ -59,7 +59,8 @@ def scratch():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
-            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', 'karel1', 'karel2a', 'karel2b',
+            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.4_alternate',
+                                       'karel1', 'karel2a', 'karel2b',
                                        'karel3a', 'karel3b', 'karel3c', 'karel3d',
                                        ]:
                 return redirect(url_for('scratch_feedback_' + request.form['lab'].replace(".", ""), filename=filename))
@@ -210,6 +211,59 @@ def scratch_feedback_1x_family_migration_story():
             tests.append(test_show_and_hide)
             test_change_stage = min_two_stages(json_data, 5)
             tests.append(test_change_stage)
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                        score_info['score'] += test['points']
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/scratch_feedback_24_alternate')
+def scratch_feedback_24_alternate():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks,\
+        find_variable, find_question, find_set_variable, arrange_blocks_v2, match_string
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '2.4_alternate')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        scripts = arrange_blocks_v2(json_data)
+        test_question = find_question(json_data, 'name', 5)
+        tests.append(test_question)
+        test_name = find_variable(json_data, 'name', 5)
+        tests.append(test_name)
+        if test_name['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_name_variable = find_set_variable(json_data, 'name', 'answer', points=5)
+            tests.append(test_name_variable)
+            test_question_color = find_question(json_data, 'color', 5)
+            tests.append(test_question_color)
+            test_color = find_variable(json_data, 'color', 5)
+            tests.append(test_color)
+            test_color_variable = find_set_variable(json_data, 'color', 'answer', points=5)
+            tests.append(test_color_variable)
+            test_name = match_string(r'VARIABLE_name', scripts, points=5, num_matches=5)
+            if test_name['pass'] is False:
+                test_name['fail_message'] += "Expected to see you use the variable 'name' in every question " \
+                                             "(so it should" \
+                                            "show up 4 times in 'say' statements, and again when you set the value" \
+                                             ".<br>"
+            else:
+                test_name['pass_message'] += "Found the variable 'name' show up 4 times in 'say' statements, and once" \
+                                             " again when you set the value."
+            tests.append(test_name)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True

@@ -97,6 +97,136 @@ def find_help(p_json, p_points):
     return p_test_help
 
 
+def find_variable(p_json, variable_name, p_points):
+    """
+    Find a particular variable in scratch. Retruns True/False
+    :param p_json: The json
+    :param variable_name: variable nmae you are looking for
+    :param p_points: Number of points this test is worth
+    :return: test dictionary
+    """
+    p_test = {"name": "Testing that variable " +
+                      variable_name +
+                      " is in the Scratch program "
+                      "(" + str(p_points) + " points)",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
+                              "Variable " +
+                              variable_name +
+                              " is in the Scratch program. <br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              "Did not find a variable " +
+                              variable_name +
+                              " in your code. <br>",
+              'points': 0
+              }
+
+    sprites = p_json['targets']
+    for sprite in sprites:
+        if 'variables' in sprite:
+            variables = sprite['variables']
+            for key in variables:
+                variable_list = variables[key]
+                if variable_name == variable_list[0]:
+                    p_test['pass'] = True
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test
+
+
+def find_question(p_json, question_string, p_points):
+    """
+    Find a particular string in all of the questions being asked in scratch. Retruns True/False
+    :param p_json: The json
+    :param question_string: String you are going to regex search in
+    :param p_points: Number of points this test is worth
+    :return: test dictionary
+    """
+    import re
+    p_test = {"name": "Testing that a question with the string '" +
+                      question_string +
+                      "' is in the Scratch program "
+                      "(" + str(p_points) + " points)",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
+                              "Question with the string " +
+                              question_string +
+                              " is in the Scratch program. <br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              "Did not find a question with the string " +
+                              question_string +
+                              " in your code. <br>",
+              'points': 0
+              }
+
+    sprites = p_json['targets']
+    for sprite in sprites:
+        if 'blocks' in sprite:
+            blocks = sprite['blocks']
+            for block_id in blocks:
+                block = blocks[block_id]
+                if block['opcode'] == 'sensing_askandwait':
+                    question = block['inputs']['QUESTION'][1][1]
+                    if re.search(question_string, question, re.X | re.M | re.S):
+                        p_test['pass'] = True
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test
+
+
+def find_set_variable(p_json, variable, value, *, points=0):
+    """
+    Find a particular string in all of the questions being asked in scratch. Retruns True/False
+    :param p_json: The json
+    :param variable: the variable
+    :param value: value
+    :param p_points: Number of points this test is worth
+    :return: test dictionary
+    """
+    p_test = {"name": "Testing that setting a variable '" +
+              variable +
+              "' to the value '" +
+              value +
+              "' is in the Scratch program  (" +
+                      str(points) +
+                      "  points)",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>" +
+                              "A variable '" +
+                              variable +
+                              "' is set to the value '" +
+                              value +
+                              "' in the Scratch program  <br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              "Did not find  a variable '" +
+                              variable +
+                              "' with the value '" +
+                              value +
+                              "' in the Scratch program  <br>",
+              'points': 0
+              }
+
+    sprites = p_json['targets']
+    for sprite in sprites:
+        if 'blocks' in sprite:
+            blocks = sprite['blocks']
+            for block_id in blocks:
+                block = blocks[block_id]
+                if block['opcode'] == 'data_setvariableto':
+                    block_variable = block['fields']['VARIABLE'][0]
+                    if isinstance(block['inputs']['VALUE'][1], str):
+                        value_block_id = block['inputs']['VALUE'][1]
+                        if blocks[value_block_id]['opcode'] == 'sensing_answer':
+                            block_value = 'answer'
+                    else:
+                        block_value = block['inputs']['VALUE'][1][1]
+                    if block_variable == variable and block_value == value:
+                        p_test['pass'] = True
+    if p_test['pass']:
+        p_test['points'] += points
+    return p_test
+
+
 def _clean_block(block):
     """
     Helper function, gets rid of a bunch of keys to make more readable
@@ -168,6 +298,198 @@ def arrange_blocks(p_json):
             _clean_block(block)
         print("arrange blocks KEY!!")
         print(scripts[key])
+    return scripts
+
+
+def build_scratch_script(starting_block_id, p_blocks):
+    """
+    Same as build karel script but copied over so I cdon't break that one
+    :param starting_block_id:
+    :param p_blocks: al the blocks for this script
+    :return: a combined script (dictionary)
+    """
+    temp_block = p_blocks[starting_block_id]
+    temp_block['ID'] = starting_block_id
+    current_block_id = starting_block_id
+    next_block_id = "continue"
+    script = []
+    while next_block_id is not None:
+        current_block = p_blocks[current_block_id]
+        print(f"aaa {current_block_id}")
+        if current_block['opcode'] == 'control_repeat' or \
+                current_block['opcode'] == 'control_forever':
+            substack_id = current_block['inputs']['SUBSTACK'][1]
+            repeat_script = build_scratch_script(substack_id, p_blocks)
+            if current_block['opcode'] == 'control_forever':
+                times = 150
+            else:
+                times = current_block['inputs']['TIMES'][1][1]
+            script.append(['control_repeat', times, repeat_script])
+        elif current_block['opcode'] == 'sensing_askandwait':
+            question = current_block['inputs']['QUESTION'][1][1]
+            script.append(['sensing_askandwait', question])
+        elif current_block['opcode'] == 'looks_sayforsecs':
+            if len(current_block['inputs']['MESSAGE']) == 3:
+                words_id = current_block['inputs']['MESSAGE'][1]
+                message = build_scratch_script(words_id, p_blocks)
+            else:
+                message = current_block['inputs']['MESSAGE'][1][1]  # does not reference anything else
+            time = current_block['inputs']['SECS'][1][1]
+            script.append(['looks_sayforsecs', message, time])
+        elif current_block['opcode'] == 'sensing_answer':
+            script.append('sensing_answer')
+        elif current_block['opcode'] == 'data_setvariableto':
+            if len(current_block['inputs']['VALUE']) == 2:
+                value = current_block['inputs']['VALUE'][1][1]
+            else:
+                if isinstance(current_block['inputs']['VALUE'][1], list):
+                    value = 'VARIABLE_' + current_block['inputs']['VALUE'][1][1]
+                else:
+                    next_id = current_block['inputs']['VALUE'][1]
+                    value = build_scratch_script(next_id, p_blocks)
+            variable = current_block['fields']['VARIABLE'][0]
+            variable = 'VARIABLE_' + variable
+            script.append(['data_setvariableto', variable, value])
+        elif current_block['opcode'] == 'procedures_call':
+            script.append(current_block['mutation']['proccode'])
+        elif current_block['opcode'] == 'control_if':
+            substack_1_id = current_block['inputs']['SUBSTACK'][1]
+            condition_id = current_block['inputs']['CONDITION'][1]
+            if_script = build_scratch_script(substack_1_id, p_blocks)
+            condition_script = build_scratch_script(condition_id, p_blocks)
+            script.append(['control_if', condition_script, if_script])
+        elif current_block['opcode'] == 'control_if_else':
+            print(f"bbb block {current_block_id}")
+            print(f"bbb block {current_block}")
+            substack_1_id = current_block['inputs']['SUBSTACK'][1]
+            substack_2_id = current_block['inputs']['SUBSTACK2'][1]
+            condition_id = current_block['inputs']['CONDITION'][1]
+            print(f"IDS {substack_1_id} sub2 {substack_2_id} cond {condition_id}")
+            if_script = build_scratch_script(substack_1_id, p_blocks)
+            else_script = build_scratch_script(substack_2_id, p_blocks)
+            condition_script = build_scratch_script(condition_id, p_blocks)
+            script.append(['control_if_else', condition_script, if_script, else_script])
+        elif current_block['opcode'] == 'control_repeat_until':
+            substack_id = current_block['inputs']['SUBSTACK'][1]
+            condition_id = current_block['inputs']['CONDITION'][1]
+            repeat_script = build_scratch_script(substack_id, p_blocks)
+            condition_script = build_scratch_script(condition_id, p_blocks)
+            script.append(['control_repeat_until', condition_script, repeat_script])
+        elif current_block['opcode'] == 'operator_equals':
+            if len(current_block['inputs']['OPERAND1']) == 2:
+                operand1 = current_block['inputs']['OPERAND1'][1][1]
+            else:
+                if isinstance(current_block['inputs']['OPERAND1'][1], str):
+                    operand1_id = current_block['inputs']['OPERAND1'][1]
+                    operand1 = build_scratch_script(operand1_id, p_blocks)
+                elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
+                    operand1 = current_block['inputs']['OPERAND1'][1][1]
+                    operand1 = "VARIABLE_" + operand1
+            if len(current_block['inputs']['OPERAND2']) == 2:
+                operand2 = current_block['inputs']['OPERAND2'][1][1]
+            else:
+                if isinstance(current_block['inputs']['OPERAND2'][1], str):
+                    operand2 = current_block['inputs']['OPERAND2'][1][1]
+                    operand2 = "VARIABLE_" + operand2
+                elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
+                    operand2_id = current_block['inputs']['OPERAND2'][1]
+                    operand2 = build_scratch_script(operand2_id, p_blocks)
+            script = [operand1, '=', operand2]
+        elif current_block['opcode'] == 'looks_switchbackdropto':
+            backdrop_id = current_block['inputs']['BACKDROP'][1]
+            backdrop = build_scratch_script(backdrop_id, p_blocks)
+            script = ['looks_switchbackdropto', backdrop]
+        elif current_block['opcode'] == 'looks_backdrops':
+            backdrop = current_block['fields']['BACKDROP'][0]
+            script = [backdrop]
+        elif current_block['opcode'] == 'operator_join':
+            if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
+                string1 = current_block['inputs']['STRING1'][1][1]
+            elif str(current_block['inputs']['STRING1'][1][0]) == str(12):  #this is a varialbe
+                string1 = "VARIABLE_" + current_block['inputs']['STRING1'][1][1]
+            elif str(current_block['inputs']['STRING1'][0]) == str(3):  #this is a another block
+                next_id = current_block['inputs']['STRING1'][1]
+                string1 = build_scratch_script(next_id, p_blocks)
+
+            if len(current_block['inputs']['STRING2'][1]) == 2:
+                string2 = current_block['inputs']['STRING2'][1][1]
+            elif str(current_block['inputs']['STRING2'][1][0]) == str(12):  #this is a varialbe
+                string2 = "VARIABLE_" + current_block['inputs']['STRING2'][1][1]
+            elif str(current_block['inputs']['STRING2'][0]) == str(3):  #this is a another block
+                next_id = current_block['inputs']['STRING2'][1]
+                string2 = build_scratch_script(next_id, p_blocks)
+            script = [str(string1) + str(string2)]
+        next_block_id = current_block['next']
+        current_block_id = next_block_id
+    return script
+
+
+def arrange_blocks_v2(p_json):
+    """
+    More or less the same, but taking the lessons I learned from Karel.
+    Looks for a particular script in the code.  Algorithms:
+    :param p_json: json info (as dictionary)
+    :return: scripts - dictionary of scripts.  Keys are block ID's of parent.  values are lists of individual blocks
+    under the parent
+    """
+    from app.scratch_labs.karel import build_karel_script
+
+    scripts = {}
+    repeat_scripts = {}
+    operator_scripts = {}
+    if_scripts = {}
+    sprites = p_json['targets']
+    for sprite in sprites:
+        if 'blocks' in sprite:
+            blocks = sprite['blocks']
+            for block_id in blocks:
+                block = blocks[block_id]
+                if block['opcode'] == "control_repeat" or \
+                        block['opcode'] == "control_forever" or \
+                        block['opcode'] == "control_repeat_until":
+                    print(f"yyy {block_id} building repeat_scripts  ")
+                    if 'inputs' in block:
+                        if 'SUBSTACK' in block['inputs']:
+                            repeat_scripts[block_id] = [block['inputs']['SUBSTACK'][1]]
+                elif block['opcode'] == "operator_equals":
+                    print(f"yyy {block_id} building operator scripts now.   ") #This may be jacked see later.
+                    if 'inputs' in block:
+                        if 'OPERAND1' in block['inputs']:
+                            operator_scripts[block_id] = [block['inputs']['OPERAND1'][1][1],
+                                                          '=',
+                                                          block['inputs']['OPERAND2'][1][1]]
+                elif block['opcode'] == "control_if_else":
+                    print(f"yyy {block_id} building if scripts now.   ")
+                    if 'inputs' in block:
+                        if 'SUBSTACK' in block['inputs']:
+                            if_scripts[block_id] = [block['inputs']['CONDITION'][1],
+                                                    block['inputs']['SUBSTACK'][1],
+                                                    block['inputs']['SUBSTACK2'][1]]
+                elif block['opcode'] == "procedures_definition":  # can skip, previous if does
+                    continue
+                elif block['parent']:
+                    parent_id = block['parent']
+                    parent_block = blocks[parent_id]
+                    if parent_block['inputs']:
+                        if parent_block['opcode'] == 'control_repeat' or \
+                                parent_block['opcode'] == 'control_forever':
+                            if 'SUBSTACK' in parent_block['inputs']:
+                                print(f"yyy {block_id} this block has a parent with substack. This is a repeat ")
+                                if parent_block['inputs']['SUBSTACK'][1] == block_id:
+                                    script = build_scratch_script(block_id, blocks)
+                                    temp_repeat_commands = []
+                                    for item in script:
+                                        print(f"IN A REPEAT STACK item['opcode']" + str(item))
+                                        if item['opcode'] == 'event_whenbroadcastreceived':
+                                            continue
+                                        else:
+                                            temp_repeat_commands.append(item['inputs']['SUBSTACK'][1])
+                                    repeat_scripts[block_id] = temp_repeat_commands
+                elif block['parent'] is None:
+                    print(f"yyy {block_id} doing things without parents now.")
+                    script = build_scratch_script(block_id, blocks)
+                    scripts[block_id] = script
+                    print(f"aaa {script}" )
     return scripts
 
 
@@ -262,7 +584,6 @@ def count_stage_changes(p_json):
         if target['isStage'] is True:
             matches = len(re.findall(r'(looks_switchcostumeto|looks_nextbackdrop)', str(p_json), re.X | re.M | re.S))
     return matches
-
 
 def every_sprite_green_flag(p_json, p_points):
     """

@@ -55,12 +55,15 @@ class robot(object):
             return False
 
 
-def _karel_helper():
-    print("yes")
-
-
 def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
-
+    """
+    This function does the karel movements
+    :param p_karel: The Karel object
+    :param moves: What it returns  If false then exit right away
+    :param max_fly: Optional variable that checks to see if Karel is flying instead of jumping
+    :param max_height: Maximum height to check if Karel is exceeding for 5 turns
+    :return: True/False depending on if crash or maximum fly exceeded.
+    """
     max_height_counter = 5
     if success is False:
         return False
@@ -476,6 +479,7 @@ def karel3d_2(p_moves, p_points):
 
     print(f"success? {karel_result}")
     return p_test
+
 
 def karel_final_spot(p_moves, p_points):
     barriers = [[5, 0], [25, 0], [35, 0], [55, 0], [65, 0], ]
