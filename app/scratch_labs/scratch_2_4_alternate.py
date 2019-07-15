@@ -1,6 +1,6 @@
 def green_flag(p_json, p_points):
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Testing that there is a green flag.  The rest of your code should be under the  green flag"
+    p_test = {"name": "Testing that there is a green flag.  The rest of your code should be under the green flag " 
                       "(" + str(p_points) + " points)",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
@@ -20,9 +20,13 @@ def green_flag(p_json, p_points):
         p_test['fail_message'] += 'There needs to be a question under the flag.'
     test_flag_and_question_and_variable = match_string(r'event_whenflagclicked .+ sensing_askandwait .+'
                                                        r' data_setvariableto', p_json)
-    if test_flag_and_question_and_variable['pass'] is False:
+
+    test_flag_and_question_and_variable_2 = match_string(r'event_whenflagclicked .+ data_setvariableto .+ '
+                                                         r'sensing_askandwait .+', p_json)
+    if test_flag_and_question_and_variable['pass'] is False and test_flag_and_question_and_variable_2['pass'] is False:
         p_test['fail_message'] += 'There needs to be a question and setting a variable under the flag.'
-    if test_flag['pass'] and test_flag_and_question['pass'] and test_flag_and_question_and_variable['pass']:
+    if test_flag['pass'] and test_flag_and_question['pass'] and (test_flag_and_question_and_variable['pass'] or
+                                                                 test_flag_and_question_and_variable_2['pass']):
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test
@@ -68,6 +72,9 @@ def test_color_change(p_scripts, p_points):
                             (test_receive_broadcast['pass'] and test_if_broadcast['pass'])):
         p_test['pass'] = True
         p_test['points'] += p_points
+    print(test_receive_broadcast['pass'])
+    print(test_if_broadcast['pass'])
+
     return p_test
 
 
@@ -94,7 +101,7 @@ def one_question(p_scripts, p_points):
     test_q_and_if = match_string(r'sensing_askandwait .+ control_if_else', p_scripts)
     if test_q_and_if['pass'] is False:
         p_test['fail_message'] += "Does not appear that you have a question and an if/else.<br>" \
-                                  "Need an if/else, because you will have a different response" \
+                                  "Need an if/else, because you will have a different response " \
                                   "depending on how the user answers the question.<br>"
 
     test_all_one = match_string(r'sensing_askandwait .+ control_if_else .+ \[ .+ \[ .+ looks_say .+ ] .+ '

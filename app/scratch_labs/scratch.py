@@ -167,6 +167,8 @@ def find_question(p_json, question_string, p_points):
             blocks = sprite['blocks']
             for block_id in blocks:
                 block = blocks[block_id]
+                if 'opcode' not in block:
+                    continue
                 if block['opcode'] == 'sensing_askandwait':
                     question = block['inputs']['QUESTION'][1][1]
                     if re.search(question_string, question, re.X | re.M | re.S):
@@ -214,6 +216,8 @@ def find_set_variable(p_json, variable, value, *, points=0):
             blocks = sprite['blocks']
             for block_id in blocks:
                 block = blocks[block_id]
+                if 'opcode' not in block:
+                    continue
                 if block['opcode'] == 'data_setvariableto':
                     block_variable = block['fields']['VARIABLE'][0]
                     if isinstance(block['inputs']['VALUE'][1], str):
@@ -317,15 +321,17 @@ def build_scratch_script(starting_block_id, p_blocks):
     script = []
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
-        print(f"aaa {current_block_id}")
+        print(f"aaa {current_block_id} opcode {current_block['opcode']}")
         if current_block['opcode'] == 'event_whenflagclicked':
             script.append('event_whenflagclicked')
-        if current_block['opcode'] == 'event_broadcast':
+        elif current_block['opcode'] == 'event_broadcast':
             message = current_block['inputs']['BROADCAST_INPUT'][1][1]
             script.append(['event_broadcast', message])
-        if current_block['opcode'] == 'event_whenbroadcastreceived':
+        elif current_block['opcode'] == 'event_whenbroadcastreceived':
+            print("here wuh")
             message = current_block['fields']['BROADCAST_OPTION'][0]
             script.append(['event_whenbroadcastreceived', message])
+            print(script)
         elif current_block['opcode'] == 'control_repeat' or \
                 current_block['opcode'] == 'control_forever':
             substack_id = current_block['inputs']['SUBSTACK'][1]
@@ -408,16 +414,16 @@ def build_scratch_script(starting_block_id, p_blocks):
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
                     operand2_id = current_block['inputs']['OPERAND2'][1]
                     operand2 = build_scratch_script(operand2_id, p_blocks)
-            script = [operand1, '=', operand2]
+            script.append([operand1, '=', operand2])
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
-            script = ['looks_switchbackdropto', backdrop]
+            script.append(['looks_switchbackdropto', backdrop])
         elif current_block['opcode'] == 'looks_nextbackdrop':
             script = 'looks_nextbackdrop'
         elif current_block['opcode'] == 'looks_backdrops':
             backdrop = current_block['fields']['BACKDROP'][0]
-            script = [backdrop]
+            script.append(backdrop)
         elif current_block['opcode'] == 'operator_join':
             if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
                 string1 = current_block['inputs']['STRING1'][1][1]
@@ -426,7 +432,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             elif str(current_block['inputs']['STRING1'][0]) == str(3):  #this is a another block
                 next_id = current_block['inputs']['STRING1'][1]
                 string1 = build_scratch_script(next_id, p_blocks)
-
             if len(current_block['inputs']['STRING2'][1]) == 2:
                 string2 = current_block['inputs']['STRING2'][1][1]
             elif str(current_block['inputs']['STRING2'][1][0]) == str(12):  #this is a varialbe
@@ -460,6 +465,9 @@ def arrange_blocks_v2(p_json):
             blocks = sprite['blocks']
             for block_id in blocks:
                 block = blocks[block_id]
+                print(f"jjj {block_id} ")
+                if 'opcode' not in block:
+                    continue
                 if block['opcode'] == "control_repeat" or \
                         block['opcode'] == "control_forever" or \
                         block['opcode'] == "control_repeat_until":

@@ -59,7 +59,7 @@ def scratch():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
-            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.4_alternate',
+            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.4_alternate', '2.5_alternate',
                                        'karel1', 'karel2a', 'karel2b',
                                        'karel3a', 'karel3b', 'karel3c', 'karel3d',
                                        ]:
@@ -267,6 +267,57 @@ def scratch_feedback_24_alternate():
             tests.append(test_q2)
             test_name_usage = name_variable_x4(scripts, 5)
             tests.append(test_name_usage)
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                        score_info['score'] += test['points']
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/scratch_feedback_25_alternate')
+def scratch_feedback_25_alternate():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
+         find_question, arrange_blocks_v2
+    from app.scratch_labs.scratch_2_4_alternate import green_flag
+    from app.scratch_labs.scratch_2_5_alternate import test_prizes, test_prizes_defined, any_conditional, four_prizes, \
+        no_if_if, find_else
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 46, 'manually_scored': 10, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '2.5_alternate')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        scripts = arrange_blocks_v2(json_data)
+        print("scripts {}".format(scripts))
+        test_question = find_question(json_data, 'door', 6)
+        tests.append(test_question)
+        test_prize_variables = test_prizes(json_data, 5)
+        tests.append(test_prize_variables)
+        if test_prize_variables['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_prize_values = test_prizes_defined(scripts, 5)
+            tests.append(test_prize_values)
+            test_flag = green_flag(scripts, 5)
+            tests.append(test_flag)
+            test_conditional = any_conditional(scripts, 5)
+            tests.append(test_conditional)
+            test_four = four_prizes(scripts, 5)
+            tests.append(test_four)
+            test_efficient = no_if_if(scripts, 5)
+            tests.append(test_efficient)
+            test_else = find_else(scripts, 5)
+            tests.append(test_else)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True
