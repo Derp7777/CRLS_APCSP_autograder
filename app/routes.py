@@ -59,7 +59,8 @@ def scratch():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
-            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.4_alternate', '2.5_alternate',
+            if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.2',
+                                       '2.4_alternate', '2.5_alternate',
                                        '2.6', 'karel1', 'karel2a', 'karel2b',
                                        'karel3a', 'karel3b', 'karel3c', 'karel3d',
                                        ]:
@@ -211,6 +212,42 @@ def scratch_feedback_1x_family_migration_story():
             tests.append(test_show_and_hide)
             test_change_stage = min_two_stages(json_data, 5)
             tests.append(test_change_stage)
+            test_help = find_help(json_data, 5)
+            tests.append(test_help)
+            score_info['finished_scoring'] = True
+            for test in tests:
+                if test['pass']:
+                        score_info['score'] += test['points']
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/scratch_feedback_22')
+def scratch_feedback_22():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks,\
+         arrange_blocks_v2
+    from app.scratch_labs.scratch_2_2 import press_zero
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '2.2')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        scripts = arrange_blocks_v2(json_data)
+        print("scripts {}".format(scripts))
+        test_zero = press_zero(json_data, 5)
+        tests.append(test_zero)
+        if test_zero['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True

@@ -343,8 +343,14 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'motion_changeyby':
             dy = current_block['inputs']['DY'][1][1]
             script.append(['motion_changeyby', dy])
+        elif current_block['opcode'] == 'motion_pointindirection':
+            direction = current_block['inputs']['DIRECTION'][1][1]
+            script.append(['motion_pointindirection', direction])
         elif current_block['opcode'] == 'event_whenflagclicked':
             script.append('event_whenflagclicked')
+        elif current_block['opcode'] == 'event_whenkeypressed':
+            key = current_block['fields']['KEY_OPTION'][0]
+            script.append(['event_whenkeypressed', key])
         elif current_block['opcode'] == 'event_broadcast':
             message = current_block['inputs']['BROADCAST_INPUT'][1][1]
             script.append(['event_broadcast', message])
@@ -482,7 +488,14 @@ def build_scratch_script(starting_block_id, p_blocks):
             elif str(current_block['inputs']['STRING2'][0]) == str(3):  #this is a another block
                 next_id = current_block['inputs']['STRING2'][1]
                 string2 = build_scratch_script(next_id, p_blocks)
-            script = [str(string1) + str(string2)]
+            script.append([str(string1) + str(string2)])
+        elif current_block['opcode'] == 'pen_penDown':
+            script.append('pen_penDown')
+        elif current_block['opcode'] == 'pen_clear':
+            script.append('pen_clear')
+        elif current_block['opcode'] == 'pen_setPenColorToColor':
+            color = current_block['inputs']['COLOR'][1][1]
+            script.append(['pen_setPenColorToColor', color])
         next_block_id = current_block['next']
         current_block_id = next_block_id
     return script
