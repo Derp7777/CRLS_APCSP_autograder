@@ -1,25 +1,34 @@
+import math
+
 class brickLayer(object):
-    def __init__(self, x, y, direction, targets):
+    def __init__(self, x, y, direction, *, draw_targets={}):
         self.x = x
         self.y = y
-        self.direction = direction
-        self.draw_targets = targets
+        self.direction = math.radians(direction)
+        self.draw_targets = draw_targets
         self.penupdown = True
 
-    def turnleft(self):
-        self.direction = (self.direction + 3) % 4
-
     def move(self, amount):
+        print("start of move selfx {} selfy {} ".format(self.x, self.y))
+
         orig_x = self.x
         orig_y = self.y
-        if self.direction == 0:
-            self.y += amount
-        elif self.direction == 1:
-            self.x += amount
-        elif self.direction == 2:
-            self.y -= amount
-        elif self.direction == 3:
-            self.x -= amount
+        amount = int(amount)
+        print(self.direction)
+        self.y += round(math.cos(self.direction) * amount)
+        self.x += round(math.sin(self.direction) * amount)
+        print("enf of moveselfx {} selfy {} ".format(self.x, self.y))
+        if ((orig_x, orig_y), (self.x, self.y)) in self.draw_targets.keys():
+            self.draw_targets[((orig_x, orig_y), (self.x, self.y))] = 0
+            return True
+        elif ((self.x, self.y), (orig_x, orig_y) ) in self.draw_targets.keys():
+            self.draw_targets[((self.x, self.y), (orig_x, orig_y))] = 0
+            return True
+        else:
+            return False
+
+    def turn(self, amount):
+        self.direction += amount
 
 
 def do_sprite(p_sprite, moves, success):
@@ -36,10 +45,25 @@ def do_sprite(p_sprite, moves, success):
         if isinstance(move, list):
             do_sprite(p_sprite, moves[i], success)
         else:
-            if move == 'move':
-                if p_karel.move() is False:
+            print("IN do-sprite selfx {} selfy {} dir {} ".format(p_sprite.x, p_sprite.y, p_sprite.direction))
+
+            print("ggg move {}".format(move))
+            if move == 'motion_movesteps':
+                amount = moves[i+1]
+                ret_val = p_sprite.move(amount)
+                if ret_val is False:
                     success = False
-                    break
+                print("IN do-sprite after move selfx {} selfy {} dir {}".format(p_sprite.x, p_sprite.y,
+                                                                                p_sprite.direction))
+
+            elif move == 'motion_turnleft':
+                degrees = float(moves[i+1])
+                degrees = -math.radians(degrees)
+                p_sprite.turn(degrees)
+            elif move == 'motion_turnright':
+                degrees = float(moves[i+1])
+                degrees = math.radians(degrees)
+                p_sprite.turn(degrees)
 
 
 def press_zero(p_scripts, p_points):
@@ -95,5 +119,24 @@ def press_one(p_scripts, p_points):
                               "Checker assumes you pressed 0 first, so you start in bottom left corner.<br>",
               "points": 0
               }
+    target_list = (((0, 0), (40, 0)), ((40, 0), (40, 20)), ((40, 20), (0, 20)), ((0, 0), (0, 20)), )
+    target_dict = {}
+    for target in target_list:
+        if target not in target_dict.keys():
+            target_dict[target] = 1
+    print(target_dict)
+    sprite = brickLayer(0, 0, 90, draw_targets=target_dict)
+    success = False
+    for key in p_scripts:
+        script = p_scripts[key]
+        if script[0] == ['event_whenkeypressed', '1']:
+            success = do_sprite(sprite, script, True)
+            if success:
+                break
+    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+                                                                 sprite.draw_targets))
+    if success:
+        p_test['pass'] = True
+        p_test['points'] += p_points
     return p_test
 

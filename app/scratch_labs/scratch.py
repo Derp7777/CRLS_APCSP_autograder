@@ -322,7 +322,16 @@ def build_scratch_script(starting_block_id, p_blocks):
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
         print(f"aaa {current_block_id} opcode {current_block['opcode']}")
-        if current_block['opcode'] == 'motion_sety':
+        if current_block['opcode'] == 'motion_movesteps':
+            steps = current_block['inputs']['STEPS'][1][1]
+            script.append(['motion_movesteps', steps])
+        if current_block['opcode'] == 'motion_turnleft':
+            degrees = current_block['inputs']['DEGREES'][1][1]
+            script.append(['motion_turnleft', degrees])
+        if current_block['opcode'] == 'motion_turnright':
+            degrees = current_block['inputs']['DEGREES'][1][1]
+            script.append(['motion_turnright', degrees])
+        elif current_block['opcode'] == 'motion_sety':
             y = current_block['inputs']['Y'][1][1]
             script.append(['motion_sety', y])
         if current_block['opcode'] == 'motion_setx':

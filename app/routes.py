@@ -225,7 +225,7 @@ def scratch_feedback_1x_family_migration_story():
 def scratch_feedback_22():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks,\
          arrange_blocks_v2
-    from app.scratch_labs.scratch_2_2 import press_zero
+    from app.scratch_labs.scratch_2_2 import press_zero, press_one
 
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
@@ -248,6 +248,8 @@ def scratch_feedback_22():
         if test_zero['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
+            test_one = press_one(scripts, 10)
+            tests.append(test_one)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True
