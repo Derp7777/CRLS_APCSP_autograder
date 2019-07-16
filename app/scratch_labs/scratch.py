@@ -322,13 +322,33 @@ def build_scratch_script(starting_block_id, p_blocks):
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
         print(f"aaa {current_block_id} opcode {current_block['opcode']}")
-        if current_block['opcode'] == 'event_whenflagclicked':
+        if current_block['opcode'] == 'motion_sety':
+            y = current_block['inputs']['Y'][1][1]
+            script.append(['motion_sety', y])
+        if current_block['opcode'] == 'motion_setx':
+            if len(current_block['inputs']['X']) == 3:
+                operator_id = current_block['inputs']['X'][1]
+                x = build_scratch_script(operator_id, p_blocks)
+            else:
+                x = current_block['inputs']['X'][1][1]
+            script.append(['motion_setx', x])
+        elif current_block['opcode'] == 'motion_gotoxy':
+            if len(current_block['inputs']['X']) == 3:
+                operator_id = current_block['inputs']['X'][1]
+                x = build_scratch_script(operator_id, p_blocks)
+            else:
+                x = current_block['inputs']['X'][1][1]
+            y = current_block['inputs']['Y'][1][1]
+            script.append(['motion_gotoxy', x, y])
+        elif current_block['opcode'] == 'motion_changeyby':
+            dy = current_block['inputs']['DY'][1][1]
+            script.append(['motion_changeyby', dy])
+        elif current_block['opcode'] == 'event_whenflagclicked':
             script.append('event_whenflagclicked')
         elif current_block['opcode'] == 'event_broadcast':
             message = current_block['inputs']['BROADCAST_INPUT'][1][1]
             script.append(['event_broadcast', message])
         elif current_block['opcode'] == 'event_whenbroadcastreceived':
-            print("here wuh")
             message = current_block['fields']['BROADCAST_OPTION'][0]
             script.append(['event_whenbroadcastreceived', message])
             print(script)
@@ -354,6 +374,13 @@ def build_scratch_script(starting_block_id, p_blocks):
                 join_block = current_block['inputs']['QUESTION'][1]
                 question = build_scratch_script(join_block, p_blocks)
             script.append(['sensing_askandwait', question])
+        elif current_block['opcode'] == 'sensing_touchingobject':
+            touchingobjectmenu_id = current_block['inputs']['TOUCHINGOBJECTMENU'][1]
+            touching_object_list = build_scratch_script(touchingobjectmenu_id, p_blocks)
+            script.append(['sensing_touchingobject', touching_object_list])
+        elif current_block['opcode'] == 'sensing_touchingobjectmenu':
+            touching_object = current_block['fields']['TOUCHINGOBJECTMENU'][0]
+            script.append(['sensing_touchingobjectmenu', touching_object])
         elif current_block['opcode'] == 'looks_sayforsecs':
             if len(current_block['inputs']['MESSAGE']) == 3:
                 words_id = current_block['inputs']['MESSAGE'][1]
@@ -395,6 +422,22 @@ def build_scratch_script(starting_block_id, p_blocks):
             else_script = build_scratch_script(substack_2_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if_else', condition_script, if_script, else_script])
+        elif current_block['opcode'] == 'operator_random':
+            num_from = current_block['inputs']['FROM'][1][1]
+            num_to = current_block['inputs']['TO'][1][1]
+            script.append(['operator_random', num_from, num_to])
+        elif current_block['opcode'] == 'operator_not':
+            operand_id = current_block['inputs']['OPERAND'][2]
+            operand = build_scratch_script(operand_id, p_blocks)
+            script.append(['operator_not', operand])
+        elif current_block['opcode'] == 'operator_or':
+            if isinstance(current_block['inputs']['OPERAND1'][1], str):
+                operand1_id = current_block['inputs']['OPERAND1'][1]
+                operand1 = build_scratch_script(operand1_id, p_blocks)
+            if isinstance(current_block['inputs']['OPERAND2'][1], str):
+                operand2_id = current_block['inputs']['OPERAND2'][1]
+                operand2 = build_scratch_script(operand2_id, p_blocks)
+            script.append([operand1, 'or', operand2])
         elif current_block['opcode'] == 'operator_equals':
             if len(current_block['inputs']['OPERAND1']) == 2:
                 operand1 = current_block['inputs']['OPERAND1'][1][1]
@@ -504,10 +547,8 @@ def arrange_blocks_v2(p_json):
                                     temp_repeat_commands = []
                                     for item in script:
                                         print(f"IN A REPEAT STACK item['opcode']" + str(item))
-                                        if item['opcode'] == 'event_whenbroadcastreceived':
-                                            continue
-                                        else:
-                                            temp_repeat_commands.append(item['inputs']['SUBSTACK'][1])
+                                        temp_repeat_commands.append(item)
+                                        print("NEXT")
                                     repeat_scripts[block_id] = temp_repeat_commands
                 elif block['parent'] is None:
                     print(f"yyy {block_id} doing things without parents now.")

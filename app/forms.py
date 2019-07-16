@@ -21,7 +21,8 @@ class UploadScratchForm(FlaskForm):
     lab = SelectField('Lab?', choices=[('1.3', '1.3'), ('1.4_1.5', '1.4_1.5'),
                                        ('1.x_family_migration_story', '1.x_family_migration_story'),
                                        ('2.4_alternate', '2.4_alternate'), ('2.5_alternate', '2.5_alternate'),
-                                       ('karel1', 'karel1'), ('karel2a', 'karel2a'),  ('karel2b', 'karel2b'),
+                                       ('2.6', '2.6'), ('karel1', 'karel1'), ('karel2a', 'karel2a'),
+                                       ('karel2b', 'karel2b'),
                                        ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),
                                        ('karel3d', 'karel3d')])
     submit = SubmitField('Submit for autograding')
