@@ -352,6 +352,9 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'motion_changeyby':
             dy = current_block['inputs']['DY'][1][1]
             script.append(['motion_changeyby', dy])
+        elif current_block['opcode'] == 'motion_changexby':
+            dx = current_block['inputs']['DX'][1][1]
+            script.append(['motion_changexby', dx])
         elif current_block['opcode'] == 'motion_pointindirection':
             direction = current_block['inputs']['DIRECTION'][1][1]
             script.append(['motion_pointindirection', direction])
@@ -500,6 +503,8 @@ def build_scratch_script(starting_block_id, p_blocks):
             script.append([str(string1) + str(string2)])
         elif current_block['opcode'] == 'pen_penDown':
             script.append('pen_penDown')
+        elif current_block['opcode'] == 'pen_penUp':
+            script.append('pen_penUp')
         elif current_block['opcode'] == 'pen_clear':
             script.append('pen_clear')
         elif current_block['opcode'] == 'pen_setPenColorToColor':

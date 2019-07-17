@@ -6,7 +6,7 @@ class brickLayer(object):
         self.y = y
         self.direction = math.radians(direction)
         self.draw_targets = draw_targets
-        self.penupdown = True
+        self.pendown = True
 
     def move(self, amount):
         print("start of move selfx {} selfy {} ".format(self.x, self.y))
@@ -14,18 +14,21 @@ class brickLayer(object):
         orig_x = self.x
         orig_y = self.y
         amount = int(amount)
-        print(self.direction)
         self.y += round(math.cos(self.direction) * amount)
         self.x += round(math.sin(self.direction) * amount)
-        print("enf of moveselfx {} selfy {} ".format(self.x, self.y))
-        if ((orig_x, orig_y), (self.x, self.y)) in self.draw_targets.keys():
-            self.draw_targets[((orig_x, orig_y), (self.x, self.y))] = 0
-            return True
-        elif ((self.x, self.y), (orig_x, orig_y) ) in self.draw_targets.keys():
-            self.draw_targets[((self.x, self.y), (orig_x, orig_y))] = 0
-            return True
-        else:
-            return False
+        print("enf of moveselfx {} selfy {}  pendown".format(self.x, self.y, self.pendown))
+        if self.pendown is True:
+            print("origx {} origy{} self.x {} self.y {} pendown {}".format(orig_x, orig_y, self.x, self.y, self.pendown))
+
+            if ((orig_x, orig_y), (self.x, self.y)) in self.draw_targets.keys():
+                self.draw_targets[((orig_x, orig_y), (self.x, self.y))] = 0
+                return True
+            elif ((self.x, self.y), (orig_x, orig_y)) in self.draw_targets.keys():
+                self.draw_targets[((self.x, self.y), (orig_x, orig_y))] = 0
+                return True
+            else:
+                print("aaa should be here it's not there!")
+                return False
 
     def turn(self, amount):
         self.direction += amount
@@ -43,27 +46,100 @@ def do_sprite(p_sprite, moves, success):
         return False
     for i, move in enumerate(moves):
         if isinstance(move, list):
-            do_sprite(p_sprite, moves[i], success)
+            ret_val = do_sprite(p_sprite, moves[i], success)
+            if ret_val is False:
+                success = False
+                break
         else:
-            print("IN do-sprite selfx {} selfy {} dir {} ".format(p_sprite.x, p_sprite.y, p_sprite.direction))
+            # print("IN do-sprite selfx {} selfy {} dir {} ".format(p_sprite.x, p_sprite.y, p_sprite.direction))
 
             print("ggg move {}".format(move))
+            if move == 'event_whenkeypressed':
+                break
             if move == 'motion_movesteps':
                 amount = moves[i+1]
                 ret_val = p_sprite.move(amount)
+                # print("IN do-sprite after move selfx {} selfy {} dir {} ret_val{}".format(p_sprite.x, p_sprite.y,
+                #                                                                 p_sprite.direction, ret_val))
                 if ret_val is False:
                     success = False
-                print("IN do-sprite after move selfx {} selfy {} dir {}".format(p_sprite.x, p_sprite.y,
-                                                                                p_sprite.direction))
-
+                    break
             elif move == 'motion_turnleft':
                 degrees = float(moves[i+1])
                 degrees = -math.radians(degrees)
                 p_sprite.turn(degrees)
+                break
+            elif move == 'motion_changeyby':
+                dy = int(moves[i + 1])
+                if p_sprite.pendown is True:
+                    orig_x = p_sprite.x
+                    orig_y = p_sprite.y
+                p_sprite.y += dy
+                if p_sprite.pendown is True:
+                    if ((orig_x, orig_y), (p_sprite.x, p_sprite.y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((orig_x, orig_y), (p_sprite.x, p_sprite.y))] = 0
+                        return True
+                    elif ((p_sprite.x, p_sprite.y), (orig_x, orig_y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
+                        return True
+                    else:
+                        print("aaa should be here it's not there!")
+                        return False
+                break
+            elif move == 'motion_changexby':
+                dx = int(moves[i + 1])
+                if p_sprite.pendown is True:
+                    orig_x = p_sprite.x
+                    orig_y = p_sprite.y
+                p_sprite.x += dx
+                if p_sprite.pendown is True:
+                    if ((orig_x, orig_y), (p_sprite.x, p_sprite.y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((orig_x, orig_y), (p_sprite.x, p_sprite.y))] = 0
+                        return True
+                    elif ((p_sprite.x, p_sprite.y), (orig_x, orig_y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
+                        return True
+                    else:
+                        print("aaa should be here it's not there!")
+                        return False
+                break
+            elif move == 'motion_setx':
+                x = int(moves[i + 1])
+                if p_sprite.pendown is True:
+                    orig_x = p_sprite.x
+                    orig_y = p_sprite.y
+                p_sprite.x = x
+                if p_sprite.pendown is True:
+                    if ((orig_x, orig_y), (p_sprite.x, p_sprite.y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((orig_x, orig_y), (p_sprite.x, p_sprite.y))] = 0
+                        return True
+                    elif ((p_sprite.x, p_sprite.y), (orig_x, orig_y)) in p_sprite.draw_targets.keys():
+                        p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
+                        return True
+                    else:
+                        print("aaa should be here it's not there! move setX")
+                        return False
+                break
+            elif move == 'pen_penUp':
+                p_sprite.pendown = False
+            elif move == 'pen_penDown':
+                p_sprite.pendown = True
+
             elif move == 'motion_turnright':
                 degrees = float(moves[i+1])
                 degrees = math.radians(degrees)
                 p_sprite.turn(degrees)
+                break
+            elif move == 'control_repeat':
+                times = int(moves[i + 1])
+                for _ in range(times):
+                    print(f"ooo repeat time {_}")
+                    ret_val = do_sprite(p_sprite, moves[2], success)
+                    if ret_val is False:
+                        success = False
+                        break
+                break
+    return success
 
 
 def press_zero(p_scripts, p_points):
@@ -75,7 +151,7 @@ def press_zero(p_scripts, p_points):
     from app.scratch_labs.scratch import match_string
 
     p_test = {"name": "Checking that there is a script that has 'when 0 key is pressed' along with a "
-                      "pen down, goto -240 -180, clear, and point 90. (" + str(p_points) + " points)<br>",
+                      "pen down, goto -216 -180, clear, and point 90. (" + str(p_points) + " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found the strings in the code!<br>",
@@ -94,7 +170,7 @@ def press_zero(p_scripts, p_points):
                               p_scripts)
     if test_point is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by a point in direction 90.<br>"
-    test_goto = match_string(r"\['event_whenkeypressed', '0'] .+ \['motion_gotoxy', \s '-240', \s '-180'],",
+    test_goto = match_string(r"\['event_whenkeypressed', '0'] .+ \['motion_gotoxy', \s '-160', \s '-180'],",
                              p_scripts)
     if test_goto is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by goto -240 -180.<br>"
@@ -109,23 +185,35 @@ def press_zero(p_scripts, p_points):
 
 
 def press_one(p_scripts, p_points):
-    p_test = {"name": "Checking that press one draws a single brick (assuming 0 is pressed first) "
-                      "" + str(p_points) + " points)<br>",
+    from app.scratch_labs.scratch import match_string
+
+    p_test = {"name": "Checking that there is a script that has 'when 1 key is pressed' and that this "
+                      "script draws a single brick, assuming 0 is pressed first "
+                      "(" + str(p_points) + " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
-                              "Press one draws a single brick (assuming 0 is pressed first).<br>",
+                              "Script that has 'when 1 key is pressed' draws a single brick"
+                              " (assuming 0 is pressed first).<br>"
+                              "Script also has a repeat with the correct number of times.<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "Press one does NOT draw a single brick (assuming 0 is pressed first)<br>"
-                              "Checker assumes you pressed 0 first, so you start in bottom left corner.<br>",
+                              "Script that has 'when 1 key is pressed does NOT draw a single brick"
+                              " (assuming 0 is pressed first)<br>"
+                              "OR, script does not have a repeat with correct number of times.<br>"
+                              "OR, script draws too many lines.<br>"
+                              "OR, a combination of all three.<br>"
+                              "Checker assumes you pressed 0 first, so you start in bottom left corner.<br><br>",
               "points": 0
               }
-    target_list = (((0, 0), (40, 0)), ((40, 0), (40, 20)), ((40, 20), (0, 20)), ((0, 0), (0, 20)), )
+    t_list = (
+        ((-160, -180), (-120, -180)), ((-120, -180), (-120, -160)), ((-120, -160), (-160, -160)), ((-160, -180),
+                                                                                                   (-160, -160))
+    )
+
     target_dict = {}
-    for target in target_list:
+    for target in t_list:
         if target not in target_dict.keys():
             target_dict[target] = 1
-    print(target_dict)
-    sprite = brickLayer(0, 0, 90, draw_targets=target_dict)
+    sprite = brickLayer(-160, -180, 90, draw_targets=target_dict)
     success = False
     for key in p_scripts:
         script = p_scripts[key]
@@ -135,8 +223,377 @@ def press_one(p_scripts, p_points):
                 break
     print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
                                                                  sprite.draw_targets))
-    if success:
+    find_repeat = match_string(r"\['event_whenkeypressed', \s* '1'], .+ \['control_repeat', \s '2'", p_scripts)
+    if find_repeat['pass'] is False:
+        p_test['fail_message'] += "Did not find a repeat with the correct number of times in the script. <br>"
+    if success is False:
+        p_test['fail_message'] += 'Drew too many lines.<br>'
+    if 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Did not draw enough lines.<br>'
+    if success is False or 1 in target_dict.values():
+        p_test['fail_message'] += 'Key: Start location, end location, whether or not this line was ' \
+                                  'not drawn (1 = not drawn, 0 = drawn).<br>' \
+                                  'Line status:<br>'
+        for key in target_dict:
+            p_test['fail_message'] += str(key) + ": " + str(target_dict[key]) + "<br>"
+    if success and find_repeat['pass'] and 1 not in target_dict.values():
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test
 
+
+def press_two(p_scripts, p_points):
+    from app.scratch_labs.scratch import match_string
+
+    p_test = {"name": "Checking that there is a script that has 'when 2 key is pressed' and that this "
+                      "script draws a two bricks, assuming 0 is pressed first "
+                      "(" + str(p_points) + " points)<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Script that has 'when 2 key is pressed' draws two bricks"
+                              " (assuming 0 is pressed first).<br>"
+                              "Script also has a repeat with the correct number of times.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Script that has 'when 2 key is pressed does NOT draw two bricks"
+                              " (assuming 0 is pressed first)<br>"
+                              "OR, script does not have a repeat with correct number of times.<br>"
+                              "OR, script draws too many lines.<br>"
+                              "OR, a combination of all three.<br>"
+                              "Checker assumes you pressed 0 first, so you start in bottom left corner.<br><br>",
+              "points": 0
+              }
+    target_list = (
+        ((-160, -180), (-120, -180)), ((-120, -180), (-120, -160)), ((-120, -160), (-160, -160)), ((-160, -180),
+                                                                                                   (-160, -160)),
+        ((-120, -180), (-80, -180)), ((-80, -180), (-80, -160)), ((-80, -160), (-120, -160)), ((-120, -180),
+                                                                                               (-120, -160)))
+    target_dict = {}
+    for target in target_list:
+        if target not in target_dict.keys():
+            target_dict[target] = 1
+    sprite = brickLayer(-160, -180, 90, draw_targets=target_dict)
+    success = False
+    for key in p_scripts:
+        script = p_scripts[key]
+        if script[0] == ['event_whenkeypressed', '2']:
+            success = do_sprite(sprite, script, True)
+            print("success? {} ".format(success))
+            if success:
+                break
+    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+                                                                 sprite.draw_targets))
+    find_repeat = match_string(r"\['event_whenkeypressed', \s* '2'], .+ \['control_repeat', \s '2'", p_scripts)
+    if find_repeat['pass'] is False:
+        p_test['fail_message'] += "Did not find a repeat with the correct number of times in the script. <br>"
+    if success is False:
+        p_test['fail_message'] += 'Drew too many lines.<br>'
+    if 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Did not draw enough lines.<br>'
+    if success is False or 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Key: Start location, end location, whether or not this line was ' \
+                                  'not drawn (1 = not drawn, 0 = drawn).<br>' \
+                                  'Line status:<br>'
+        for key in target_dict:
+            p_test['fail_message'] += str(key) + ": " + str(target_dict[key]) + "<br>"
+    if success and find_repeat['pass'] and 1 not in sprite.draw_targets.values():
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
+
+def press_three(p_scripts, p_points):
+    from app.scratch_labs.scratch import match_string
+
+    p_test = {"name": "Checking that there is a script that has 'when 3 key is pressed' and that this "
+                      "script draws 8 bricks, assuming 0 is pressed first "
+                      "(" + str(p_points) + " points)<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Script that has 'when 3 key is pressed' draws 8 bricks"
+                              " (assuming 0 is pressed first).<br>"
+                              "Script also has a repeat with the correct number of times.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Script that has 'when 3 key is pressed does NOT draw 8 bricks"
+                              " (assuming 0 is pressed first)<br>"
+                              "OR, script does not have a repeat with correct number of times.<br>"
+                              "OR, script draws too many lines.<br>"
+                              "OR, a combination of all three.<br>"
+                              "Checker assumes you pressed 0 first, so you start in bottom left corner.<br><br>",
+              "points": 0
+              }
+    target_list = (
+        ((-160, -180), (-120, -180)), ((-120, -180), (-120, -160)), ((-120, -160), (-160, -160)), ((-160, -180),
+                                                                                                   (-160, -160)),
+        ((-120, -180), (-80, -180)), ((-80, -180), (-80, -160)), ((-80, -160), (-120, -160)), ((-120, -180),
+                                                                                               (-120, -160)),
+        ((-80, -180), (-40, -180)), ((-40, -180), (-40, -160)), ((-40, -160), (-80, -160)), ((-80, -180),
+                                                                                             (-80, -160)),
+        ((-40, -180), (0, -180)), ((0, -180), (0, -160)), ((0, -160), (-40, -160)), ((-40, -180),
+                                                                                     (-40, -160)),
+        ((0, -180), (40, -180)), ((40, -180), (40, -160)), ((40, -160), (0, -160)), ((0, -180), (0, -160)),
+        ((40, -180), (80, -180)), ((80, -180), (80, -160)), ((80, -160), (40, -160)), ((40, -180), (40, -160)),
+        ((80, -180), (120, -180)), ((120, -180), (120, -160)), ((120, -160), (80, -160)), ((80, -180), (80, -160)),
+        ((120, -180), (160, -180)), ((160, -180), (160, -160)), ((160, -160), (120, -160)), ((120, -180), (120, -160)))
+
+    target_dict = {}
+    for target in target_list:
+        if target not in target_dict.keys():
+            target_dict[target] = 1
+    print(target_dict)
+    sprite = brickLayer(-160, -180, 90, draw_targets=target_dict)
+    success = False
+    for key in p_scripts:
+        script = p_scripts[key]
+        if script[0] == ['event_whenkeypressed', '3']:
+            print("here we go 3")
+            success = do_sprite(sprite, script, True)
+            print("success? {} ".format(success))
+            if success:
+                break
+    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+                                                                 sprite.draw_targets))
+    find_repeat_1 = match_string(r"\['event_whenkeypressed', \s* '3'], .+ \['control_repeat', \s '2'", p_scripts)
+    find_repeat_2 = match_string(r"\['event_whenkeypressed', \s* '3'], .+ \['control_repeat', \s '8'", p_scripts)
+    if find_repeat_1['pass'] is False or find_repeat_2['pass'] is False:
+        p_test['fail_message'] += "Did not find two repeat with the correct number of times in the script. <br>"
+    if success is False:
+        p_test['fail_message'] += 'Drew too many lines.<br>'
+    if 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Did not draw enough lines.<br>'
+    if success is False or 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Key: Start location, end location, whether or not this line was ' \
+                                  'not drawn (1 = not drawn, 0 = drawn).<br>' \
+                                  'Line status:<br>'
+        for key in target_dict:
+            p_test['fail_message'] += str(key) + ": " + str(target_dict[key]) + "<br>"
+    if success and find_repeat_1['pass'] and find_repeat_2['pass'] and 1 not in sprite.draw_targets.values():
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
+
+def press_four(p_scripts, p_points):
+    from app.scratch_labs.scratch import match_string
+
+    p_test = {"name": "Checking that there is a script that has 'when 4 key is pressed' and that this "
+                      "script draws an entire brick road, assuming 0 is pressed first "
+                      "(" + str(p_points) + " points)<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Script that has 'when 4 key is pressed' draws a road of bricks"
+                              " (assuming 0 is pressed first).<br>"
+                              "Script also has a repeat with the correct number of times.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Script that has 'when 4 key is pressed does NOT draw an entire road of bricks"
+                              " (assuming 0 is pressed first)<br>"
+                              "OR, script does not have a repeat with correct number of times.<br>"
+                              "OR, script draws too many lines.<br>"
+                              "OR, a combination of all three.<br>"
+                              "Checker assumes you pressed 0 first, so you start in bottom left corner.<br><br>",
+              "points": 0
+              }
+    t_list = (((-160, -180), (-120, -180)), ((-120, -180), (-120, -160)), ((-120, -160), (-160, -160)),
+              ((-160, -160), (-160, -180)), ((-120, -180), (-80, -180)), ((-80, -180), (-80, -160)),
+              ((-80, -160), (-120, -160)), ((-120, -160), (-120, -180)), ((-80, -180), (-40, -180)),
+              ((-40, -180), (-40, -160)), ((-40, -160), (-80, -160)), ((-80, -160), (-80, -180)),
+              ((-40, -180), (0, -180)), ((0, -180), (0, -160)), ((0, -160), (-40, -160)),
+              ((-40, -160), (-40, -180)), ((0, -180), (40, -180)), ((40, -180), (40, -160)),
+              ((40, -160), (0, -160)), ((0, -160), (0, -180)), ((40, -180), (80, -180)),
+              ((80, -180), (80, -160)), ((80, -160), (40, -160)), ((40, -160), (40, -180)),
+              ((80, -180), (120, -180)), ((120, -180), (120, -160)), ((120, -160), (80, -160)),
+              ((80, -160), (80, -180)), ((120, -180), (160, -180)), ((160, -180), (160, -160)),
+              ((160, -160), (120, -160)), ((120, -160), (120, -180)), ((-140, -160), (-100, -160)),
+              ((-100, -160), (-100, -140)), ((-100, -140), (-140, -140)), ((-140, -140), (-140, -160)),
+              ((-100, -160), (-60, -160)), ((-60, -160), (-60, -140)), ((-60, -140), (-100, -140)),
+              ((-100, -140), (-100, -160)), ((-60, -160), (-20, -160)), ((-20, -160), (-20, -140)),
+              ((-20, -140), (-60, -140)), ((-60, -140), (-60, -160)), ((-20, -160), (20, -160)),
+              ((20, -160), (20, -140)), ((20, -140), (-20, -140)), ((-20, -140), (-20, -160)),
+              ((20, -160), (60, -160)), ((60, -160), (60, -140)), ((60, -140), (20, -140)),
+              ((20, -140), (20, -160)), ((60, -160), (100, -160)), ((100, -160), (100, -140)),
+              ((100, -140), (60, -140)), ((60, -140), (60, -160)), ((100, -160), (140, -160)),
+              ((140, -160), (140, -140)), ((140, -140), (100, -140)), ((100, -140), (100, -160)),
+              ((140, -160), (180, -160)), ((180, -160), (180, -140)), ((180, -140), (140, -140)),
+              ((140, -140), (140, -160)), ((-160, -140), (-120, -140)), ((-120, -140), (-120, -120)),
+              ((-120, -120), (-160, -120)), ((-160, -120), (-160, -140)), ((-120, -140), (-80, -140)),
+              ((-80, -140), (-80, -120)), ((-80, -120), (-120, -120)), ((-120, -120), (-120, -140)),
+              ((-80, -140), (-40, -140)), ((-40, -140), (-40, -120)), ((-40, -120), (-80, -120)),
+              ((-80, -120), (-80, -140)), ((-40, -140), (0, -140)), ((0, -140), (0, -120)),
+              ((0, -120), (-40, -120)), ((-40, -120), (-40, -140)), ((0, -140), (40, -140)),
+              ((40, -140), (40, -120)), ((40, -120), (0, -120)), ((0, -120), (0, -140)),
+              ((40, -140), (80, -140)), ((80, -140), (80, -120)), ((80, -120), (40, -120)),
+              ((40, -120), (40, -140)), ((80, -140), (120, -140)), ((120, -140), (120, -120)),
+              ((120, -120), (80, -120)), ((80, -120), (80, -140)), ((120, -140), (160, -140)),
+              ((160, -140), (160, -120)), ((160, -120), (120, -120)), ((120, -120), (120, -140)),
+              ((-140, -120), (-100, -120)), ((-100, -120), (-100, -100)), ((-100, -100), (-140, -100)),
+              ((-140, -100), (-140, -120)), ((-100, -120), (-60, -120)), ((-60, -120), (-60, -100)),
+              ((-60, -100), (-100, -100)), ((-100, -100), (-100, -120)), ((-60, -120), (-20, -120)),
+              ((-20, -120), (-20, -100)), ((-20, -100), (-60, -100)), ((-60, -100), (-60, -120)),
+              ((-20, -120), (20, -120)), ((20, -120), (20, -100)), ((20, -100), (-20, -100)),
+              ((-20, -100), (-20, -120)), ((20, -120), (60, -120)), ((60, -120), (60, -100)),
+              ((60, -100), (20, -100)), ((20, -100), (20, -120)), ((60, -120), (100, -120)),
+              ((100, -120), (100, -100)), ((100, -100), (60, -100)), ((60, -100), (60, -120)),
+              ((100, -120), (140, -120)), ((140, -120), (140, -100)), ((140, -100), (100, -100)),
+              ((100, -100), (100, -120)), ((140, -120), (180, -120)), ((180, -120), (180, -100)),
+              ((180, -100), (140, -100)), ((140, -100), (140, -120)), ((-160, -100), (-120, -100)),
+              ((-120, -100), (-120, -80)), ((-120, -80), (-160, -80)), ((-160, -80), (-160, -100)),
+              ((-120, -100), (-80, -100)), ((-80, -100), (-80, -80)), ((-80, -80), (-120, -80)),
+              ((-120, -80), (-120, -100)), ((-80, -100), (-40, -100)), ((-40, -100), (-40, -80)),
+              ((-40, -80), (-80, -80)), ((-80, -80), (-80, -100)), ((-40, -100), (0, -100)),
+              ((0, -100), (0, -80)), ((0, -80), (-40, -80)), ((-40, -80), (-40, -100)),
+              ((0, -100), (40, -100)), ((40, -100), (40, -80)), ((40, -80), (0, -80)), ((0, -80), (0, -100)),
+              ((40, -100), (80, -100)), ((80, -100), (80, -80)), ((80, -80), (40, -80)), ((40, -80), (40, -100)),
+              ((80, -100), (120, -100)), ((120, -100), (120, -80)), ((120, -80), (80, -80)), ((80, -80), (80, -100)),
+              ((120, -100), (160, -100)), ((160, -100), (160, -80)), ((160, -80), (120, -80)),
+              ((120, -80), (120, -100)), ((-140, -80), (-100, -80)), ((-100, -80), (-100, -60)),
+              ((-100, -60), (-140, -60)), ((-140, -60), (-140, -80)), ((-100, -80), (-60, -80)),
+              ((-60, -80), (-60, -60)), ((-60, -60), (-100, -60)), ((-100, -60), (-100, -80)),
+              ((-60, -80), (-20, -80)), ((-20, -80), (-20, -60)), ((-20, -60), (-60, -60)), ((-60, -60), (-60, -80)),
+              ((-20, -80), (20, -80)), ((20, -80), (20, -60)), ((20, -60), (-20, -60)), ((-20, -60), (-20, -80)),
+              ((20, -80), (60, -80)), ((60, -80), (60, -60)), ((60, -60), (20, -60)), ((20, -60), (20, -80)),
+              ((60, -80), (100, -80)), ((100, -80), (100, -60)), ((100, -60), (60, -60)), ((60, -60), (60, -80)),
+              ((100, -80), (140, -80)), ((140, -80), (140, -60)), ((140, -60), (100, -60)), ((100, -60), (100, -80)),
+              ((140, -80), (180, -80)), ((180, -80), (180, -60)), ((180, -60), (140, -60)), ((140, -60), (140, -80)),
+              ((-160, -60), (-120, -60)), ((-120, -60), (-120, -40)), ((-120, -40), (-160, -40)),
+              ((-160, -40), (-160, -60)), ((-120, -60), (-80, -60)), ((-80, -60), (-80, -40)),
+              ((-80, -40), (-120, -40)), ((-120, -40), (-120, -60)), ((-80, -60), (-40, -60)),
+              ((-40, -60), (-40, -40)), ((-40, -40), (-80, -40)), ((-80, -40), (-80, -60)),
+              ((-40, -60), (0, -60)), ((0, -60), (0, -40)), ((0, -40), (-40, -40)), ((-40, -40), (-40, -60)),
+              ((0, -60), (40, -60)), ((40, -60), (40, -40)), ((40, -40), (0, -40)), ((0, -40), (0, -60)),
+              ((40, -60), (80, -60)), ((80, -60), (80, -40)), ((80, -40), (40, -40)), ((40, -40), (40, -60)),
+              ((80, -60), (120, -60)), ((120, -60), (120, -40)), ((120, -40), (80, -40)), ((80, -40), (80, -60)),
+              ((120, -60), (160, -60)), ((160, -60), (160, -40)), ((160, -40), (120, -40)), ((120, -40), (120, -60)),
+              ((-140, -40), (-100, -40)), ((-100, -40), (-100, -20)), ((-100, -20), (-140, -20)),
+              ((-140, -20), (-140, -40)), ((-100, -40), (-60, -40)), ((-60, -40), (-60, -20)),
+              ((-60, -20), (-100, -20)), ((-100, -20), (-100, -40)), ((-60, -40), (-20, -40)),
+              ((-20, -40), (-20, -20)), ((-20, -20), (-60, -20)), ((-60, -20), (-60, -40)),
+              ((-20, -40), (20, -40)), ((20, -40), (20, -20)), ((20, -20), (-20, -20)), ((-20, -20), (-20, -40)),
+              ((20, -40), (60, -40)), ((60, -40), (60, -20)), ((60, -20), (20, -20)),
+              ((20, -20), (20, -40)), ((60, -40), (100, -40)), ((100, -40), (100, -20)),
+              ((100, -20), (60, -20)), ((60, -20), (60, -40)), ((100, -40), (140, -40)),
+              ((140, -40), (140, -20)), ((140, -20), (100, -20)), ((100, -20), (100, -40)),
+              ((140, -40), (180, -40)), ((180, -40), (180, -20)), ((180, -20), (140, -20)),
+              ((140, -20), (140, -40)), ((-160, -20), (-120, -20)), ((-120, -20), (-120, 0)),
+              ((-120, 0), (-160, 0)), ((-160, 0), (-160, -20)), ((-120, -20), (-80, -20)),
+              ((-80, -20), (-80, 0)), ((-80, 0), (-120, 0)), ((-120, 0), (-120, -20)),
+              ((-80, -20), (-40, -20)), ((-40, -20), (-40, 0)), ((-40, 0), (-80, 0)),
+              ((-80, 0), (-80, -20)), ((-40, -20), (0, -20)), ((0, -20), (0, 0)), ((0, 0), (-40, 0)),
+              ((-40, 0), (-40, -20)), ((0, -20), (40, -20)), ((40, -20), (40, 0)), ((40, 0), (0, 0)),
+              ((0, 0), (0, -20)), ((40, -20), (80, -20)), ((80, -20), (80, 0)), ((80, 0), (40, 0)),
+              ((40, 0), (40, -20)), ((80, -20), (120, -20)), ((120, -20), (120, 0)), ((120, 0), (80, 0)),
+              ((80, 0), (80, -20)), ((120, -20), (160, -20)), ((160, -20), (160, 0)), ((160, 0), (120, 0)),
+              ((120, 0), (120, -20)), ((-140, 0), (-100, 0)), ((-100, 0), (-100, 20)), ((-100, 20), (-140, 20)),
+              ((-140, 20), (-140, 0)), ((-100, 0), (-60, 0)), ((-60, 0), (-60, 20)), ((-60, 20), (-100, 20)),
+              ((-100, 20), (-100, 0)), ((-60, 0), (-20, 0)), ((-20, 0), (-20, 20)), ((-20, 20), (-60, 20)),
+              ((-60, 20), (-60, 0)), ((-20, 0), (20, 0)), ((20, 0), (20, 20)), ((20, 20), (-20, 20)),
+              ((-20, 20), (-20, 0)), ((20, 0), (60, 0)), ((60, 0), (60, 20)), ((60, 20), (20, 20)),
+              ((20, 20), (20, 0)), ((60, 0), (100, 0)), ((100, 0), (100, 20)), ((100, 20), (60, 20)),
+              ((60, 20), (60, 0)), ((100, 0), (140, 0)), ((140, 0), (140, 20)), ((140, 20), (100, 20)),
+              ((100, 20), (100, 0)), ((140, 0), (180, 0)), ((180, 0), (180, 20)), ((180, 20), (140, 20)),
+              ((140, 20), (140, 0)), ((-160, 20), (-120, 20)), ((-120, 20), (-120, 40)), ((-120, 40), (-160, 40)),
+              ((-160, 40), (-160, 20)), ((-120, 20), (-80, 20)), ((-80, 20), (-80, 40)), ((-80, 40), (-120, 40)),
+              ((-120, 40), (-120, 20)), ((-80, 20), (-40, 20)), ((-40, 20), (-40, 40)), ((-40, 40), (-80, 40)),
+              ((-80, 40), (-80, 20)), ((-40, 20), (0, 20)), ((0, 20), (0, 40)), ((0, 40), (-40, 40)),
+              ((-40, 40), (-40, 20)), ((0, 20), (40, 20)), ((40, 20), (40, 40)), ((40, 40), (0, 40)),
+              ((0, 40), (0, 20)), ((40, 20), (80, 20)), ((80, 20), (80, 40)), ((80, 40), (40, 40)),
+              ((40, 40), (40, 20)), ((80, 20), (120, 20)), ((120, 20), (120, 40)), ((120, 40), (80, 40)),
+              ((80, 40), (80, 20)), ((120, 20), (160, 20)), ((160, 20), (160, 40)), ((160, 40), (120, 40)),
+              ((120, 40), (120, 20)), ((-140, 40), (-100, 40)), ((-100, 40), (-100, 60)), ((-100, 60), (-140, 60)),
+              ((-140, 60), (-140, 40)), ((-100, 40), (-60, 40)), ((-60, 40), (-60, 60)), ((-60, 60), (-100, 60)),
+              ((-100, 60), (-100, 40)), ((-60, 40), (-20, 40)), ((-20, 40), (-20, 60)), ((-20, 60), (-60, 60)),
+              ((-60, 60), (-60, 40)), ((-20, 40), (20, 40)), ((20, 40), (20, 60)), ((20, 60), (-20, 60)),
+              ((-20, 60), (-20, 40)), ((20, 40), (60, 40)), ((60, 40), (60, 60)), ((60, 60), (20, 60)),
+              ((20, 60), (20, 40)), ((60, 40), (100, 40)), ((100, 40), (100, 60)), ((100, 60), (60, 60)),
+              ((60, 60), (60, 40)), ((100, 40), (140, 40)), ((140, 40), (140, 60)), ((140, 60), (100, 60)),
+              ((100, 60), (100, 40)), ((140, 40), (180, 40)), ((180, 40), (180, 60)), ((180, 60), (140, 60)),
+              ((140, 60), (140, 40)), ((-160, 60), (-120, 60)), ((-120, 60), (-120, 80)), ((-120, 80), (-160, 80)),
+              ((-160, 80), (-160, 60)), ((-120, 60), (-80, 60)), ((-80, 60), (-80, 80)), ((-80, 80), (-120, 80)),
+              ((-120, 80), (-120, 60)), ((-80, 60), (-40, 60)), ((-40, 60), (-40, 80)), ((-40, 80), (-80, 80)),
+              ((-80, 80), (-80, 60)), ((-40, 60), (0, 60)), ((0, 60), (0, 80)), ((0, 80), (-40, 80)),
+              ((-40, 80), (-40, 60)), ((0, 60), (40, 60)), ((40, 60), (40, 80)), ((40, 80), (0, 80)),
+              ((0, 80), (0, 60)), ((40, 60), (80, 60)), ((80, 60), (80, 80)), ((80, 80), (40, 80)),
+              ((40, 80), (40, 60)), ((80, 60), (120, 60)), ((120, 60), (120, 80)), ((120, 80), (80, 80)),
+              ((80, 80), (80, 60)), ((120, 60), (160, 60)), ((160, 60), (160, 80)), ((160, 80), (120, 80)),
+              ((120, 80), (120, 60)), ((-140, 80), (-100, 80)), ((-100, 80), (-100, 100)), ((-100, 100), (-140, 100)),
+              ((-140, 100), (-140, 80)), ((-100, 80), (-60, 80)), ((-60, 80), (-60, 100)), ((-60, 100), (-100, 100)),
+              ((-100, 100), (-100, 80)), ((-60, 80), (-20, 80)), ((-20, 80), (-20, 100)), ((-20, 100), (-60, 100)),
+              ((-60, 100), (-60, 80)), ((-20, 80), (20, 80)), ((20, 80), (20, 100)), ((20, 100), (-20, 100)),
+              ((-20, 100), (-20, 80)), ((20, 80), (60, 80)), ((60, 80), (60, 100)), ((60, 100), (20, 100)),
+              ((20, 100), (20, 80)), ((60, 80), (100, 80)), ((100, 80), (100, 100)), ((100, 100), (60, 100)),
+              ((60, 100), (60, 80)), ((100, 80), (140, 80)), ((140, 80), (140, 100)), ((140, 100), (100, 100)),
+              ((100, 100), (100, 80)), ((140, 80), (180, 80)), ((180, 80), (180, 100)), ((180, 100), (140, 100)),
+              ((140, 100), (140, 80)), ((-160, 100), (-120, 100)), ((-120, 100), (-120, 120)),
+              ((-120, 120), (-160, 120)), ((-160, 120), (-160, 100)), ((-120, 100), (-80, 100)),
+              ((-80, 100), (-80, 120)), ((-80, 120), (-120, 120)), ((-120, 120), (-120, 100)),
+              ((-80, 100), (-40, 100)), ((-40, 100), (-40, 120)), ((-40, 120), (-80, 120)),
+              ((-80, 120), (-80, 100)), ((-40, 100), (0, 100)), ((0, 100), (0, 120)),
+              ((0, 120), (-40, 120)), ((-40, 120), (-40, 100)), ((0, 100), (40, 100)), ((40, 100), (40, 120)),
+              ((40, 120), (0, 120)), ((0, 120), (0, 100)), ((40, 100), (80, 100)), ((80, 100), (80, 120)),
+              ((80, 120), (40, 120)), ((40, 120), (40, 100)), ((80, 100), (120, 100)), ((120, 100), (120, 120)),
+              ((120, 120), (80, 120)), ((80, 120), (80, 100)), ((120, 100), (160, 100)), ((160, 100), (160, 120)),
+              ((160, 120), (120, 120)), ((120, 120), (120, 100)), ((-140, 120), (-100, 120)),
+              ((-100, 120), (-100, 140)), ((-100, 140), (-140, 140)), ((-140, 140), (-140, 120)),
+              ((-100, 120), (-60, 120)), ((-60, 120), (-60, 140)), ((-60, 140), (-100, 140)),
+              ((-100, 140), (-100, 120)), ((-60, 120), (-20, 120)), ((-20, 120), (-20, 140)),
+              ((-20, 140), (-60, 140)), ((-60, 140), (-60, 120)), ((-20, 120), (20, 120)), ((20, 120), (20, 140)),
+              ((20, 140), (-20, 140)), ((-20, 140), (-20, 120)), ((20, 120), (60, 120)), ((60, 120), (60, 140)),
+              ((60, 140), (20, 140)), ((20, 140), (20, 120)), ((60, 120), (100, 120)), ((100, 120), (100, 140)),
+              ((100, 140), (60, 140)), ((60, 140), (60, 120)), ((100, 120), (140, 120)), ((140, 120), (140, 140)),
+              ((140, 140), (100, 140)), ((100, 140), (100, 120)), ((140, 120), (180, 120)), ((180, 120), (180, 140)),
+              ((180, 140), (140, 140)), ((140, 140), (140, 120)), ((-160, 140), (-120, 140)),
+              ((-120, 140), (-120, 160)), ((-120, 160), (-160, 160)), ((-160, 160), (-160, 140)),
+              ((-120, 140), (-80, 140)), ((-80, 140), (-80, 160)), ((-80, 160), (-120, 160)),
+              ((-120, 160), (-120, 140)), ((-80, 140), (-40, 140)), ((-40, 140), (-40, 160)),
+              ((-40, 160), (-80, 160)), ((-80, 160), (-80, 140)), ((-40, 140), (0, 140)),
+              ((0, 140), (0, 160)), ((0, 160), (-40, 160)), ((-40, 160), (-40, 140)), ((0, 140), (40, 140)),
+              ((40, 140), (40, 160)), ((40, 160), (0, 160)), ((0, 160), (0, 140)), ((40, 140), (80, 140)),
+              ((80, 140), (80, 160)), ((80, 160), (40, 160)), ((40, 160), (40, 140)), ((80, 140), (120, 140)),
+              ((120, 140), (120, 160)), ((120, 160), (80, 160)), ((80, 160), (80, 140)), ((120, 140), (160, 140)),
+              ((160, 140), (160, 160)), ((160, 160), (120, 160)), ((120, 160), (120, 140)), ((-140, 160), (-100, 160)),
+              ((-100, 160), (-100, 180)), ((-100, 180), (-140, 180)), ((-140, 180), (-140, 160)),
+              ((-100, 160), (-60, 160)), ((-60, 160), (-60, 180)), ((-60, 180), (-100, 180)),
+              ((-100, 180), (-100, 160)), ((-60, 160), (-20, 160)), ((-20, 160), (-20, 180)),
+              ((-20, 180), (-60, 180)), ((-60, 180), (-60, 160)), ((-20, 160), (20, 160)), ((20, 160), (20, 180)),
+              ((20, 180), (-20, 180)), ((-20, 180), (-20, 160)), ((20, 160), (60, 160)), ((60, 160), (60, 180)),
+              ((60, 180), (20, 180)), ((20, 180), (20, 160)), ((60, 160), (100, 160)), ((100, 160), (100, 180)),
+              ((100, 180), (60, 180)), ((60, 180), (60, 160)), ((100, 160), (140, 160)), ((140, 160), (140, 180)),
+              ((140, 180), (100, 180)), ((100, 180), (100, 160)), ((140, 160), (180, 160)), ((180, 160), (180, 180)),
+              ((180, 180), (140, 180)), ((140, 180), (140, 160)))
+
+    target_dict = {}
+    for target in t_list:
+        if target not in target_dict.keys():
+            target_dict[target] = 1
+    print(target_dict)
+    sprite = brickLayer(-160, -180, 90, draw_targets=target_dict)
+    success = False
+    for key in p_scripts:
+        script = p_scripts[key]
+        if script[0] == ['event_whenkeypressed', '4']:
+            print("aaa here we go")
+            success = do_sprite(sprite, script, True)
+            if success:
+                break
+    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+                                                                 sprite.draw_targets))
+    find_repeat_1 = match_string(r"\['event_whenkeypressed', \s* '4'], .+ \['control_repeat', \s '2'", p_scripts)
+    find_repeat_2 = match_string(r"\['event_whenkeypressed', \s* '4'], .+ \['control_repeat', \s '8'", p_scripts)
+    if find_repeat_1['pass'] is False or find_repeat_2['pass'] is False:
+        p_test['fail_message'] += "Did not find two repeat with the correct number of times in the script. <br>"
+    if success is False:
+        p_test['fail_message'] += 'Drew too many lines.<br>'
+    if 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Did not draw enough lines.<br>'
+    if success is False or 1 in sprite.draw_targets.values():
+        p_test['fail_message'] += 'Key: Start location, end location, whether or not this line was ' \
+                                  'not drawn (1 = not drawn, 0 = drawn).<br>' \
+                                  'Line status:<br>'
+        counter = 0
+        for key in target_dict:
+            p_test['fail_message'] += str(key) + ": " + str(target_dict[key]) + "<br>"
+            counter += 1
+            if counter % 8 == 0:
+                p_test['fail_message'] += 'New row <br>'
+    if success and find_repeat_1['pass'] and find_repeat_2['pass'] and 1 not in sprite.draw_targets.values():
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
