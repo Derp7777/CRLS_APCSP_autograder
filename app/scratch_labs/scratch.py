@@ -736,3 +736,86 @@ def every_sprite_broadcast_and_receive(p_json, p_points):
     if p_test['pass']:
         p_test['points'] += p_points
     return p_test
+
+
+def unique_coordinates(p_coordinates):
+    """
+    Gets unique coordintes from list of coordinates
+    :param p_coordinates: something like [ [0,0], [150, 0], [0,0]
+    :return: something like [ [0,0], [150,0]
+    """
+    temp_dict = {}
+    for coordinate in p_coordinates:
+        coord_tuple = tuple(coordinate)
+        if coord_tuple not in temp_dict:
+            temp_dict[coord_tuple] = 1
+    return_coordinates = [list(key) for key, val in temp_dict.items()]
+    return return_coordinates
+
+
+def distance(p1, p2):
+    """
+    Given 2 points p1 and p2, calculate distance
+    :param p1: list like [0,0]
+    :param p2: list like [0,150]
+    :return: distance
+    """
+    import math
+    d = math.sqrt(((p1[0] - p2[0]) ** 2) + ((p1[1] - p2[1]) ** 2))
+    return d
+
+
+def is_equilateral_triangle(p_coordinates):
+    """
+    tests to see if 3 points is equilateral triangle.  Basically a = b = c.
+    Also that there are 3 points
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+    if len(p_coordinates) != 3:
+        return False
+    d12 = distance(p_coordinates[0], p_coordinates[1])
+    d23 = distance(p_coordinates[1], p_coordinates[2])
+    d13 = distance(p_coordinates[0], p_coordinates[2])
+    tol = 0.01 * d12
+    print("aaa d12 {} d13 {} d23 {}".format(d12, d13, d23))
+    if abs(d12 - d23) < tol and abs(d12 - d13) < tol and abs(d23 - d13) < tol:
+        return True
+    else:
+        return False
+
+
+def is_square(p_coordinates):
+    """
+    tests to see if 4 points is square.  See algorithm:
+    https://softwareengineering.stackexchange.com/questions/176938/how-to-check-if-4-points-form-a-square
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+
+    if len(p_coordinates) != 4:
+        return False
+    d12 = distance(p_coordinates[0], p_coordinates[1])
+    d13 = distance(p_coordinates[0], p_coordinates[2])
+    d14 = distance(p_coordinates[0], p_coordinates[3])
+    d23 = distance(p_coordinates[1], p_coordinates[2])
+    d24 = distance(p_coordinates[1], p_coordinates[3])
+    d34 = distance(p_coordinates[2], p_coordinates[3])
+    tol = 0.01 * d12
+    print("yes yes d12 {} d13 {} d14 {} d23 {} d24 {} d34 {}".format(d12, d13, d14, d23, d24, d34))
+
+    if abs(d12 - d13) < tol:   # distance to 4 is the long one
+        if abs(d14 - d23) < tol:
+            return True
+        else:
+            return False
+    elif abs(d12 - d14) < tol: # distance to 3 is the long one
+        if abs(d13 - d24) < tol:
+            return True
+        else:
+            return False
+    elif abs(d13 - d14) < tol: # distance to 2 is the long one
+        if abs(d12 - d34) < tol:
+            return True
+        else:
+            return False

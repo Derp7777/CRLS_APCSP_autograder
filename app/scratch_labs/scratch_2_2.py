@@ -1,24 +1,29 @@
 import math
 
 class brickLayer(object):
-    def __init__(self, x, y, direction, *, draw_targets={}):
+    def __init__(self, x, y, direction, *, pendown=True, draw_targets={}):
         self.x = x
         self.y = y
         self.direction = math.radians(direction)
         self.draw_targets = draw_targets
-        self.pendown = True
+        self.pendown = pendown
+        self.move_history = [[self.x, self.y]]
+        self.say_history = ''
 
     def move(self, amount):
-        print("start of move selfx {} selfy {} ".format(self.x, self.y))
+        print("start of move selfx {} selfy {} hist {}".format(self.x, self.y, self.move_history))
 
         orig_x = self.x
         orig_y = self.y
         amount = int(amount)
         self.y += round(math.cos(self.direction) * amount)
         self.x += round(math.sin(self.direction) * amount)
-        print("enf of moveselfx {} selfy {}  pendown".format(self.x, self.y, self.pendown))
+        self.move_history.append([self.x, self.y])
+        # print("enf of moveselfx {} selfy {}  pendown".format(self.x, self.y, self.pendown))
+        # print("origx {} origy{} self.x {} self.y {} pendown {} hist {}"
+        #      .format(orig_x, orig_y, self.x, self.y, self.pendown, self.move_history))
+
         if self.pendown is True:
-            print("origx {} origy{} self.x {} self.y {} pendown {}".format(orig_x, orig_y, self.x, self.y, self.pendown))
 
             if ((orig_x, orig_y), (self.x, self.y)) in self.draw_targets.keys():
                 self.draw_targets[((orig_x, orig_y), (self.x, self.y))] = 0
@@ -151,7 +156,7 @@ def press_zero(p_scripts, p_points):
     from app.scratch_labs.scratch import match_string
 
     p_test = {"name": "Checking that there is a script that has 'when 0 key is pressed' along with a "
-                      "pen down, goto -216 -180, clear, and point 90. (" + str(p_points) + " points)<br>",
+                      "pen down, goto -160 -180, clear, and point 90. (" + str(p_points) + " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found the strings in the code!<br>",
@@ -173,7 +178,7 @@ def press_zero(p_scripts, p_points):
     test_goto = match_string(r"\['event_whenkeypressed', '0'] .+ \['motion_gotoxy', \s '-160', \s '-180'],",
                              p_scripts)
     if test_goto is False:
-        p_test['fail_message'] += "Did not find a when 0 pressed followed by goto -240 -180.<br>"
+        p_test['fail_message'] += "Did not find a when 0 pressed followed by goto -160 -180.<br>"
     test_color = match_string(r"\['event_whenkeypressed', '0'] .+ \['pensetPenColorToColor'",
                               p_scripts)
     if test_color is False:
@@ -221,8 +226,8 @@ def press_one(p_scripts, p_points):
             success = do_sprite(sprite, script, True)
             if success:
                 break
-    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
-                                                                 sprite.draw_targets))
+    # print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+    #                                                              sprite.draw_targets))
     find_repeat = match_string(r"\['event_whenkeypressed', \s* '1'], .+ \['control_repeat', \s '2'", p_scripts)
     if find_repeat['pass'] is False:
         p_test['fail_message'] += "Did not find a repeat with the correct number of times in the script. <br>"
@@ -280,8 +285,8 @@ def press_two(p_scripts, p_points):
             print("success? {} ".format(success))
             if success:
                 break
-    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
-                                                                 sprite.draw_targets))
+    # print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+    #                                                              sprite.draw_targets))
     find_repeat = match_string(r"\['event_whenkeypressed', \s* '2'], .+ \['control_repeat', \s '2'", p_scripts)
     if find_repeat['pass'] is False:
         p_test['fail_message'] += "Did not find a repeat with the correct number of times in the script. <br>"
@@ -350,8 +355,8 @@ def press_three(p_scripts, p_points):
             print("success? {} ".format(success))
             if success:
                 break
-    print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
-                                                                 sprite.draw_targets))
+    # print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
+    #                                                              sprite.draw_targets))
     find_repeat_1 = match_string(r"\['event_whenkeypressed', \s* '3'], .+ \['control_repeat', \s '2'", p_scripts)
     find_repeat_2 = match_string(r"\['event_whenkeypressed', \s* '3'], .+ \['control_repeat', \s '8'", p_scripts)
     if find_repeat_1['pass'] is False or find_repeat_2['pass'] is False:
