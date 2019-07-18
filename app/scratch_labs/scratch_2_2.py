@@ -1,13 +1,14 @@
 import math
 
 class brickLayer(object):
-    def __init__(self, x, y, direction, *, pendown=True, draw_targets={}):
+    def __init__(self, x, y, direction, *, pendown=True, draw_targets={}, variables={}):
         self.x = x
         self.y = y
         self.direction = math.radians(direction)
         self.draw_targets = draw_targets
         self.pendown = pendown
         self.move_history = [[self.x, self.y]]
+        self.variables = variables
         self.say_history = ''
 
     def move(self, amount):
@@ -47,6 +48,7 @@ def do_sprite(p_sprite, moves, success):
     :param success: What it returns  If false then exit right away
     :return: True/False depending on if crash or maximum fly exceeded.
     """
+    import re
     if success is False:
         return False
     for i, move in enumerate(moves):
@@ -62,7 +64,18 @@ def do_sprite(p_sprite, moves, success):
             if move == 'event_whenkeypressed':
                 break
             if move == 'motion_movesteps':
-                amount = moves[i+1]
+                if re.search("VARIABLE_", moves[i+1]):
+                    print("uuu moves[i+1] {}".format(moves[i+1]))
+                    match = re.search(r"VARIABLE_(.+)", moves[i+1], re.X | re.M | re.S)
+                    variable_name = match.group(1)
+                    print("uuu variable name {}".format(variable_name))
+                    print("uuu  p_sprite.variables[variable_name] {}".format(p_sprite.variables[variable_name]))
+#                    amount = re.sub(r"VARIABLE_.+'", str(p_sprite.variables[variable_name]),  moves[i+1],
+                    #                re.X | re.M | re.S)
+                    amount = int(p_sprite.variables[variable_name])
+                    print("uuu amountf {}".format(amount))
+                else:
+                    amount = moves[i+1]
                 ret_val = p_sprite.move(amount)
                 # print("IN do-sprite after move selfx {} selfy {} dir {} ret_val{}".format(p_sprite.x, p_sprite.y,
                 #                                                                 p_sprite.direction, ret_val))
@@ -134,6 +147,25 @@ def do_sprite(p_sprite, moves, success):
                 degrees = float(moves[i+1])
                 degrees = math.radians(degrees)
                 p_sprite.turn(degrees)
+                break    
+            elif move == 'looks_sayforsecs':  
+                words_pre_sub = str(moves[i+1])
+                if re.search("VARIABLE_", words_pre_sub):
+                    match = re.search(r"VARIABLE_(.+)", words_pre_sub, re.X | re.M | re.S)
+                    if match:
+                        variable_name = match.group(1)
+                    match = re.search(r"VARIABLE_(.+?)'", words_pre_sub, re.X | re.M | re.S)
+                    if match:
+                        variable_name = match.group(1)
+                    sub_this = 'VARIABLE_' + variable_name
+                    words_pre_sub = re.sub(sub_this, p_sprite.variables[variable_name], words_pre_sub)
+                    words = words_pre_sub
+                else:
+                    words = str(moves[i + 1])
+                words = re.sub(r"\['", '', words)
+                words = re.sub(r"']", '', words)
+                print("asdfasdf words {}".format(words))
+                p_sprite.say_history += words + "\n"
                 break
             elif move == 'control_repeat':
                 times = int(moves[i + 1])
@@ -165,25 +197,26 @@ def press_zero(p_scripts, p_points):
                               "Be sure that there is only one 'when 0 key is pressed'<br>",
               "points": 0
               }
-    test_pendown = match_string(r"\['event_whenkeypressed', '0'] .+ 'pen_penDown'", p_scripts)
-    if test_pendown is False:
+    print("aaa asdfasdf {} ".format(p_scripts))
+    test_pendown = match_string(r"\['event_whenkeypressed', \s* '0'] .+ 'pen_penDown'", p_scripts)
+    if test_pendown['pass'] is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by a pen erase all.<br>"
-    test_clear = match_string(r"\['event_whenkeypressed', '0'] .+ 'pen_clear'", p_scripts)
-    if test_clear is False:
+    test_clear = match_string(r"\['event_whenkeypressed', \s* '0'] .+ 'pen_clear'", p_scripts)
+    if test_clear['pass'] is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by an erase all.<br>"
-    test_point = match_string(r"\['event_whenkeypressed', '0'] .+ \['motion_pointindirection', \s '90'],",
+    test_point = match_string(r"\['event_whenkeypressed', \s* '0'] .+ \['motion_pointindirection', \s '90'],",
                               p_scripts)
-    if test_point is False:
+    if test_point['pass'] is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by a point in direction 90.<br>"
-    test_goto = match_string(r"\['event_whenkeypressed', '0'] .+ \['motion_gotoxy', \s '-160', \s '-180'],",
+    test_goto = match_string(r"\['event_whenkeypressed', \s* '0'] .+ \['motion_gotoxy', \s '-160', \s '-180'],",
                              p_scripts)
-    if test_goto is False:
+    if test_goto['pass'] is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by goto -160 -180.<br>"
-    test_color = match_string(r"\['event_whenkeypressed', '0'] .+ \['pensetPenColorToColor'",
+    test_color = match_string(r"\['event_whenkeypressed', \s* '0'] .+ \['pen_setPenColorToColor'",
                               p_scripts)
-    if test_color is False:
+    if test_color['pass'] is False:
         p_test['fail_message'] += "Did not find a when 0 pressed followed by changing of pen color.<br>"
-    if test_pendown and test_clear and test_point and test_goto and test_color:
+    if test_pendown['pass'] and test_clear['pass'] and test_point['pass'] and test_goto['pass'] and test_color['pass']:
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test

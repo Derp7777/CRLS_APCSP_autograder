@@ -61,7 +61,7 @@ def scratch():
             flash(file.filename + ' uploaded')
             if request.form['lab'] in ['1.3', '1.4_1.5', '1.x_family_migration_story', '2.2',
                                        '2.4_alternate', '2.5_alternate',
-                                       '2.6', '3.2_alternate', 'karel1', 'karel2a', 'karel2b',
+                                       '2.6', '3.2_alternate', '3.3_3.4_alternate', 'karel1', 'karel2a', 'karel2b',
                                        'karel3a', 'karel3b', 'karel3c', 'karel3d',
                                        ]:
                 return redirect(url_for('scratch_feedback_' + request.form['lab'].replace(".", ""), filename=filename))
@@ -243,7 +243,7 @@ def scratch_feedback_22():
         json_data = read_json_file()
         scripts = arrange_blocks_v2(json_data)
         print("scripts {}".format(scripts))
-        test_zero = press_zero(json_data, 15)
+        test_zero = press_zero(scripts, 15)
         tests.append(test_zero)
         if test_zero['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
@@ -268,8 +268,8 @@ def scratch_feedback_22():
 
 @app.route('/scratch/scratch_feedback_24_alternate')
 def scratch_feedback_24_alternate():
-    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks,\
-        find_variable, find_question, find_set_variable, arrange_blocks_v2, match_string
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help,\
+        find_variable, find_question, find_set_variable, arrange_blocks_v2
     from app.scratch_labs.scratch_2_4_alternate import green_flag, test_color_change, one_question, two_question, \
         name_variable_x4
     user = {'username': 'CRLS Scratch Scholar'}
@@ -376,7 +376,7 @@ def scratch_feedback_25_alternate():
 @app.route('/scratch/scratch_feedback_26')
 def scratch_feedback_26():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
-         find_question, arrange_blocks_v2
+         arrange_blocks_v2
     from app.scratch_labs.scratch_2_6 import green_flag, test_top_1, test_fall, test_hit_ground, test_random_x, \
         platform_or_ground
     user = {'username': 'CRLS Scratch Scholar'}
@@ -423,10 +423,11 @@ def scratch_feedback_26():
 @app.route('/scratch/scratch_feedback_32_alternate')
 def scratch_feedback_32_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
-    from app.scratch_labs.scratch_3_2_alternate import press_zero, press_one, press_two
+    from app.scratch_labs.scratch_3_2_alternate import press_zero, press_one, press_two, press_three, press_four, \
+        find_make_triangle, find_happy_birthday, make_triangle_works, happy_birthday_works
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 40, 'manually_scored': 10, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 50, 'manually_scored': 10, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
@@ -439,7 +440,6 @@ def scratch_feedback_32_alternate():
         unzip_sb3(filename)
         json_data = read_json_file()
         scripts = arrange_blocks_v2(json_data)
-        print("scripts {}".format(scripts))
         test_zero = press_zero(json_data, 5)
         tests.append(test_zero)
         if test_zero['pass'] is False:
@@ -447,16 +447,61 @@ def scratch_feedback_32_alternate():
         else:
             test_one = press_one(scripts, 5)
             tests.append(test_one)
-
             test_two = press_two(scripts, 5)
             tests.append(test_two)
-            test_help = find_help(json_data, 5)
-            tests.append(test_help)
+            test_procedure_triangle = find_make_triangle(scripts, 5)
+            tests.append(test_procedure_triangle)
+            test_triangle_works = make_triangle_works(scripts, 5)
+            tests.append(test_triangle_works)
+            test_press_three = press_three(scripts, 5)
+            tests.append(test_press_three)
+            test_find_happy_birthday = find_happy_birthday(scripts, 5)
+            tests.append(test_find_happy_birthday)
+            test_happy_birthday_works = happy_birthday_works(scripts, 5)
+            tests.append(test_happy_birthday_works)
+            test_press_four = press_four(scripts, 5)
+            tests.append(test_press_four)
+            test_find_help = find_help(json_data, 5)
+            tests.append(test_find_help)
             score_info['finished_scoring'] = True
             for test in tests:
                 if test['pass']:
                         score_info['score'] += test['points']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/scratch/scratch_feedback_33_34_alternate')
+def scratch_feedback_33_34_alternate():
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
+    from app.scratch_labs.scratch_3_3_3_4_alternate import day_of_week_works
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 50, 'manually_scored': 10, 'finished_scoring': False}
+
+    # Test file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = scratch_filename_test(filename, '3.3_3.4_alternate')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        unzip_sb3(filename)
+        json_data = read_json_file()
+        scripts = arrange_blocks_v2(json_data)
+        print('scripts')
+        for key in scripts:
+                print("key {}  script {} ".format(key, scripts[key]))
+
+        test_day_of_week_works = day_of_week_works(scripts, 5)
+        tests.append(test_day_of_week_works)
+        test_help = find_help(json_data, 5)
+        tests.append(test_help)
+        score_info['finished_scoring'] = True
+        for test in tests:
+            if test['pass']:
+                    score_info['score'] += test['points']
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/scratch/karel1')
@@ -688,7 +733,7 @@ def scratch_feedback_karel3c():
 def scratch_feedback_karel3d():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help
     from app.scratch_labs.karel import extract_coder_json, arrange_karel_blocks, find_turnright,  \
-        karel3d_1, karel3d_2, karel_final_spot
+        karel3d_1, karel3d_2
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 45, 'manually_scored': 0, 'finished_scoring': False}

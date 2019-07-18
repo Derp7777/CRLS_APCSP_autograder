@@ -454,7 +454,7 @@ def karel3d_1(p_moves, p_points):
 
 
 def karel3d_2(p_moves, p_points):
-    barriers = [[15, 0], [25, 0], [30, 5], [40, 5], [50, 5], [60, 5], [70, 5], [75, 0],]
+    barriers = [[15, 0], [25, 0], [30, 5], [40, 5], [50, 5], [60, 5], [70, 5], [75, 0], ]
     beepers = []
     karel = robot(0, 0, 1, barriers, beepers)
     success = True
@@ -502,7 +502,7 @@ def karel_final_spot(p_moves, p_points):
         p_test['fail_message'] += "Karel needed to land on [9,0] without crashing, but did not<br>" \
                                   "Karel coordinates at end of run are this:<br>" \
                                   "X: " + str(karel.x/10) + "<br>" \
-                                                         "Y: " + str(karel.y/10) + "<br>"
+                                                            "Y: " + str(karel.y/10) + "<br>"
 
     print(f"success? {karel_result}")
     return p_test

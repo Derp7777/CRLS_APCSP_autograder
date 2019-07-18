@@ -323,8 +323,17 @@ def build_scratch_script(starting_block_id, p_blocks):
         current_block = p_blocks[current_block_id]
         print(f"aaa {current_block_id} opcode {current_block['opcode']}")
         if current_block['opcode'] == 'motion_movesteps':
-            steps = current_block['inputs']['STEPS'][1][1]
-            script.append(['motion_movesteps', steps])
+            if len(current_block['inputs']['STEPS']) == 3:
+                arg_id = current_block['inputs']['STEPS'][1]
+                variable_name = build_scratch_script(arg_id, p_blocks)
+                print(variable_name)
+              #  script.append(['motion_movesteps', 'VARIABLE_' + variable_name[0]])
+
+                script.append(['motion_movesteps', variable_name[0]])
+
+            else:
+                steps = current_block['inputs']['STEPS'][1][1]
+                script.append(['motion_movesteps', steps])
         if current_block['opcode'] == 'motion_turnleft':
             degrees = current_block['inputs']['DEGREES'][1][1]
             script.append(['motion_turnleft', degrees])
@@ -400,13 +409,15 @@ def build_scratch_script(starting_block_id, p_blocks):
             touching_object = current_block['fields']['TOUCHINGOBJECTMENU'][0]
             script.append(['sensing_touchingobjectmenu', touching_object])
         elif current_block['opcode'] == 'looks_sayforsecs':
+            time = current_block['inputs']['SECS'][1][1]
             if len(current_block['inputs']['MESSAGE']) == 3:
                 words_id = current_block['inputs']['MESSAGE'][1]
-                message = build_scratch_script(words_id, p_blocks)
+                variable_name = build_scratch_script(words_id, p_blocks)
+                print("OOO BEFORE DEATH {}".format(variable_name))
+                script.append(['looks_sayforsecs', variable_name[0], time])
             else:
                 message = current_block['inputs']['MESSAGE'][1][1]  # does not reference anything else
-            time = current_block['inputs']['SECS'][1][1]
-            script.append(['looks_sayforsecs', message, time])
+                script.append(['looks_sayforsecs', message, time])
         elif current_block['opcode'] == 'sensing_answer':
             script.append('sensing_answer')
         elif current_block['opcode'] == 'data_setvariableto':
@@ -510,6 +521,8 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'pen_setPenColorToColor':
             color = current_block['inputs']['COLOR'][1][1]
             script.append(['pen_setPenColorToColor', color])
+        elif current_block['opcode'] == 'argument_reporter_string_number':
+            script.append('VARIABLE_' + str(current_block['fields']['VALUE'][0]))
         next_block_id = current_block['next']
         current_block_id = next_block_id
     return script
@@ -559,7 +572,17 @@ def arrange_blocks_v2(p_json):
                             if_scripts[block_id] = [block['inputs']['CONDITION'][1],
                                                     block['inputs']['SUBSTACK'][1],
                                                     block['inputs']['SUBSTACK2'][1]]
-                elif block['opcode'] == "procedures_definition":  # can skip, previous if does
+                elif block['opcode'] == "procedures_definition":  # tells what's in it
+                    continue
+                elif block['opcode'] == "procedures_prototype":  #  start here. prototype has defintion as parent
+                    procedures_definition_id = block['parent']
+                    procedure_name = block['mutation']['proccode']
+                    #procedures_definition_block = blocks[procedures_definition_id]
+
+                    script = build_scratch_script(procedures_definition_id, blocks)
+                    print("aaa script {} ".format(script))
+                    scripts[procedure_name] = script
+                    print("aaa procedure name is this {}".format(procedure_name))
                     continue
                 elif block['parent']:
                     parent_id = block['parent']
@@ -778,7 +801,7 @@ def is_equilateral_triangle(p_coordinates):
     d23 = distance(p_coordinates[1], p_coordinates[2])
     d13 = distance(p_coordinates[0], p_coordinates[2])
     tol = 0.01 * d12
-    print("aaa d12 {} d13 {} d23 {}".format(d12, d13, d23))
+    print("aaa blahblah d12 {} d13 {} d23 {}".format(d12, d13, d23))
     if abs(d12 - d23) < tol and abs(d12 - d13) < tol and abs(d23 - d13) < tol:
         return True
     else:
@@ -802,7 +825,7 @@ def is_square(p_coordinates):
     d24 = distance(p_coordinates[1], p_coordinates[3])
     d34 = distance(p_coordinates[2], p_coordinates[3])
     tol = 0.01 * d12
-    print("yes yes d12 {} d13 {} d14 {} d23 {} d24 {} d34 {}".format(d12, d13, d14, d23, d24, d34))
+    # print("yes yes d12 {} d13 {} d14 {} d23 {} d24 {} d34 {}".format(d12, d13, d14, d23, d24, d34))
 
     if abs(d12 - d13) < tol:   # distance to 4 is the long one
         if abs(d14 - d23) < tol:
@@ -819,3 +842,15 @@ def is_square(p_coordinates):
             return True
         else:
             return False
+
+
+def procedure_exists(p_name, p_scripts):
+    """
+    Tests to see if procedure with X name and certain variables exists
+    :param p_name: names that I'm looking for with args.  Like make_triangle %s
+    :param p_scripts: dictionary of scripts
+    :return: True or false
+    """
+    if p_name in p_scripts.keys():
+        return True
+    return False
