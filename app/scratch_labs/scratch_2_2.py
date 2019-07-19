@@ -20,10 +20,6 @@ class brickLayer(object):
         self.y += round(math.cos(self.direction) * amount)
         self.x += round(math.sin(self.direction) * amount)
         self.move_history.append([self.x, self.y])
-        # print("enf of moveselfx {} selfy {}  pendown".format(self.x, self.y, self.pendown))
-        # print("origx {} origy{} self.x {} self.y {} pendown {} hist {}"
-        #      .format(orig_x, orig_y, self.x, self.y, self.pendown, self.move_history))
-
         if self.pendown is True:
 
             if ((orig_x, orig_y), (self.x, self.y)) in self.draw_targets.keys():
@@ -33,7 +29,6 @@ class brickLayer(object):
                 self.draw_targets[((self.x, self.y), (orig_x, orig_y))] = 0
                 return True
             else:
-                print("aaa should be here it's not there!")
                 return False
 
     def turn(self, amount):
@@ -58,9 +53,7 @@ def do_sprite(p_sprite, moves, success):
                 success = False
                 break
         else:
-            # print("IN do-sprite selfx {} selfy {} dir {} ".format(p_sprite.x, p_sprite.y, p_sprite.direction))
-
-            print("ggg move {}".format(move))
+            print("ggg move is this{}".format(move))
             if move == 'event_whenkeypressed':
                 break
             if move == 'motion_movesteps':
@@ -77,8 +70,6 @@ def do_sprite(p_sprite, moves, success):
                 else:
                     amount = moves[i+1]
                 ret_val = p_sprite.move(amount)
-                # print("IN do-sprite after move selfx {} selfy {} dir {} ret_val{}".format(p_sprite.x, p_sprite.y,
-                #                                                                 p_sprite.direction, ret_val))
                 if ret_val is False:
                     success = False
                     break
@@ -101,7 +92,6 @@ def do_sprite(p_sprite, moves, success):
                         p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
                         return True
                     else:
-                        print("aaa should be here it's not there!")
                         return False
                 break
             elif move == 'motion_changexby':
@@ -118,7 +108,6 @@ def do_sprite(p_sprite, moves, success):
                         p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
                         return True
                     else:
-                        print("aaa should be here it's not there!")
                         return False
                 break
             elif move == 'motion_setx':
@@ -135,7 +124,6 @@ def do_sprite(p_sprite, moves, success):
                         p_sprite.draw_targets[((p_sprite.x, p_sprite.y), (orig_x, orig_y))] = 0
                         return True
                     else:
-                        print("aaa should be here it's not there! move setX")
                         return False
                 break
             elif move == 'pen_penUp':
@@ -148,8 +136,10 @@ def do_sprite(p_sprite, moves, success):
                 degrees = math.radians(degrees)
                 p_sprite.turn(degrees)
                 break    
-            elif move == 'looks_sayforsecs':  
+            elif move == 'looks_sayforsecs':
+                print("pre pre " + str(moves))
                 words_pre_sub = str(moves[i+1])
+                print("presub words" + words_pre_sub)
                 if re.search("VARIABLE_", words_pre_sub):
                     match = re.search(r"VARIABLE_(.+)", words_pre_sub, re.X | re.M | re.S)
                     if match:
@@ -158,7 +148,7 @@ def do_sprite(p_sprite, moves, success):
                     if match:
                         variable_name = match.group(1)
                     sub_this = 'VARIABLE_' + variable_name
-                    words_pre_sub = re.sub(sub_this, p_sprite.variables[variable_name], words_pre_sub)
+                    words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
                     words = words_pre_sub
                 else:
                     words = str(moves[i + 1])
@@ -166,6 +156,48 @@ def do_sprite(p_sprite, moves, success):
                 words = re.sub(r"']", '', words)
                 print("asdfasdf words {}".format(words))
                 p_sprite.say_history += words + "\n"
+                break
+            elif move == 'control_if_else':
+                print("ooo moves{}  i{}".format(moves, i))
+                operator = moves[i + 1][0]
+                print("ooo operator {}".format(operator))
+                left_side = operator[0]
+                left_side = str(left_side)
+                sign = operator[1]
+                right_side = operator[2]
+                right_side = str(right_side)
+                print("done assigning left {} right {} sign {}".format(left_side, right_side, sign))
+                match = re.search(r"VARIABLE_(.+?)'", left_side, re.X | re.M | re.S)
+                if match:
+                    print("MATCH1")
+                    variable_name = match.group(1)
+                    left_side = p_sprite.variables[variable_name]
+                match = re.search(r"VARIABLE_(.+?)'", right_side, re.X | re.M | re.S)
+                if match:
+                    print("MATCHRIGHT")
+                    variable_name = match.group(1)
+                    right_side = p_sprite.variables[variable_name]
+                if sign == '=':
+                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                    if str(left_side) == str(right_side):
+                        ret_val = do_sprite(p_sprite, moves[2], success)
+                    else:
+                        ret_val = do_sprite(p_sprite, moves[3], success)
+                elif sign == '<':
+                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                    if str(left_side) < str(right_side):
+                        ret_val = do_sprite(p_sprite, moves[2], success)
+                    else:
+                        ret_val = do_sprite(p_sprite, moves[3], success)
+                elif sign == '>':
+                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                    if str(left_side) > str(right_side):
+                        print("YES???")
+                        ret_val = do_sprite(p_sprite, moves[2], success)
+                    else:
+                        print("NO!")
+                        ret_val = do_sprite(p_sprite, moves[3], success)
+
                 break
             elif move == 'control_repeat':
                 times = int(moves[i + 1])

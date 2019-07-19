@@ -326,7 +326,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             if len(current_block['inputs']['STEPS']) == 3:
                 arg_id = current_block['inputs']['STEPS'][1]
                 variable_name = build_scratch_script(arg_id, p_blocks)
-                print(variable_name)
               #  script.append(['motion_movesteps', 'VARIABLE_' + variable_name[0]])
 
                 script.append(['motion_movesteps', variable_name[0]])
@@ -378,7 +377,6 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'event_whenbroadcastreceived':
             message = current_block['fields']['BROADCAST_OPTION'][0]
             script.append(['event_whenbroadcastreceived', message])
-            print(script)
         elif current_block['opcode'] == 'control_repeat' or \
                 current_block['opcode'] == 'control_forever':
             substack_id = current_block['inputs']['SUBSTACK'][1]
@@ -413,7 +411,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             if len(current_block['inputs']['MESSAGE']) == 3:
                 words_id = current_block['inputs']['MESSAGE'][1]
                 variable_name = build_scratch_script(words_id, p_blocks)
-                print("OOO BEFORE DEATH {}".format(variable_name))
                 script.append(['looks_sayforsecs', variable_name[0], time])
             else:
                 message = current_block['inputs']['MESSAGE'][1][1]  # does not reference anything else
@@ -481,12 +478,60 @@ def build_scratch_script(starting_block_id, p_blocks):
                 operand2 = current_block['inputs']['OPERAND2'][1][1]
             else:
                 if isinstance(current_block['inputs']['OPERAND2'][1], str):
+                    operand2_id = current_block['inputs']['OPERAND2'][1]
+                    operand2 = build_scratch_script(operand2_id, p_blocks)
+                elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
+                    operand2 = current_block['inputs']['OPERAND2'][1][1]
+                    operand2 = 'VARIABLE_' + operand2
+            script.append([operand1, '=', operand2])
+        elif current_block['opcode'] == 'operator_lt':
+            print("aaa intereing {}".format(current_block_id))
+            if len(current_block['inputs']['OPERAND1']) == 2:
+                operand1 = current_block['inputs']['OPERAND1'][1][1]
+                print("wut 0")
+            else:
+                if isinstance(current_block['inputs']['OPERAND1'][1], str):
+                    print("wut 1")
+                    operand1_id = current_block['inputs']['OPERAND1'][1]
+                    operand1 = build_scratch_script(operand1_id, p_blocks)
+                elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
+                    print("wut 2")
+                    operand1 = current_block['inputs']['OPERAND1'][1][1]
+                    operand1 = "VARIABLE_" + operand1
+            if len(current_block['inputs']['OPERAND2']) == 2:
+                operand2 = current_block['inputs']['OPERAND2'][1][1]
+            else:
+                if isinstance(current_block['inputs']['OPERAND2'][1], str):
+                    print("wut try this")
+                    operand2_id = current_block['inputs']['OPERAND2'][1]
+                    operand2 = build_scratch_script(operand2_id, p_blocks)
+                elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
+                    print("wut try this 2")
+
+                    operand2 = current_block['inputs']['OPERAND2'][1][1]
+                    operand2 = "VARIABLE_" + operand2
+            print("QWERTY operand 1 {} operand {}".format(operand1, operand2))
+            script.append([operand1, '<', operand2])
+        elif current_block['opcode'] == 'operator_gt':
+            if len(current_block['inputs']['OPERAND1']) == 2:
+                operand1 = current_block['inputs']['OPERAND1'][1][1]
+            else:
+                if isinstance(current_block['inputs']['OPERAND1'][1], str):
+                    operand1_id = current_block['inputs']['OPERAND1'][1]
+                    operand1 = build_scratch_script(operand1_id, p_blocks)
+                elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
+                    operand1 = current_block['inputs']['OPERAND1'][1][1]
+                    operand1 = "VARIABLE_" + operand1
+            if len(current_block['inputs']['OPERAND2']) == 2:
+                operand2 = current_block['inputs']['OPERAND2'][1][1]
+            else:
+                if isinstance(current_block['inputs']['OPERAND2'][1], str):
                     operand2 = current_block['inputs']['OPERAND2'][1][1]
                     operand2 = "VARIABLE_" + operand2
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
                     operand2_id = current_block['inputs']['OPERAND2'][1]
                     operand2 = build_scratch_script(operand2_id, p_blocks)
-            script.append([operand1, '=', operand2])
+            script.append([operand1, '>', operand2])
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
@@ -554,19 +599,16 @@ def arrange_blocks_v2(p_json):
                 if block['opcode'] == "control_repeat" or \
                         block['opcode'] == "control_forever" or \
                         block['opcode'] == "control_repeat_until":
-                    print(f"yyy {block_id} building repeat_scripts  ")
                     if 'inputs' in block:
                         if 'SUBSTACK' in block['inputs']:
                             repeat_scripts[block_id] = [block['inputs']['SUBSTACK'][1]]
                 elif block['opcode'] == "operator_equals":
-                    print(f"yyy {block_id} building operator scripts now.   ") #This may be jacked see later.
                     if 'inputs' in block:
                         if 'OPERAND1' in block['inputs']:
                             operator_scripts[block_id] = [block['inputs']['OPERAND1'][1][1],
                                                           '=',
                                                           block['inputs']['OPERAND2'][1][1]]
                 elif block['opcode'] == "control_if_else":
-                    print(f"yyy {block_id} building if scripts now.   ")
                     if 'inputs' in block:
                         if 'SUBSTACK' in block['inputs']:
                             if_scripts[block_id] = [block['inputs']['CONDITION'][1],
@@ -598,7 +640,6 @@ def arrange_blocks_v2(p_json):
                                     for item in script:
                                         print(f"IN A REPEAT STACK item['opcode']" + str(item))
                                         temp_repeat_commands.append(item)
-                                        print("NEXT")
                                     repeat_scripts[block_id] = temp_repeat_commands
                 elif block['parent'] is None:
                     print(f"yyy {block_id} doing things without parents now.")
@@ -801,7 +842,6 @@ def is_equilateral_triangle(p_coordinates):
     d23 = distance(p_coordinates[1], p_coordinates[2])
     d13 = distance(p_coordinates[0], p_coordinates[2])
     tol = 0.01 * d12
-    print("aaa blahblah d12 {} d13 {} d23 {}".format(d12, d13, d23))
     if abs(d12 - d23) < tol and abs(d12 - d13) < tol and abs(d23 - d13) < tol:
         return True
     else:
@@ -825,8 +865,6 @@ def is_square(p_coordinates):
     d24 = distance(p_coordinates[1], p_coordinates[3])
     d34 = distance(p_coordinates[2], p_coordinates[3])
     tol = 0.01 * d12
-    # print("yes yes d12 {} d13 {} d14 {} d23 {} d24 {} d34 {}".format(d12, d13, d14, d23, d24, d34))
-
     if abs(d12 - d13) < tol:   # distance to 4 is the long one
         if abs(d14 - d23) < tol:
             return True

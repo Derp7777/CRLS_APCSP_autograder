@@ -290,7 +290,7 @@ def happy_birthday_works(p_scripts, p_points):
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "The happy_birthday custom block with one argument works.<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "The make_triangle custom block with one argument does not appear to work."
+                              "The happy_birthday custom block with one argument does not appear to work."
                               "Is the input parameter named name?<br>"
                               "BE SURE INPUT PARAMETER IS NAMED name OTHERWISE THIS TEST BREAKS.<br>",
               "points": 0

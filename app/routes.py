@@ -473,10 +473,11 @@ def scratch_feedback_32_alternate():
 @app.route('/scratch/scratch_feedback_33_34_alternate')
 def scratch_feedback_33_34_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
-    from app.scratch_labs.scratch_3_3_3_4_alternate import day_of_week_works
+    from app.scratch_labs.scratch_3_3_3_4_alternate import find_day_of_week, day_of_week_works, if_ifelse, \
+        find_min, find_between, min_works, minif_ifelse
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 50, 'manually_scored': 10, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
@@ -492,9 +493,20 @@ def scratch_feedback_33_34_alternate():
         print('scripts')
         for key in scripts:
                 print("key {}  script {} ".format(key, scripts[key]))
-
+        test_find_day_of_week = find_day_of_week(scripts, 5)
+        tests.append(test_find_day_of_week)
         test_day_of_week_works = day_of_week_works(scripts, 5)
         tests.append(test_day_of_week_works)
+        test_if_ifelse = if_ifelse(scripts, 5)
+        tests.append(test_if_ifelse)
+        test_find_min = find_min(scripts, 5)
+        tests.append(test_find_min)
+        test_min_works = min_works(scripts, 15)
+        tests.append(test_min_works)
+        test_minif_ifelse = minif_ifelse(scripts, 5)
+        tests.append(test_minif_ifelse)
+        test_find_between = find_between(scripts, 5)
+        tests.append(test_find_between)
         test_help = find_help(json_data, 5)
         tests.append(test_help)
         score_info['finished_scoring'] = True
