@@ -474,7 +474,7 @@ def scratch_feedback_32_alternate():
 def scratch_feedback_33_34_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
     from app.scratch_labs.scratch_3_3_3_4_alternate import find_day_of_week, day_of_week_works, if_ifelse, \
-        find_min, find_between, min_works, minif_ifelse
+        find_min, find_between, min_works, minif_ifelse, between_works_equal
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -507,6 +507,8 @@ def scratch_feedback_33_34_alternate():
         tests.append(test_minif_ifelse)
         test_find_between = find_between(scripts, 5)
         tests.append(test_find_between)
+        test_between_works_equal = between_works_equal(scripts, 10)
+        tests.append(test_between_works_equal)
         test_help = find_help(json_data, 5)
         tests.append(test_help)
         score_info['finished_scoring'] = True

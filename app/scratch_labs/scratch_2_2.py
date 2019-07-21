@@ -35,6 +35,51 @@ class brickLayer(object):
         self.direction += amount
 
 
+def eval_boolean(p_boolean, p_sprite):
+    """
+    evaluates p_boolean given from scratch json, after simplifying
+    :param p_boolean: the statement to evaluate
+    :param p_sprite: sprite object(we will use the sprite variables)
+    :return: True or False
+    """
+    import re
+
+    print("aaa inside p_boolean {}".format(p_boolean))
+    p_boolean = re.sub("'", '', p_boolean)
+    p_boolean = re.sub(",", '', p_boolean)
+    p_boolean = re.sub('=', '==', p_boolean)
+
+    p_boolean = re.sub(r"\[", '(', p_boolean)
+    p_boolean = re.sub("]", ')', p_boolean)
+    for key in p_sprite.variables:
+        if re.search(key, p_boolean, re.X | re.M | re.S):
+            p_boolean = re.sub('VARIABLE_' + key, str(p_sprite.variables[key]), p_boolean)
+    print("aaa inside p_boolean {}".format(p_boolean))
+    sub_in = True
+    print("start subin")
+    counter = 1
+    while sub_in:
+        print("start subin loop")
+        print(p_boolean)
+        sub_in = False
+        counter += 1
+        if counter > 11:
+            break
+        found = re.search(r'\(([\d_a-zA-Z]+)\)', p_boolean, re.X | re.M | re.S)
+        if found:
+            sub_this = found.group(1)
+            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
+            p_boolean = re.sub(r'\(' + sub_this + r'\)', sub_this, p_boolean)
+
+
+            sub_in = True
+        else:
+            sub_in = False
+    ret_val = eval(p_boolean)
+    print(ret_val)
+    return ret_val
+
+
 def do_sprite(p_sprite, moves, success):
     """
     This function does the sprite movements
@@ -160,44 +205,59 @@ def do_sprite(p_sprite, moves, success):
             elif move == 'control_if_else':
                 print("ooo moves{}  i{}".format(moves, i))
                 operator = moves[i + 1][0]
-                print("ooo operator {}".format(operator))
-                left_side = operator[0]
-                left_side = str(left_side)
-                sign = operator[1]
-                right_side = operator[2]
-                right_side = str(right_side)
-                print("done assigning left {} right {} sign {}".format(left_side, right_side, sign))
-                match = re.search(r"VARIABLE_(.+?)'", left_side, re.X | re.M | re.S)
-                if match:
-                    print("MATCH1")
-                    variable_name = match.group(1)
-                    left_side = p_sprite.variables[variable_name]
-                match = re.search(r"VARIABLE_(.+?)'", right_side, re.X | re.M | re.S)
-                if match:
-                    print("MATCHRIGHT")
-                    variable_name = match.group(1)
-                    right_side = p_sprite.variables[variable_name]
-                if sign == '=':
-                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                    if str(left_side) == str(right_side):
-                        ret_val = do_sprite(p_sprite, moves[2], success)
-                    else:
-                        ret_val = do_sprite(p_sprite, moves[3], success)
-                elif sign == '<':
-                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                    if str(left_side) < str(right_side):
-                        ret_val = do_sprite(p_sprite, moves[2], success)
-                    else:
-                        ret_val = do_sprite(p_sprite, moves[3], success)
-                elif sign == '>':
-                    print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                    if str(left_side) > str(right_side):
-                        print("YES???")
-                        ret_val = do_sprite(p_sprite, moves[2], success)
-                    else:
-                        print("NO!")
-                        ret_val = do_sprite(p_sprite, moves[3], success)
+                operator = str(operator)
+                condition = eval_boolean(operator, p_sprite)
+                if condition:
+                    ret_val = do_sprite(p_sprite, moves[2], success)
+                else:
+                    ret_val = do_sprite(p_sprite, moves[3], success)
+                break
+                # print("ooo operator {}".format(operator))
+                # left_side = operator[0]
+                # left_side = str(left_side)
+                # sign = operator[1]
+                # right_side = operator[2]
+                # right_side = str(right_side)
+                # print("done assigning left {} right {} sign {}".format(left_side, right_side, sign))
+                # match = re.search(r"VARIABLE_(.+?)'", left_side, re.X | re.M | re.S)
+                # if match:
+                #     print("MATCH1")
+                #     variable_name = match.group(1)
+                #     left_side = p_sprite.variables[variable_name]
+                # match = re.search(r"VARIABLE_(.+?)'", right_side, re.X | re.M | re.S)
+                # if match:
+                #     print("MATCHRIGHT")
+                #     variable_name = match.group(1)
+                #     right_side = p_sprite.variables[variable_name]
+                # if sign == '=':
+                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                #     if str(left_side) == str(right_side):
+                #         ret_val = do_sprite(p_sprite, moves[2], success)
+                #     else:
+                #         ret_val = do_sprite(p_sprite, moves[3], success)
+                # elif sign == '<':
+                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                #     if str(left_side) < str(right_side):
+                #         ret_val = do_sprite(p_sprite, moves[2], success)
+                #     else:
+                #         ret_val = do_sprite(p_sprite, moves[3], success)
+                # elif sign == '>':
+                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
+                #     if str(left_side) > str(right_side):
+                #         print("YES???")
+                #         ret_val = do_sprite(p_sprite, moves[2], success)
+                #     else:
+                #         print("NO!")
+                #         ret_val = do_sprite(p_sprite, moves[3], success)
 
+                break
+            elif move == 'control_if':
+                print("ooo control_if moves{}  i{}".format(moves, i))
+                operator = moves[i + 1][0]
+                operator = str(operator)
+                condition = eval_boolean(operator, p_sprite)
+                if condition:
+                    ret_val = do_sprite(p_sprite, moves[2], success)
                 break
             elif move == 'control_repeat':
                 times = int(moves[i + 1])

@@ -438,12 +438,9 @@ def build_scratch_script(starting_block_id, p_blocks):
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if', condition_script, if_script])
         elif current_block['opcode'] == 'control_if_else':
-            print(f"bbb block {current_block_id}")
-            print(f"bbb block {current_block}")
             substack_1_id = current_block['inputs']['SUBSTACK'][1]
             substack_2_id = current_block['inputs']['SUBSTACK2'][1]
             condition_id = current_block['inputs']['CONDITION'][1]
-            print(f"IDS {substack_1_id} sub2 {substack_2_id} cond {condition_id}")
             if_script = build_scratch_script(substack_1_id, p_blocks)
             else_script = build_scratch_script(substack_2_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
@@ -488,25 +485,20 @@ def build_scratch_script(starting_block_id, p_blocks):
             print("aaa intereing {}".format(current_block_id))
             if len(current_block['inputs']['OPERAND1']) == 2:
                 operand1 = current_block['inputs']['OPERAND1'][1][1]
-                print("wut 0")
             else:
                 if isinstance(current_block['inputs']['OPERAND1'][1], str):
-                    print("wut 1")
                     operand1_id = current_block['inputs']['OPERAND1'][1]
                     operand1 = build_scratch_script(operand1_id, p_blocks)
                 elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
-                    print("wut 2")
                     operand1 = current_block['inputs']['OPERAND1'][1][1]
                     operand1 = "VARIABLE_" + operand1
             if len(current_block['inputs']['OPERAND2']) == 2:
                 operand2 = current_block['inputs']['OPERAND2'][1][1]
             else:
                 if isinstance(current_block['inputs']['OPERAND2'][1], str):
-                    print("wut try this")
                     operand2_id = current_block['inputs']['OPERAND2'][1]
                     operand2 = build_scratch_script(operand2_id, p_blocks)
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
-                    print("wut try this 2")
 
                     operand2 = current_block['inputs']['OPERAND2'][1][1]
                     operand2 = "VARIABLE_" + operand2
