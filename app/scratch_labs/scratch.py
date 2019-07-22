@@ -461,6 +461,14 @@ def build_scratch_script(starting_block_id, p_blocks):
                 operand2_id = current_block['inputs']['OPERAND2'][1]
                 operand2 = build_scratch_script(operand2_id, p_blocks)
             script.append([operand1, 'or', operand2])
+        elif current_block['opcode'] == 'operator_and':
+            if isinstance(current_block['inputs']['OPERAND1'][1], str):
+                operand1_id = current_block['inputs']['OPERAND1'][1]
+                operand1 = build_scratch_script(operand1_id, p_blocks)
+            if isinstance(current_block['inputs']['OPERAND2'][1], str):
+                operand2_id = current_block['inputs']['OPERAND2'][1]
+                operand2 = build_scratch_script(operand2_id, p_blocks)
+            script.append([operand1, 'and', operand2])
         elif current_block['opcode'] == 'operator_equals':
             if len(current_block['inputs']['OPERAND1']) == 2:
                 operand1 = current_block['inputs']['OPERAND1'][1][1]

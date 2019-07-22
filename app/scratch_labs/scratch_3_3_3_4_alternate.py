@@ -254,7 +254,7 @@ def between_works_equal(p_scripts, p_points):
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
 
-    p_test = {"name": "Checking that the between custom block with three input parameters works when number1"
+    p_test = {"name": "Checking that the between custom block with three input parameters works when number1 "
                       "is EQUAL to number2 or number3"
                       " (" + str(p_points) + " points)<br>",
               "pass": False,
@@ -264,7 +264,8 @@ def between_works_equal(p_scripts, p_points):
                               "The between custom block with three input parameters does not appear to work in this "
                               "scenario.<br>"
                               "Is the input parameters named 'number1', 'number2', 'number3'?<br>"
-                              "BE SURE INPUT PARAMETER IS NAMED CORRECTLY  OTHERWISE THIS TEST BREAKS.<br>",
+                              "BE SURE INPUT PARAMETER IS NAMED CORRECTLY  OTHERWISE THIS TEST BREAKS.<br>"
+                              "The script must say 'True' exactly (capital T, lowercase everything else).<br>",
               "points": 0
               }
     if 'between %s %s %s' in p_scripts.keys():
@@ -288,5 +289,83 @@ def between_works_equal(p_scripts, p_points):
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
+    return p_test
+
+
+def between_works_unequal(p_scripts, p_points):
+    """
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+    :param p_points: Number of points this test is worth (int)
+    :return: The test dictionary
+    """
+    from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
+    from app.scratch_labs.scratch import match_string
+
+    p_test = {"name": "Checking that the between custom block with three input parameters works when number1 "
+                      "is NOT equal to number2 or number3"
+                      " (" + str(p_points) + " points)<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "The between custom block with three input parameters works.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "The between custom block with three input parameters does not appear to work in this "
+                              "scenario.<br>"
+                              "Is the input parameters named 'number1', 'number2', 'number3'?<br>"
+                              "BE SURE INPUT PARAMETER IS NAMED CORRECTLY  OTHERWISE THIS TEST BREAKS.<br>"
+                              "The script must say 'True' exactly (capital T, lowercase everything else)"
+                              "or else 'False' exactly (capital F, lowercase everything else).<br>",
+              "points": 0
+              }
+    if 'between %s %s %s' in p_scripts.keys():
+        print("ppp STARTING")
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 1, "number2": 2, "number3": 3})
+        script = p_scripts['between %s %s %s']
+        between_success_1 = do_sprite(sprite, script, True)
+        print("VALHALLA {}".format(sprite.say_history))
+        test_1 = match_string(r'^False', sprite.say_history)
+        if test_1['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 1, number2 = 2, number3 = 3<br>" \
+                                      "Expect back 'False', got this:<br>" + sprite.say_history
+
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 1, "number2": 3, "number3": 2})
+        between_success_2 = do_sprite(sprite, script, True)
+        test_2 = match_string(r'^False', sprite.say_history)
+        if test_2['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 1, number2 = 3, number3 = 2<br>" \
+                                      "Expect back 'False', got this:<br>" + sprite.say_history
+
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 1, "number3": 3})
+        between_success_3 = do_sprite(sprite, script, True)
+        test = match_string(r'^True', sprite.say_history)
+        if test['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 2, number2 = 1, number3 = 3<br>" \
+                                      "Expect back 'True', got this:<br>" + sprite.say_history
+
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 3, "number3": 1})
+        between_success_4 = do_sprite(sprite, script, True)
+        test = match_string(r'^True', sprite.say_history)
+        if test['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 2, number2 = 3, number3 = 1<br>" \
+                                      "Expect back 'True', got this:<br>" + sprite.say_history
+
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 1, "number3": 2})
+        between_success_5 = do_sprite(sprite, script, True)
+        test = match_string(r'^False', sprite.say_history)
+        if test['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 3, number2 = 1, number3 = 2<br>" \
+                                      "Expect back 'True', got this:<br>" + sprite.say_history
+
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 2, "number3": 1})
+        between_success_6 = do_sprite(sprite, script, True)
+        test = match_string(r'^True', sprite.say_history)
+        if test['pass'] is False:
+            p_test['fail_message'] += "Called custom block 'between' with number1 = 3, number2 = 2, number3 = 1<br>" \
+                                      "Expect back 'True', got this:<br>" + sprite.say_history
+
+        if between_success_1 and between_success_2 and between_success_3 and between_success_4 and \
+            between_success_5 and between_success_6 and test_1['pass'] and test_2['pass']:
+            p_test['pass'] = True
+            p_test['points'] += p_points
+
     return p_test
 
