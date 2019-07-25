@@ -45,39 +45,77 @@ def eval_boolean(p_boolean, p_sprite):
     import re
 
     print("aaa inside p_boolean {}".format(p_boolean))
-    p_boolean = re.sub("'", '', p_boolean)
+    p_boolean = sub_brackets_apostrophe(p_boolean)
     p_boolean = re.sub(",", '', p_boolean)
     p_boolean = re.sub('=', '==', p_boolean)
 
+    p_boolean = re.sub("'", '', p_boolean)
     p_boolean = re.sub(r"\[", '(', p_boolean)
     p_boolean = re.sub("]", ')', p_boolean)
+
     for key in p_sprite.variables:
         if re.search(key, p_boolean, re.X | re.M | re.S):
             p_boolean = re.sub('VARIABLE_' + key, str(p_sprite.variables[key]), p_boolean)
-    print("aaa inside p_boolean {}".format(p_boolean))
     sub_in = True
-    print("start subin")
     counter = 1
     while sub_in:
-        print("start subin loop")
         print(p_boolean)
-        sub_in = False
         counter += 1
         if counter > 11:
             break
         found = re.search(r'\(([\d_a-zA-Z]+)\)', p_boolean, re.X | re.M | re.S)
         if found:
             sub_this = found.group(1)
-            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
+#            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
             p_boolean = re.sub(r'\(' + sub_this + r'\)', sub_this, p_boolean)
-
-
             sub_in = True
         else:
             sub_in = False
     ret_val = eval(p_boolean)
     print(ret_val)
     return ret_val
+
+
+def sub_variables(p_words, p_sprite):
+    """
+    Sub in variables to expressions
+    :param p_words: words (such as VARIABLES_x is this)
+    :param p_sprite: contains p_sprite.variables, which is the dictionary conversion of variables to values
+    :return:
+    """
+    import re
+    p_words = re.sub("'", '', p_words)
+    p_words = re.sub(r"\[", '', p_words)
+    p_words = re.sub("]", '', p_words)
+    print('aaa presub words {}'.format(p_words))
+    if re.search("VARIABLE_", p_words):
+        for key in sorted(p_sprite.variables, key=len, reverse=True):
+            print("aaa key for subbing vars {}".format(key))
+            match_string = r'VARIABLE_' + key
+            match = re.search(match_string, p_words, re.X | re.M | re.S)
+            if match:
+                p_words = re.sub(match_string, str(p_sprite.variables[key]), p_words)
+            # p_words = re.sub(sub_this, str(p_sprite.variables[variable_name]), p_words)
+            words = p_words
+            print("aaa words after first sub {}".format(p_words))
+    if re.search("sensing_answer", p_words):
+        print('ccc sensing answer')
+        if 'sensing_answer' not in p_sprite.variables.keys():
+            raise Exception("Code has a sensing answer, but test does not. <br>"
+                            "Students: Remove the question if you do'nt need it and do it a different way.<br>"
+                            "Teacher: Create a sensing_answer variable in the sprite object.<br>")
+        sensing_answers = True
+        while sensing_answers:
+            match_string = 'sensing_answer'
+            print("ccc p_words {}".format(p_words))
+            match = re.search(match_string, p_words, re.X | re.M | re.S)
+            if match:
+                answer = p_sprite.variables['sensing_answer'].pop(0)
+                p_words = re.sub(match_string, answer, p_words, 1)
+            else:
+                sensing_answers = False
+        # p_words = re.sub(sub_this, str(p_sprite.variables[variable_name]), p_words)
+    return p_words
 
 
 def do_sprite(p_sprite, moves, success):
@@ -89,8 +127,11 @@ def do_sprite(p_sprite, moves, success):
     :return: True/False depending on if crash or maximum fly exceeded.
     """
     import re
+    import random
     if success is False:
+        print("ccc exiting, success if false")
         return False
+    print("aaa beginning of do sprite.  here are all  moves {}".format(moves))
     for i, move in enumerate(moves):
         if isinstance(move, list):
             ret_val = do_sprite(p_sprite, moves[i], success)
@@ -171,6 +212,66 @@ def do_sprite(p_sprite, moves, success):
                     else:
                         return False
                 break
+            elif move == 'data_setvariableto':
+                print("ccc set variable to key: {} value: {}".format(moves[i+1], moves[i+2]))
+                key = moves[i + 1]
+                value = moves[i + 2]
+                if isinstance(value, list):
+                    print("ccc running on this {}".format(value))
+                    value = do_sprite(p_sprite, value, success)
+                p_sprite.variables[key] = value
+                print('ccc vars after data set {}  '.format(p_sprite.variables))
+
+                break
+            elif move == 'data_lengthoflist':
+                list_name = moves[i + 1]
+                list_length = len(p_sprite.variables[list_name])
+                print("fff returning this for length of list {}".format(list_length))
+                return list_length
+            elif move == 'data_itemoflist':
+                index = moves[i + 1]
+                list_name = moves[i + 2]
+                print("fff returning this for index {} list name {}".format(index, list_name))
+                if isinstance(index, list):
+                    index = do_sprite(p_sprite, index, success)
+                index = int(index)
+                # print("fff index {}".format(index))
+                item = p_sprite.variables[list_name][index - 1]
+                return item
+            elif move == 'data_addtolist':
+                item = moves[i + 1]
+                list_name = moves[i + 2]
+                print("jjj data-add_to_list")
+
+                print("fff radding thisthis for item {} list name {}".format(item, list_name))
+                if isinstance(item, list):
+                    item = do_sprite(p_sprite, item, success)
+
+                print("jjj item is this {}".format(item))
+                item = sub_variables(item, p_sprite)
+                p_sprite.variables[list_name].append(item)
+
+                break
+            if move == 'operator_random':
+                if isinstance(moves[2], list) is False:
+                    print("wuuuuu {} {} ".format(moves[1], moves[2]))
+                    if abs(float(moves[1]) - round(float(moves[1]))) < .001 and \
+                            abs(float(moves[2]) - round(float(moves[2]))) < .001:
+                        rand_number = random.randint(int(moves[1]), int(moves[2]))
+                    else:
+                        rand_number = random.uniform(float(moves[1]), float(moves[2]))
+                    print("returning this  rand num {}".format(rand_number))
+                else:
+                    upper_bound = do_sprite(p_sprite, moves[2], success)
+                    print("ccc lower {} upper_bound{}".format(moves[1], upper_bound))
+
+                    if abs(float(moves[1]) - round(float(moves[1]))) < .001 and \
+                            abs(float(upper_bound) - round(float(upper_bound))) < .001:
+                        rand_number = random.randint(int(moves[1]), int(upper_bound))
+                    else:
+                        rand_number = random.uniform(float(moves[1]), float(upper_bound))
+                    print("returning this  for randnumber {}".format(rand_number))
+                return rand_number
             elif move == 'pen_penUp':
                 p_sprite.pendown = False
             elif move == 'pen_penDown':
@@ -182,26 +283,60 @@ def do_sprite(p_sprite, moves, success):
                 p_sprite.turn(degrees)
                 break    
             elif move == 'looks_sayforsecs':
-                print("pre pre " + str(moves))
-                words_pre_sub = str(moves[i+1])
-                print("presub words" + words_pre_sub)
-                if re.search("VARIABLE_", words_pre_sub):
-                    match = re.search(r"VARIABLE_(.+)", words_pre_sub, re.X | re.M | re.S)
-                    if match:
-                        variable_name = match.group(1)
-                    match = re.search(r"VARIABLE_(.+?)'", words_pre_sub, re.X | re.M | re.S)
-                    if match:
-                        variable_name = match.group(1)
-                    sub_this = 'VARIABLE_' + variable_name
-                    words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
-                    words = words_pre_sub
+                #print("looks_say. beginning entire list " + str(moves))
+                say_this = moves[i+1]
+                print("what is saying?  Type?  {}".format(type(moves[i+1])))
+                if isinstance(say_this, list):
+                    ret_val = do_sprite(p_sprite, say_this, success)
+                    print('ggg say this {}'.format(ret_val))
+                    words_pre_sub = ret_val
                 else:
-                    words = str(moves[i + 1])
-                words = re.sub(r"\['", '', words)
-                words = re.sub(r"']", '', words)
+                    words_pre_sub = str(moves[i+1])
+                print("looks_say.  beginning efore subbing words" + words_pre_sub)
+
+                words_pre_sub = re.sub("'", '', words_pre_sub)
+                words_pre_sub = re.sub(r"\[", '', words_pre_sub)
+                words_pre_sub = re.sub("]", '', words_pre_sub)
+                print('aaa presub words {}'.format(words_pre_sub))
+                if re.search("VARIABLE_", words_pre_sub):
+                    for key in sorted(p_sprite.variables, key=len, reverse=True):
+                        print("aaa key for subbing vars {}".format(key))
+                        match_string = r'VARIABLE_' + key
+                        match = re.search(match_string, words_pre_sub, re.X | re.M | re.S)
+                        if match:
+                            words_pre_sub = re.sub(match_string, str(p_sprite.variables[key]), words_pre_sub)
+                        # words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
+                        words = words_pre_sub
+                        print("aaa words after first sub {}".format(words_pre_sub))
+                # match = re.search(r"VARIABLE_(.+) \s", words_pre_sub, re.X | re.M | re.S)
+                    # if match:
+                    #     variable_name = match.group(1)
+                    # match = re.search(r"VARIABLE_(.+?)'", words_pre_sub, re.X | re.M | re.S)
+                    # if match:
+                    #     variable_name = match.group(1)
+                    # sub_this = r'VARIABLE_' + variable_name
+                    # print("fff subthis {}".format(sub_this))
+                    # words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
+                    # words = words_pre_sub
+                else:
+                    words = words_pre_sub
+
                 print("asdfasdf words {}".format(words))
                 p_sprite.say_history += words + "\n"
                 break
+            elif move == 'sensing_answer':
+                return 'sensing_answer'
+            elif move == 'join':
+                string1 = moves[i+1]
+                if isinstance(string1, list):
+                    ret_val1 = do_sprite(p_sprite, string1, success)
+                    string1 = ret_val1
+                string2 = moves[i+2]
+                if isinstance(string2, list):
+                    ret_val2 = do_sprite(p_sprite, string2, success)
+                    string2 = ret_val2
+                print("uuu join string1 {} string2 {}".format(string1, string2))
+                return(string1 + string2)
             elif move == 'control_if_else':
                 print("ooo moves{}  i{}".format(moves, i))
                 operator = moves[i + 1][0]
@@ -211,45 +346,6 @@ def do_sprite(p_sprite, moves, success):
                     ret_val = do_sprite(p_sprite, moves[2], success)
                 else:
                     ret_val = do_sprite(p_sprite, moves[3], success)
-                break
-                # print("ooo operator {}".format(operator))
-                # left_side = operator[0]
-                # left_side = str(left_side)
-                # sign = operator[1]
-                # right_side = operator[2]
-                # right_side = str(right_side)
-                # print("done assigning left {} right {} sign {}".format(left_side, right_side, sign))
-                # match = re.search(r"VARIABLE_(.+?)'", left_side, re.X | re.M | re.S)
-                # if match:
-                #     print("MATCH1")
-                #     variable_name = match.group(1)
-                #     left_side = p_sprite.variables[variable_name]
-                # match = re.search(r"VARIABLE_(.+?)'", right_side, re.X | re.M | re.S)
-                # if match:
-                #     print("MATCHRIGHT")
-                #     variable_name = match.group(1)
-                #     right_side = p_sprite.variables[variable_name]
-                # if sign == '=':
-                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                #     if str(left_side) == str(right_side):
-                #         ret_val = do_sprite(p_sprite, moves[2], success)
-                #     else:
-                #         ret_val = do_sprite(p_sprite, moves[3], success)
-                # elif sign == '<':
-                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                #     if str(left_side) < str(right_side):
-                #         ret_val = do_sprite(p_sprite, moves[2], success)
-                #     else:
-                #         ret_val = do_sprite(p_sprite, moves[3], success)
-                # elif sign == '>':
-                #     print("uuu left{}right{}dfdfd".format(left_side, right_side))
-                #     if str(left_side) > str(right_side):
-                #         print("YES???")
-                #         ret_val = do_sprite(p_sprite, moves[2], success)
-                #     else:
-                #         print("NO!")
-                #         ret_val = do_sprite(p_sprite, moves[3], success)
-
                 break
             elif move == 'control_if':
                 print("ooo control_if moves{}  i{}".format(moves, i))
@@ -268,6 +364,8 @@ def do_sprite(p_sprite, moves, success):
                         success = False
                         break
                 break
+            else:
+                print("xxx this move did not get done {}".format(move))
     return success
 
 

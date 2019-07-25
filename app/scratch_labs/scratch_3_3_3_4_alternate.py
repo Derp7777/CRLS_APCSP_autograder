@@ -164,7 +164,7 @@ def min_works(p_scripts, p_points):
         test_1 = match_string(r'5', sprite.say_history)
         if test_1['pass'] is False:
             p_test['fail_message'] += "Called custom block 'min' with number1 = 5 and number2 = 8" \
-                                      "Expect back '5', got this:<br>" + sprite.say_history
+                                      "Expect '5', got this:<br>" + sprite.say_history
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 555, "number2": -8})
         day_success_2 = do_sprite(sprite, script, True)
@@ -172,7 +172,7 @@ def min_works(p_scripts, p_points):
         test_2 = match_string(r'555', sprite.say_history)
         if test_2['pass'] is False:
             p_test['fail_message'] += "Called custom block 'min' with number1 = 555 and number2 = -8" \
-                                      "Expect back '555', got this:<br>" + sprite.say_history
+                                      "Expect '555', got this:<br>" + sprite.say_history
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
@@ -277,7 +277,7 @@ def between_works_equal(p_scripts, p_points):
         test_1 = match_string(r'^True', sprite.say_history)
         if test_1['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 5, number2 = 5, number3 = 2<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 5, "number2": 6665, "number3": 5})
         day_success_2 = do_sprite(sprite, script, True)
@@ -285,7 +285,7 @@ def between_works_equal(p_scripts, p_points):
         test_2 = match_string(r'^True', sprite.say_history)
         if test_2['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 5, number2 = 6665, number3 = 5<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
@@ -325,45 +325,48 @@ def between_works_unequal(p_scripts, p_points):
         test_1 = match_string(r'^False', sprite.say_history)
         if test_1['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 1, number2 = 2, number3 = 3<br>" \
-                                      "Expect back 'False', got this:<br>" + sprite.say_history
+                                      "Expect 'False', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 1, "number2": 3, "number3": 2})
         between_success_2 = do_sprite(sprite, script, True)
         test_2 = match_string(r'^False', sprite.say_history)
         if test_2['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 1, number2 = 3, number3 = 2<br>" \
-                                      "Expect back 'False', got this:<br>" + sprite.say_history
+                                      "Expect 'False', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 1, "number3": 3})
         between_success_3 = do_sprite(sprite, script, True)
-        test = match_string(r'^True', sprite.say_history)
-        if test['pass'] is False:
+        test_3 = match_string(r'^True', sprite.say_history)
+        if test_3['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 2, number2 = 1, number3 = 3<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
+        print("test4")
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 3, "number3": 1})
         between_success_4 = do_sprite(sprite, script, True)
-        test = match_string(r'^True', sprite.say_history)
-        if test['pass'] is False:
+        test_4 = match_string(r'^True', sprite.say_history)
+        print("test4 say history {}".format(sprite.say_history))
+        if test_4['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 2, number2 = 3, number3 = 1<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 1, "number3": 2})
         between_success_5 = do_sprite(sprite, script, True)
-        test = match_string(r'^False', sprite.say_history)
-        if test['pass'] is False:
+        test_5 = match_string(r'^False', sprite.say_history)
+        if test_5['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 3, number2 = 1, number3 = 2<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 2, "number3": 1})
         between_success_6 = do_sprite(sprite, script, True)
-        test = match_string(r'^True', sprite.say_history)
-        if test['pass'] is False:
+        test_6 = match_string(r'^False', sprite.say_history)
+        if test_6['pass'] is False:
             p_test['fail_message'] += "Called custom block 'between' with number1 = 3, number2 = 2, number3 = 1<br>" \
-                                      "Expect back 'True', got this:<br>" + sprite.say_history
+                                      "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
         if between_success_1 and between_success_2 and between_success_3 and between_success_4 and \
-            between_success_5 and between_success_6 and test_1['pass'] and test_2['pass']:
+            between_success_5 and between_success_6 and test_1['pass'] and test_2['pass'] and test_3['pass'] and \
+            test_4['pass'] and test_5['pass'] and test_6['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
 

@@ -22,7 +22,7 @@ class UploadScratchForm(FlaskForm):
                                        ('1.x_family_migration_story', '1.x_family_migration_story'), ('2.2', '2.2'),
                                        ('2.4_alternate', '2.4_alternate'), ('2.5_alternate', '2.5_alternate'),
                                        ('2.6', '2.6'), ('3.2_alternate', '3.2_alternate'),
-                                       ('3.3_3.4_alternate', '3.3_3.4_alternate'),
+                                       ('3.3_3.4_alternate', '3.3_3.4_alternate'), ('4.2_alternate', '4.2_alternate'),
                                        ('karel1', 'karel1'), ('karel2a', 'karel2a'),
                                        ('karel2b', 'karel2b'),
                                        ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),

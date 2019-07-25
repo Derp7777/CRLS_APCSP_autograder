@@ -136,6 +136,54 @@ def find_variable(p_json, variable_name, p_points):
     return p_test
 
 
+def find_list(p_json, list_name, p_points, *, min_items=0):
+    """
+    Find a particular list in scratch. Retruns True/False
+    :param p_json: The json
+    :param list_name: list name you are looking for
+    :param p_points: Number of points this test is worth
+    :param min_items: minimum number of items in the list to pass
+    :return: test dictionary
+    """
+    p_test = {"name": "Testing that list '" +
+                      list_name +
+                      "' is in the Scratch program "
+                      "(" + str(p_points) + " points)",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
+                              "List '" +
+                              list_name +
+                              "' is in the Scratch program. <br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              "Did not find a list '" +
+                              list_name +
+                              "' in your code.  You must name the list EXACTLY '" +
+                              list_name +
+                              "' with correct spelling and capitalization.  <br>",
+              'points': 0
+              }
+
+    sprites = p_json['targets']
+    for sprite in sprites:
+        if 'lists' in sprite:
+            lists = sprite['lists']
+            for key in lists:
+                list_list = lists[key]
+                if list_name == list_list[0]:
+                    p_test['pass'] = True # temporarily....see min_items test
+                    if min_items >= 1:
+                        if len(list_list[1]) < min_items:
+                            p_test['pass'] = False
+                            p_test['fail_message'] = "<h5 style=\"color:red;\">Fail. </h5>" \
+                                                     "Found a list '" + list_name + "' in your code. <br> " +\
+                                                     list_name + "' with correct spelling and capitalization.  <br>" \
+                                                     "List did not have minimum number of items " + str(min_items) +\
+                                                     "<br>Found list had this many items:" + str(len(list_list[1])),
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test
+
+
 def find_question(p_json, question_string, p_points):
     """
     Find a particular string in all of the questions being asked in scratch. Retruns True/False
@@ -427,8 +475,30 @@ def build_scratch_script(starting_block_id, p_blocks):
                     next_id = current_block['inputs']['VALUE'][1]
                     value = build_scratch_script(next_id, p_blocks)
             variable = current_block['fields']['VARIABLE'][0]
-            variable = 'VARIABLE_' + variable
+            # variable = 'VARIABLE_' + variable
             script.append(['data_setvariableto', variable, value])
+        elif current_block['opcode'] == 'data_itemoflist':
+            list_name = current_block['fields']['LIST'][0]
+            if len(current_block['inputs']['INDEX']) == 2:
+                item = current_block['inputs']['INDEX'][1][1]
+            elif len(current_block['inputs']['INDEX']) == 3:
+                item_id = current_block['inputs']['INDEX'][1]
+                item = build_scratch_script(item_id, p_blocks)
+            script.extend(['data_itemoflist', item, list_name])
+        elif current_block['opcode'] == 'data_lengthoflist':
+            list_name = current_block['fields']['LIST'][0]
+            print("ccc length of list {}".format(list_name))
+            script.extend(['data_lengthoflist', list_name])
+        elif current_block['opcode'] == 'data_addtolist':
+            item = ''
+            if len(current_block['inputs']['ITEM']) == 2:
+                item = current_block['inputs']['ITEM'][1][1]
+            else:
+                item_id =  current_block['inputs']['ITEM'][1]
+                item = build_scratch_script(item_id, p_blocks)
+            if len(current_block['fields']['LIST']) == 2:
+                list_to_append = current_block['fields']['LIST'][0]
+                script.append(['data_addtolist', item, list_to_append])
         elif current_block['opcode'] == 'procedures_call':
             script.append(current_block['mutation']['proccode'])
         elif current_block['opcode'] == 'control_if':
@@ -445,10 +515,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             else_script = build_scratch_script(substack_2_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if_else', condition_script, if_script, else_script])
-        elif current_block['opcode'] == 'operator_random':
-            num_from = current_block['inputs']['FROM'][1][1]
-            num_to = current_block['inputs']['TO'][1][1]
-            script.append(['operator_random', num_from, num_to])
         elif current_block['opcode'] == 'operator_not':
             operand_id = current_block['inputs']['OPERAND'][2]
             operand = build_scratch_script(operand_id, p_blocks)
@@ -526,12 +592,58 @@ def build_scratch_script(starting_block_id, p_blocks):
                 operand2 = current_block['inputs']['OPERAND2'][1][1]
             else:
                 if isinstance(current_block['inputs']['OPERAND2'][1], str):
-                    operand2 = current_block['inputs']['OPERAND2'][1][1]
-                    operand2 = "VARIABLE_" + operand2
+                    operand2_id = current_block['inputs']['OPERAND2'][1]
+                    operand2 = build_scratch_script(operand2_id, p_blocks)
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
                     operand2_id = current_block['inputs']['OPERAND2'][1]
                     operand2 = build_scratch_script(operand2_id, p_blocks)
             script.append([operand1, '>', operand2])
+        elif current_block['opcode'] == 'operator_join':
+            reserved_commands = ['data_itemoflist', 'data_lengthoflist']
+            if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
+                string1 = current_block['inputs']['STRING1'][1][1]
+            elif str(current_block['inputs']['STRING1'][1][0]) == str(12):  # this is a varialbe
+                string1 = "VARIABLE_" + current_block['inputs']['STRING1'][1][1]
+            elif str(current_block['inputs']['STRING1'][0]) == str(3):  # this is a another block (join)
+                next_id = current_block['inputs']['STRING1'][1]
+                string1 = build_scratch_script(next_id, p_blocks)
+            if len(current_block['inputs']['STRING2'][1]) == 2:
+                string2 = current_block['inputs']['STRING2'][1][1]
+            elif str(current_block['inputs']['STRING2'][1][0]) == str(12):  # this is a varialbe
+                string2 = "VARIABLE_" + current_block['inputs']['STRING2'][1][1]
+            elif str(current_block['inputs']['STRING2'][0]) == str(3):  # this is a another block (join)
+                next_id = current_block['inputs']['STRING2'][1]
+                string2 = build_scratch_script(next_id, p_blocks)
+            print("rrr str1 {} str2{} type str1{} type str2{}".format(string1, string2, type(string1),
+                                                                      type(string2)))
+            if isinstance(string1, list):
+                if string1[0] not in reserved_commands:
+                     string1 = string1[0]
+            if isinstance(string2, list):
+                 if string2[0] not in reserved_commands:
+                     string2 = string2[0]
+
+            script.append(['join', string1, string2])
+        elif current_block['opcode'] == 'operator_random':
+            print("ccc entering random")
+            if len(current_block['inputs']['FROM'][1]) == 2:  # no change
+                num_from = current_block['inputs']['FROM'][1][1]
+            elif str(current_block['inputs']['FROM'][1][0]) == str(12):  # this is a varialbe
+                num_from = "VARIABLE_" + current_block['inputs']['FROM'][1][1]
+            elif str(current_block['inputs']['FROM'][0]) == str(3):  # this is a another block
+                next_id = current_block['inputs']['FROM'][1]
+                num_from = build_scratch_script(next_id, p_blocks)
+            print("ccc num_from {} ".format(num_from))
+            if len(current_block['inputs']['TO'][1]) == 2:
+                num_to = current_block['inputs']['TO'][1][1]
+            elif str(current_block['inputs']['TO'][1][0]) == str(12):  # this is a varialbe
+                num_to = "VARIABLE_" + current_block['inputs']['TO'][1][1]
+            elif str(current_block['inputs']['TO'][0]) == str(3):  # this is a another block
+                next_id = current_block['inputs']['TO'][1]
+                num_to = build_scratch_script(next_id, p_blocks)
+            print("ccc num_to{} ".format(num_to))
+
+            script.extend(['operator_random', num_from, num_to])
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
@@ -541,22 +653,6 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'looks_backdrops':
             backdrop = current_block['fields']['BACKDROP'][0]
             script.append(backdrop)
-        elif current_block['opcode'] == 'operator_join':
-            if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
-                string1 = current_block['inputs']['STRING1'][1][1]
-            elif str(current_block['inputs']['STRING1'][1][0]) == str(12):  #this is a varialbe
-                string1 = "VARIABLE_" + current_block['inputs']['STRING1'][1][1]
-            elif str(current_block['inputs']['STRING1'][0]) == str(3):  #this is a another block
-                next_id = current_block['inputs']['STRING1'][1]
-                string1 = build_scratch_script(next_id, p_blocks)
-            if len(current_block['inputs']['STRING2'][1]) == 2:
-                string2 = current_block['inputs']['STRING2'][1][1]
-            elif str(current_block['inputs']['STRING2'][1][0]) == str(12):  #this is a varialbe
-                string2 = "VARIABLE_" + current_block['inputs']['STRING2'][1][1]
-            elif str(current_block['inputs']['STRING2'][0]) == str(3):  #this is a another block
-                next_id = current_block['inputs']['STRING2'][1]
-                string2 = build_scratch_script(next_id, p_blocks)
-            script.append([str(string1) + str(string2)])
         elif current_block['opcode'] == 'pen_penDown':
             script.append('pen_penDown')
         elif current_block['opcode'] == 'pen_penUp':
