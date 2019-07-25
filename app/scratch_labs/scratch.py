@@ -489,25 +489,42 @@ def build_scratch_script(starting_block_id, p_blocks):
             list_name = current_block['fields']['LIST'][0]
             print("ccc length of list {}".format(list_name))
             script.extend(['data_lengthoflist', list_name])
+        elif current_block['opcode'] == 'data_deleteoflist':
+            list_name = current_block['fields']['LIST'][0]
+            if len(current_block['inputs']['INDEX']) == 3:
+                item_id = current_block['inputs']['INDEX'][1]
+                item = build_scratch_script(item_id, p_blocks)
+            else:
+                item = current_block['inputs']['INDEX'][1][1]
+            script.append(['data_deleteoflist', item, list_name])
         elif current_block['opcode'] == 'data_addtolist':
-            item = ''
             if len(current_block['inputs']['ITEM']) == 2:
                 item = current_block['inputs']['ITEM'][1][1]
             else:
-                item_id =  current_block['inputs']['ITEM'][1]
+                item_id = current_block['inputs']['ITEM'][1]
                 item = build_scratch_script(item_id, p_blocks)
             if len(current_block['fields']['LIST']) == 2:
                 list_to_append = current_block['fields']['LIST'][0]
-                script.append(['data_addtolist', item, list_to_append])
+            script.append(['data_addtolist', item, list_to_append])
         elif current_block['opcode'] == 'procedures_call':
             script.append(current_block['mutation']['proccode'])
         elif current_block['opcode'] == 'control_if':
+            if 'SUBSTACK' not in current_block['inputs'].keys():
+                raise Exception("You have an if statement with nothing in it.  "
+                                "Add something inside it before autograding")
             substack_1_id = current_block['inputs']['SUBSTACK'][1]
             condition_id = current_block['inputs']['CONDITION'][1]
             if_script = build_scratch_script(substack_1_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if', condition_script, if_script])
         elif current_block['opcode'] == 'control_if_else':
+            if 'SUBSTACK' not in current_block['inputs'].keys():
+                raise Exception("You have an if/else statement with nothing in the if.  "
+                                "Add something inside it before autograding")
+            if 'SUBSTACK2' not in  current_block['inputs'].keys():
+                raise Exception("You have an if/else statement with nothing in the else.  "
+                                "Add something inside it before autograding")
+
             substack_1_id = current_block['inputs']['SUBSTACK'][1]
             substack_2_id = current_block['inputs']['SUBSTACK2'][1]
             condition_id = current_block['inputs']['CONDITION'][1]

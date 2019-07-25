@@ -45,32 +45,45 @@ def eval_boolean(p_boolean, p_sprite):
     import re
 
     print("aaa inside p_boolean {}".format(p_boolean))
-    p_boolean = sub_brackets_apostrophe(p_boolean)
+
     p_boolean = re.sub(",", '', p_boolean)
     p_boolean = re.sub('=', '==', p_boolean)
+    p_boolean = sub_variables(p_boolean, p_sprite)
+    print("aaa inside {}".format(p_boolean))
+    #
+    # p_boolean = re.sub("'", '', p_boolean)
+    # p_boolean = re.sub(r"\[", '(', p_boolean)
+    # p_boolean = re.sub("]", ')', p_boolean)
 
-    p_boolean = re.sub("'", '', p_boolean)
-    p_boolean = re.sub(r"\[", '(', p_boolean)
-    p_boolean = re.sub("]", ')', p_boolean)
+#     for key in p_sprite.variables:
+#         if re.search(key, p_boolean, re.X | re.M | re.S):
+#             p_boolean = re.sub('VARIABLE_' + key, str(p_sprite.variables[key]), p_boolean)
+#     sub_in = True
+#     counter = 1
+#     while sub_in:
+#         print(p_boolean)
+#         counter += 1
+#         if counter > 11:
+#             break
+#         found = re.search(r'\(([\d_a-zA-Z]+)\)', p_boolean, re.X | re.M | re.S)
+#         if found:
+#             sub_this = found.group(1)
+# #            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
+#             p_boolean = re.sub(r'\(' + sub_this + r'\)', sub_this, p_boolean)
+#             sub_in = True
+#         else:
+#             sub_in = False
+    words = p_boolean.split()
+    p_boolean = ''
+    print("aaa inside words {}".format(words))
 
-    for key in p_sprite.variables:
-        if re.search(key, p_boolean, re.X | re.M | re.S):
-            p_boolean = re.sub('VARIABLE_' + key, str(p_sprite.variables[key]), p_boolean)
-    sub_in = True
-    counter = 1
-    while sub_in:
-        print(p_boolean)
-        counter += 1
-        if counter > 11:
-            break
-        found = re.search(r'\(([\d_a-zA-Z]+)\)', p_boolean, re.X | re.M | re.S)
-        if found:
-            sub_this = found.group(1)
-#            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
-            p_boolean = re.sub(r'\(' + sub_this + r'\)', sub_this, p_boolean)
-            sub_in = True
+
+    for word in words:
+        if word != '==' and word != '>' and word != '<':
+            p_boolean += "'" + word + "' "
         else:
-            sub_in = False
+            p_boolean += ' ' + word + ' '
+    print("aaa inside {}".format(p_boolean))
     ret_val = eval(p_boolean)
     print(ret_val)
     return ret_val
@@ -110,10 +123,11 @@ def sub_variables(p_words, p_sprite):
             print("ccc p_words {}".format(p_words))
             match = re.search(match_string, p_words, re.X | re.M | re.S)
             if match:
-                answer = p_sprite.variables['sensing_answer'].pop(0)
+                answer = p_sprite.variables['current_answer']
                 p_words = re.sub(match_string, answer, p_words, 1)
             else:
                 sensing_answers = False
+        print("after jjj {}".format(p_sprite.variables))
         # p_words = re.sub(sub_this, str(p_sprite.variables[variable_name]), p_words)
     return p_words
 
@@ -218,9 +232,13 @@ def do_sprite(p_sprite, moves, success):
                 value = moves[i + 2]
                 if isinstance(value, list):
                     print("ccc running on this {}".format(value))
-                    value = do_sprite(p_sprite, value, success)
+                    if str(value) == "['sensing_answer']":
+                        value = p_sprite.variables['current_answer']
+                    else:
+                        value = do_sprite(p_sprite, value, success)
+
                 p_sprite.variables[key] = value
-                print('ccc vars after data set {}  '.format(p_sprite.variables))
+                print('ccc variables after data_setvariableto after data set {}  '.format(p_sprite.variables))
 
                 break
             elif move == 'data_lengthoflist':
@@ -236,7 +254,14 @@ def do_sprite(p_sprite, moves, success):
                     index = do_sprite(p_sprite, index, success)
                 index = int(index)
                 # print("fff index {}".format(index))
-                item = p_sprite.variables[list_name][index - 1]
+                try:
+                    item = p_sprite.variables[list_name][index - 1]
+                except IndexError:
+                    raise Exception("Index was out of range of list.  This means you are picking an item that is longer"
+                                    " than the list.\n"
+                                    "For example, you might be trying to pick item 10 of a 3 item list.\n"
+                                    "Check the part of your code where it says 'item XXXX of LISTNAME' and probably "
+                                    "the XXXX part is wrong.<br>")
                 return item
             elif move == 'data_addtolist':
                 item = moves[i + 1]
@@ -250,6 +275,20 @@ def do_sprite(p_sprite, moves, success):
                 print("jjj item is this {}".format(item))
                 item = sub_variables(item, p_sprite)
                 p_sprite.variables[list_name].append(item)
+
+                break
+            elif move == 'data_deleteoflist':
+                item = moves[i + 1]
+                list_name = moves[i + 2]
+                print("jjj datadelete_list")
+
+                print("fff radding thisthis for item {} list name {}".format(item, list_name))
+                if isinstance(item, list):
+                    item = do_sprite(p_sprite, item, success)
+
+                print("jjj item is this {}".format(item))
+                item = int(sub_variables(item, p_sprite))
+                p_sprite.variables[list_name].pop(item - 1)
 
                 break
             if move == 'operator_random':
@@ -320,12 +359,13 @@ def do_sprite(p_sprite, moves, success):
                     # words = words_pre_sub
                 else:
                     words = words_pre_sub
-
-                print("asdfasdf words {}".format(words))
                 p_sprite.say_history += words + "\n"
                 break
             elif move == 'sensing_answer':
                 return 'sensing_answer'
+            elif move == 'sensing_askandwait':
+                p_sprite.variables['current_answer'] = p_sprite.variables['sensing_answer'].pop(0)
+                print("ooo current answer is this {}".format(p_sprite.variables['current_answer']))
             elif move == 'join':
                 string1 = moves[i+1]
                 if isinstance(string1, list):
@@ -336,7 +376,7 @@ def do_sprite(p_sprite, moves, success):
                     ret_val2 = do_sprite(p_sprite, string2, success)
                     string2 = ret_val2
                 print("uuu join string1 {} string2 {}".format(string1, string2))
-                return(string1 + string2)
+                return string1 + string2
             elif move == 'control_if_else':
                 print("ooo moves{}  i{}".format(moves, i))
                 operator = moves[i + 1][0]
