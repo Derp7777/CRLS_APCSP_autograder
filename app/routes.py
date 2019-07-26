@@ -578,6 +578,7 @@ def scratch_feedback_42_alternate():
 @app.route('/scratch/scratch_feedback_43')
 def scratch_feedback_43():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
+    from app.scratch_labs.scratch_4_3 import one_works
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -593,6 +594,10 @@ def scratch_feedback_43():
         unzip_sb3(filename)
         json_data = read_json_file()
         scripts = arrange_blocks_v2(json_data)
+        for key in scripts:
+            print("key {}  script {} ".format(key, scripts[key]))
+        test_one_works = one_works(scripts, 5)
+        tests.append(test_one_works)
         test_help = find_help(json_data, 5)
         tests.append(test_help)
         score_info['finished_scoring'] = True

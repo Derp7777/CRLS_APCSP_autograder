@@ -461,12 +461,15 @@ def build_scratch_script(starting_block_id, p_blocks):
             if len(current_block['inputs']['MESSAGE']) == 3:
                 words_id = current_block['inputs']['MESSAGE'][1]
                 variable_name = build_scratch_script(words_id, p_blocks)
-                script.append(['looks_sayforsecs', variable_name[0], time])
+                print("oooo variable_name  {}".format(variable_name) )
+                script.append(['looks_sayforsecs', variable_name, time])
             else:
                 message = current_block['inputs']['MESSAGE'][1][1]  # does not reference anything else
-                script.append(['looks_sayforsecs', message, time])
+                script.append(['looks_sayforsecs', message, time]) # needs append
+
         elif current_block['opcode'] == 'sensing_answer':
-            script.append('sensing_answer')
+#            script.append('sensing_answer')
+            return 'sensing_answer'
         elif current_block['opcode'] == 'data_setvariableto':
             if len(current_block['inputs']['VALUE']) == 2:
                 value = current_block['inputs']['VALUE'][1][1]
@@ -479,13 +482,26 @@ def build_scratch_script(starting_block_id, p_blocks):
             variable = current_block['fields']['VARIABLE'][0]
             # variable = 'VARIABLE_' + variable
             script.append(['data_setvariableto', variable, value])
+        elif current_block['opcode'] == 'data_changevariableby':
+            variable_name = current_block['fields']['VARIABLE'][0]
+            variable_name = 'VARIABLE_' + variable_name
+            change_value = current_block['inputs']['VALUE'][1][1]
+            print("xxx variable {} change_value {}".format(variable_name, change_value))
+            script.append(['data_changevariableby', variable_name, change_value])
         elif current_block['opcode'] == 'data_itemoflist':
             list_name = current_block['fields']['LIST'][0]
             if len(current_block['inputs']['INDEX']) == 2:
                 item = current_block['inputs']['INDEX'][1][1]
             elif len(current_block['inputs']['INDEX']) == 3:
-                item_id = current_block['inputs']['INDEX'][1]
-                item = build_scratch_script(item_id, p_blocks)
+                print("qqq {}".format(current_block['inputs']['INDEX'][0]))
+                if str(current_block['inputs']['INDEX'][0]) == str(3):
+                    print("ijij")
+                    item = current_block['inputs']['INDEX'][1][1]
+                    item = "VARIABLE_" + item
+      #              item_id = current_block['inputs']['INDEX'][1]
+       #             item = build_scratch_script(item_id, p_blocks)
+     #           elif str(current_block['inputs']['INDEX'][0]) == str(12):
+            print("dat item of list item {} list_name {}".format(item, list_name))
             script.extend(['data_itemoflist', item, list_name])
         elif current_block['opcode'] == 'data_lengthoflist':
             list_name = current_block['fields']['LIST'][0]
@@ -494,8 +510,12 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'data_deleteoflist':
             list_name = current_block['fields']['LIST'][0]
             if len(current_block['inputs']['INDEX']) == 3:
-                item_id = current_block['inputs']['INDEX'][1]
-                item = build_scratch_script(item_id, p_blocks)
+                if current_block['inputs']['INDEX'][0] == str(3):
+                    item_id = current_block['inputs']['INDEX'][1]
+                    item = build_scratch_script(item_id, p_blocks)
+                elif current_block['inputs']['INDEX'][0] == str(12):
+                    item = current_block['inputs']['INDEX'][1][1]
+                    item = "VARIABLE_" + item
             else:
                 item = current_block['inputs']['INDEX'][1][1]
             script.append(['data_deleteoflist', item, list_name])
@@ -596,7 +616,7 @@ def build_scratch_script(starting_block_id, p_blocks):
                     operand2 = current_block['inputs']['OPERAND2'][1][1]
                     operand2 = "VARIABLE_" + operand2
             print("QWERTY operand 1 {} operand {}".format(operand1, operand2))
-            script.append([operand1, '<', operand2])
+            script.extend([operand1, '<', operand2])
         elif current_block['opcode'] == 'operator_gt':
             if len(current_block['inputs']['OPERAND1']) == 2:
                 operand1 = current_block['inputs']['OPERAND1'][1][1]
@@ -616,7 +636,7 @@ def build_scratch_script(starting_block_id, p_blocks):
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
                     operand2_id = current_block['inputs']['OPERAND2'][1]
                     operand2 = build_scratch_script(operand2_id, p_blocks)
-            script.append([operand1, '>', operand2])
+            script.extend([operand1, '>', operand2])
         elif current_block['opcode'] == 'operator_join':
             reserved_commands = ['data_itemoflist', 'data_lengthoflist']
             if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
@@ -683,6 +703,8 @@ def build_scratch_script(starting_block_id, p_blocks):
             script.append(['pen_setPenColorToColor', color])
         elif current_block['opcode'] == 'argument_reporter_string_number':
             script.append('VARIABLE_' + str(current_block['fields']['VALUE'][0]))
+        elif 'opcode' in current_block.keys():
+            print("This opcode not done " + current_block['opcode'])
         next_block_id = current_block['next']
         current_block_id = next_block_id
     return script

@@ -77,12 +77,14 @@ def eval_boolean(p_boolean, p_sprite):
     p_boolean = ''
     print("aaa inside words {}".format(words))
 
-
     for word in words:
         if word != '==' and word != '>' and word != '<':
-            p_boolean += "'" + word + "' "
+            if re.search(r"[^a-zA-Z]", word):
+                p_boolean += " " + word + " "  # numbers only
+            else:
+                p_boolean += "'" + word + "' "
         else:
-            p_boolean += ' ' + word + ' '
+            p_boolean += ' ' + word + ' '  # pass through ==, >, or <
     print("aaa inside {}".format(p_boolean))
     ret_val = eval(p_boolean)
     print(ret_val)
@@ -241,6 +243,23 @@ def do_sprite(p_sprite, moves, success):
                 print('ccc variables after data_setvariableto after data set {}  '.format(p_sprite.variables))
 
                 break
+            elif move == 'data_changevariableby':
+                variable_plus_variable = moves[1]
+                if re.search("\d \. \d", moves[2], re.X | re.M | re.S):
+                    delta_value = float(moves[2])
+                else:
+                    delta_value = int(moves[2])
+                variable = re.sub('VARIABLE_', '', variable_plus_variable)
+                if variable in p_sprite.variables.keys():
+                    if re.search("\d \. \d", str(p_sprite.variables[variable]), re.X | re.M | re.S):
+                        p_sprite.variables[variable] = float(p_sprite.variables[variable])
+                    else:
+                        p_sprite.variables[variable] = int(p_sprite.variables[variable])
+                    p_sprite.variables[variable] += delta_value
+                else:
+                    raise Exception("Tried to edit variable {}, but that variable does not exist.<br>".format(variable))
+                print("changevariable by worked? {}".format(p_sprite.variables))
+                break
             elif move == 'data_lengthoflist':
                 list_name = moves[i + 1]
                 list_length = len(p_sprite.variables[list_name])
@@ -252,8 +271,13 @@ def do_sprite(p_sprite, moves, success):
                 print("fff returning this for index {} list name {}".format(index, list_name))
                 if isinstance(index, list):
                     index = do_sprite(p_sprite, index, success)
+                index = sub_variables(index, p_sprite)
+                print("iiu index {}".format(index))
                 index = int(index)
                 # print("fff index {}".format(index))
+                if index - 1 < 0:
+                    raise Exception("Index was negative number.  Did you try to say "
+                                    "0th item of list or something like that?)")
                 try:
                     item = p_sprite.variables[list_name][index - 1]
                 except IndexError:
@@ -360,6 +384,7 @@ def do_sprite(p_sprite, moves, success):
                 else:
                     words = words_pre_sub
                 p_sprite.say_history += words + "\n"
+                print("pppo {}".format(p_sprite.say_history))
                 break
             elif move == 'sensing_answer':
                 return 'sensing_answer'
@@ -403,6 +428,25 @@ def do_sprite(p_sprite, moves, success):
                     if ret_val is False:
                         success = False
                         break
+                break
+            elif move == 'control_repeat_until':
+                condition = moves[1]
+
+                new_condition = []
+                for x in condition:
+                    if isinstance(x, list):
+                        ret_val = do_sprite(p_sprite, x, success)
+                        new_condition.append(ret_val)
+                    else:
+                        new_condition.append(x)
+                print('oooo new condition {}  {}'.format(new_condition, type(new_condition)))
+                new_condition = str(new_condition)
+                true_false = eval_boolean(new_condition, p_sprite)
+                print("ooo condition {}".format(true_false))
+                while true_false is False:
+                    ret_val = do_sprite(p_sprite, moves[2], success)
+                    true_false = eval_boolean(new_condition, p_sprite)
+                    print("ppp what is say hist".format(p_sprite.say_history))
                 break
             else:
                 print("xxx this move did not get done {}".format(move))
