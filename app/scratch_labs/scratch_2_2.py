@@ -276,8 +276,8 @@ def do_sprite(p_sprite, moves, success):
                 index = int(index)
                 # print("fff index {}".format(index))
                 if index - 1 < 0:
-                    raise Exception("Index was negative number.  Did you try to say "
-                                    "0th item of list or something like that?)")
+                    raise Exception("Index was 0 or lower (too low of number.\n"
+                                    "  Did you try to 'say' 0th item of list or something like that?)")
                 try:
                     item = p_sprite.variables[list_name][index - 1]
                 except IndexError:
@@ -285,7 +285,16 @@ def do_sprite(p_sprite, moves, success):
                                     " than the list.\n"
                                     "For example, you might be trying to pick item 10 of a 3 item list.\n"
                                     "Check the part of your code where it says 'item XXXX of LISTNAME' and probably "
-                                    "the XXXX part is wrong.<br>")
+                                    "the XXXX part is wrong.<br>"
+                                    "ALTERNATIVELY, the code mostly works and it looks like it works in Scratch,"
+                                    "but the counter goes too high at the very end or is too low at beginning.  \n"
+                                    "We recommend to follow this template:\n"
+                                    "1. Outside loop, set the counter to where you want it to start (1 if beginning of "
+                                    "list)\n"
+                                    "2. Inside loop, do your thing (for example say item of list) \n"
+                                    "3. Change counter variable by 1 (or more, if you are skipping items in list).\n\n"
+                                    "Another possibility is that you are hard coding your counter somewhere"
+                                    "and it works for certain size lists but not small lists. ")
                 return item
             elif move == 'data_addtolist':
                 item = moves[i + 1]
@@ -346,8 +355,9 @@ def do_sprite(p_sprite, moves, success):
                 p_sprite.turn(degrees)
                 break    
             elif move == 'looks_sayforsecs':
-                #print("looks_say. beginning entire list " + str(moves))
+                print("looks_say. beginning entire list " + str(moves))
                 say_this = moves[i+1]
+
                 print("what is saying?  Type?  {}".format(type(moves[i+1])))
                 if isinstance(say_this, list):
                     ret_val = do_sprite(p_sprite, say_this, success)
@@ -355,34 +365,35 @@ def do_sprite(p_sprite, moves, success):
                     words_pre_sub = ret_val
                 else:
                     words_pre_sub = str(moves[i+1])
-                print("looks_say.  beginning efore subbing words" + words_pre_sub)
-
-                words_pre_sub = re.sub("'", '', words_pre_sub)
-                words_pre_sub = re.sub(r"\[", '', words_pre_sub)
-                words_pre_sub = re.sub("]", '', words_pre_sub)
-                print('aaa presub words {}'.format(words_pre_sub))
-                if re.search("VARIABLE_", words_pre_sub):
-                    for key in sorted(p_sprite.variables, key=len, reverse=True):
-                        print("aaa key for subbing vars {}".format(key))
-                        match_string = r'VARIABLE_' + key
-                        match = re.search(match_string, words_pre_sub, re.X | re.M | re.S)
-                        if match:
-                            words_pre_sub = re.sub(match_string, str(p_sprite.variables[key]), words_pre_sub)
+                print("looks_say.  beginning efore subbing words" + str(words_pre_sub))
+                words = words_pre_sub
+                if isinstance(words_pre_sub, str):
+                    words_pre_sub = re.sub("'", '', words_pre_sub)
+                    words_pre_sub = re.sub(r"\[", '', words_pre_sub)
+                    words_pre_sub = re.sub("]", '', words_pre_sub)
+                    print('aaa presub words {}'.format(words_pre_sub))
+                    if re.search("VARIABLE_", words_pre_sub) :
+                        for key in sorted(p_sprite.variables, key=len, reverse=True):
+                            print("aaa key for subbing vars {}".format(key))
+                            match_string = r'VARIABLE_' + key
+                            match = re.search(match_string, words_pre_sub, re.X | re.M | re.S)
+                            if match:
+                                words_pre_sub = re.sub(match_string, str(p_sprite.variables[key]), words_pre_sub)
+                            # words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
+                            words = words_pre_sub
+                            print("aaa words after first sub {}".format(words_pre_sub))
+                    # match = re.search(r"VARIABLE_(.+) \s", words_pre_sub, re.X | re.M | re.S)
+                        # if match:
+                        #     variable_name = match.group(1)
+                        # match = re.search(r"VARIABLE_(.+?)'", words_pre_sub, re.X | re.M | re.S)
+                        # if match:
+                        #     variable_name = match.group(1)
+                        # sub_this = r'VARIABLE_' + variable_name
+                        # print("fff subthis {}".format(sub_this))
                         # words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
+                        # words = words_pre_sub
+                    else:
                         words = words_pre_sub
-                        print("aaa words after first sub {}".format(words_pre_sub))
-                # match = re.search(r"VARIABLE_(.+) \s", words_pre_sub, re.X | re.M | re.S)
-                    # if match:
-                    #     variable_name = match.group(1)
-                    # match = re.search(r"VARIABLE_(.+?)'", words_pre_sub, re.X | re.M | re.S)
-                    # if match:
-                    #     variable_name = match.group(1)
-                    # sub_this = r'VARIABLE_' + variable_name
-                    # print("fff subthis {}".format(sub_this))
-                    # words_pre_sub = re.sub(sub_this, str(p_sprite.variables[variable_name]), words_pre_sub)
-                    # words = words_pre_sub
-                else:
-                    words = words_pre_sub
                 p_sprite.say_history += words + "\n"
                 print("pppo {}".format(p_sprite.say_history))
                 break

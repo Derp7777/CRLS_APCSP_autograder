@@ -357,6 +357,28 @@ def arrange_blocks(p_json):
     return scripts
 
 
+def extract_value(block_portion, p_block_id, p_blocks):
+    """
+    Same as build karel script but copied over so I cdon't break that one
+    :param block_portion: a portion of a block (like block['inputs']['MESSAGE']
+    :param p_block_id: ID of this block
+    :param p_blocks: al the blocks for this script
+    :return: a combined script (dictionary)
+    """
+    if len(block_portion) == 2:
+        return block_portion[1][1]  # length is 2, say it directly.
+    else:
+        if isinstance(block_portion[1], list):
+            # i.e  message[1] is a list - variable.  Same as before, but  add VARIABLE_
+            ret_val = block_portion[1][1]
+            ret_val = 'VARIABLE_' + ret_val
+            return ret_val
+        else:
+            # message[1] is a string and therefore references another block
+            next_id = block_portion[1]
+            ret_val = build_scratch_script(next_id, p_blocks)
+            return ret_val
+
 def build_scratch_script(starting_block_id, p_blocks):
     """
     Same as build karel script but copied over so I cdon't break that one
@@ -458,15 +480,20 @@ def build_scratch_script(starting_block_id, p_blocks):
             script.append(['sensing_touchingobjectmenu', touching_object])
         elif current_block['opcode'] == 'looks_sayforsecs':
             time = current_block['inputs']['SECS'][1][1]
-            if len(current_block['inputs']['MESSAGE']) == 3:
-                words_id = current_block['inputs']['MESSAGE'][1]
-                variable_name = build_scratch_script(words_id, p_blocks)
-                print("oooo variable_name  {}".format(variable_name) )
-                script.append(['looks_sayforsecs', variable_name, time])
+            if len(current_block['inputs']['MESSAGE']) == 2:
+                message = current_block['inputs']['MESSAGE'][1][1]  # length is 2, say it directly.
             else:
-                message = current_block['inputs']['MESSAGE'][1][1]  # does not reference anything else
-                script.append(['looks_sayforsecs', message, time]) # needs append
+                if isinstance(current_block['inputs']['MESSAGE'][1], list): # message[1] is a list - variable
+                    message = current_block['inputs']['MESSAGE'][1][1]
+                    message = 'VARIABLE_' + message
+                else:
+                    # message[1] is a string and therefore references another block
+                    words_id = current_block['inputs']['MESSAGE'][1]
+                    message = build_scratch_script(words_id, p_blocks)
+                    print("oooo message  {}".format(message) )
+            script.append(['looks_sayforsecs', message, time])  # Needs the append
 
+            print("script is this {}".format(script))
         elif current_block['opcode'] == 'sensing_answer':
 #            script.append('sensing_answer')
             return 'sensing_answer'
@@ -495,12 +522,11 @@ def build_scratch_script(starting_block_id, p_blocks):
             elif len(current_block['inputs']['INDEX']) == 3:
                 print("qqq {}".format(current_block['inputs']['INDEX'][0]))
                 if str(current_block['inputs']['INDEX'][0]) == str(3):
-                    print("ijij")
                     item = current_block['inputs']['INDEX'][1][1]
                     item = "VARIABLE_" + item
-      #              item_id = current_block['inputs']['INDEX'][1]
-       #             item = build_scratch_script(item_id, p_blocks)
-     #           elif str(current_block['inputs']['INDEX'][0]) == str(12):
+                if str(current_block['inputs']['INDEX'][0]) == str(12): #hm. test_5from 4.3a
+                    item = current_block['inputs']['INDEX'][1][1]
+                    item = "VARIABLE_" + item
             print("dat item of list item {} list_name {}".format(item, list_name))
             script.extend(['data_itemoflist', item, list_name])
         elif current_block['opcode'] == 'data_lengthoflist':
@@ -593,7 +619,7 @@ def build_scratch_script(starting_block_id, p_blocks):
                 elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
                     operand2 = current_block['inputs']['OPERAND2'][1][1]
                     operand2 = 'VARIABLE_' + operand2
-            script.append([operand1, '=', operand2])
+            script.extend([operand1, '=', operand2])
         elif current_block['opcode'] == 'operator_lt':
             print("aaa intereing {}".format(current_block_id))
             if len(current_block['inputs']['OPERAND1']) == 2:
@@ -1029,3 +1055,25 @@ def procedure_exists(p_name, p_scripts):
     if p_name in p_scripts.keys():
         return True
     return False
+
+
+def free_points(p_points):
+    """
+    Gives free points
+    :param p_points: Number of points this test is worth
+    :return: test dictionary
+    """
+    p_test = {"name": "Free points "
+                      "(" + str(p_points) + " points)",
+              "pass": True,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
+                              "Free points. <br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              "This will always pass.  <br>",
+              'points': 0
+              }
+
+
+    p_test['points'] += p_points
+    return p_test
+
