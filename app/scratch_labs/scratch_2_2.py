@@ -147,7 +147,7 @@ def do_sprite(p_sprite, moves, success):
     if success is False:
         print("ccc exiting, success if false")
         return False
-    print("aaa beginning of do sprite.  here are all  moves {}".format(moves))
+    print("aaa beginning of do sprite.  here are all  moves {} and vars {}".format(moves, p_sprite.variables))
     for i, move in enumerate(moves):
         if isinstance(move, list):
             ret_val = do_sprite(p_sprite, moves[i], success)
@@ -229,7 +229,7 @@ def do_sprite(p_sprite, moves, success):
                         return False
                 break
             elif move == 'data_setvariableto':
-                print("ccc set variable to key: {} value: {}".format(moves[i+1], moves[i+2]))
+                print("ccc set variable to.   variable: {} value: {}".format(moves[i+1], moves[i+2]))
                 key = moves[i + 1]
                 value = moves[i + 2]
                 if isinstance(value, list):
@@ -238,7 +238,9 @@ def do_sprite(p_sprite, moves, success):
                         value = p_sprite.variables['current_answer']
                     else:
                         value = do_sprite(p_sprite, value, success)
-
+                print("ccc value is this {}".format(value))
+                value = str(value)
+                value = sub_variables(value, p_sprite)
                 p_sprite.variables[key] = value
                 print('ccc variables after data_setvariableto after data set {}  '.format(p_sprite.variables))
 
@@ -326,7 +328,6 @@ def do_sprite(p_sprite, moves, success):
                 break
             if move == 'operator_random':
                 if isinstance(moves[2], list) is False:
-                    print("wuuuuu {} {} ".format(moves[1], moves[2]))
                     if abs(float(moves[1]) - round(float(moves[1]))) < .001 and \
                             abs(float(moves[2]) - round(float(moves[2]))) < .001:
                         rand_number = random.randint(int(moves[1]), int(moves[2]))
@@ -344,6 +345,67 @@ def do_sprite(p_sprite, moves, success):
                         rand_number = random.uniform(float(moves[1]), float(upper_bound))
                     print("returning this  for randnumber {}".format(rand_number))
                 return rand_number
+            elif move == 'operator_subtract':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                evaluated = num1 - num2
+                print("jjj ran operator_subtract and got this {}".format(evaluated))
+                return evaluated
+            elif move == 'operator_add':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of addition can't be converted to int.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of addition can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                evaluated = num1 + num2
+                return evaluated
             elif move == 'pen_penUp':
                 p_sprite.pendown = False
             elif move == 'pen_penDown':
@@ -411,7 +473,8 @@ def do_sprite(p_sprite, moves, success):
                 if isinstance(string2, list):
                     ret_val2 = do_sprite(p_sprite, string2, success)
                     string2 = ret_val2
-                print("uuu join string1 {} string2 {}".format(string1, string2))
+                print("uuu join string1 {} string2 {} and both {}".format(string1, string2, string1 + string2))
+
                 return string1 + string2
             elif move == 'control_if_else':
                 print("ooo moves{}  i{}".format(moves, i))

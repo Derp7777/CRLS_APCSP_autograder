@@ -295,7 +295,7 @@ def one_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '1' key welcomes each name individually.  See instructions "
+    p_test = {"name": "Checking that pressing '1' key says each song individually.  See instructions "
                       "from what this should look like "
                       " (" + str(p_points) + " points).<br>",
               "pass": False,
@@ -387,7 +387,7 @@ def two_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '2' key welcomes each name individually.  See instructions "
+    p_test = {"name": "Checking that pressing '2' key says every other song.  See instructions "
                       "from what this should look like "
                       " (" + str(p_points) + " points).<br>",
               "pass": False,
@@ -477,7 +477,7 @@ def three_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '3' key welcomes each name individually.  See instructions "
+    p_test = {"name": "Checking that pressing '3' key says the songs in reverse playlist order.  See instructions "
                       "from what this should look like "
                       " (" + str(p_points) + " points).<br>",
               "pass": False,
@@ -561,6 +561,98 @@ def three_works(p_scripts, p_points):
     return p_test
 
 
+def four_works(p_scripts, p_points):
+    """
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+    :param p_points: Number of points this test is worth (int)
+    :return: The test dictionary
+    """
+    import re
+    from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
+    from app.scratch_labs.scratch import match_string
+    p_test = {"name": "Checking that pressing '1' key skips the first two and last two songs but says the others."
+                      "  See instructions "
+                      "from what this should look like "
+                      " (" + str(p_points) + " points).<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Pressing '4' key welcomes each name individually.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Pressing '4' key does not welcome each name individually. <br><br>",
+              "points": 0
+              }
+    found_4 = False
+    test_1 = False
+    test_2 = False
+    test_3 = False
+
+    for key in p_scripts:
+        script = p_scripts[key]
+        test_4_key = match_string(r"event_whenkeypressed', \s '4' .+  data_setvariableto .+ control_repeat .+ "
+                                  r"looks_sayforsecs", script)
+        if test_4_key['pass']:
+            found_4 = True
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"songs": ['Brahms op 118 no 1',
+                                                                             'Brahms op 118 no 2',
+                                                                             'Brahms op 118 no 3',
+                                                                             'Brahms op 118 no 4',
+                                                                             'Brahms op 118 no 5',
+                                                                             'Brahms op 118 no 6', ]
+                                                                   })
+            run_1 = do_sprite(sprite, script, True)
+            match_this = r"^Brahms\sop\s118\sno\s3\nBrahms\sop\s" \
+                         r"118\sno\s4"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_1 = True
+            if test_1 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: ['Brahms op 118 no 1','Brahms op 118 no 2','Brahms op 118 no 3'," \
+                                          "'Brahms op 118 no 4', 'Brahms op 118 no 5','Brahms op 118 no 6']<br> " \
+                                          "Expected output: <br>" \
+                                          "Brahms op 118 no 3 <br>Brahms op 118 no 4<br><br>" \
+                                          "Actual output: <br>" + history_newlines + "<br><br>"
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"songs": ['In da club', ]})
+            run_2 = do_sprite(sprite, script, True)
+            match_this = r"^$"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_2 = True
+            if test_2 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: ['In da club']<br> " \
+                                          "Expected output: <br><br><br>" \
+                                          "Actual output:<br> " + history_newlines + "<br><br>"
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"songs": ['Baby one more time',
+                                                                             'Oops I did it again',
+                                                                             'Lucky', 'Humble', 'i']
+                                                                   })
+            run_3 = do_sprite(sprite, script, True)
+            match_this = r"^Lucky"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_3 = True
+            if test_3 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: ['Baby one more time','Oops I did it again','Lucky', 'Humble', " \
+                                          "'i']<br> " \
+                                          "Expected output: <br>Lucky" \
+                                          "<br><br>" \
+                                          "Actual output:<br> " + history_newlines + "<br><br>"
+
+    if found_4 is False:
+        p_test['fail_message'] += "In your code, did not find 'when 1 key pressed' in your code " \
+                                  "followed by some expected elements - setting a variable to a value " \
+                                  "(to track the index or counter)," \
+                                  "a repeat of some sort, and a say of some sort.<br><br>"
+
+    p_test['fail_message'] += "<b>Be sure you are not hard-coding the number of items in the list.</b><br>" \
+                              "The code has to work with lists of length 1 and 5 (and 205), not just length 6.<br>"
+    if found_4 and test_1 and test_2 and test_3 and run_1 and run_2 and run_3:
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
 def five_works(p_scripts, p_points):
     """
     :param p_scripts: json data from file, which is the code of the scratch file. (dict)
@@ -570,7 +662,7 @@ def five_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '5' key welcomes each name individually.  See instructions "
+    p_test = {"name": "Checking that pressing '5' key says all songs at once.  See instructions "
                       "from what this should look like "
                       " (" + str(p_points) + " points).<br>",
               "pass": False,
@@ -599,8 +691,8 @@ def five_works(p_scripts, p_points):
                                                                              'Brahms op 118 no 6', ]
                                                                    })
             run_1 = do_sprite(sprite, script, True)
-            match_this = r"^Brahms\sop\s118\sno\s6\nBrahms\sop\s118\sno\s5\nBrahms\sop\s118\sno\s4\n" \
-                         r"Brahms\sop\s118\sno\s3\nBrahms\sop\s118\sno\s2\nBrahms\sop\s118\sno\s1"
+            match_this = r"^s*Brahms\sop\s118\sno\s1\sBrahms\sop\s118\sno\s2\sBrahms\sop\s118\sno\s3\s" \
+                         r"Brahms\sop\s118\sno\s4\sBrahms\sop\s118\sno\s5\sBrahms\sop\s118\sno\s6"
             matched = re.search(match_this, sprite.say_history)
             if matched:
                 test_1 = True
@@ -609,12 +701,12 @@ def five_works(p_scripts, p_points):
                 p_test['fail_message'] += "Input list: ['Brahms op 118 no 1','Brahms op 118 no 2','Brahms op 118 no 3'," \
                                           "'Brahms op 118 no 4', 'Brahms op 118 no 5','Brahms op 118 no 6']<br> " \
                                           "Expected output: <br>Brahms op 118 no 1 Brahms op 118 no 2 " \
-                                          "Brahms op 118 no 3 Brahms op 118 no 4 Brahms op 118 no 5" \
+                                          "Brahms op 118 no 3 Brahms op 118 no 4 Brahms op 118 no 5 " \
                                           "Brahms op 118 no 6 <br><br>" \
                                           "Actual output: <br>" + history_newlines + "<br><br>"
             sprite = brickLayer(0, 0, 0, pendown=False, variables={"songs": ['In da club', ]})
             run_2 = do_sprite(sprite, script, True)
-            match_this = r"^In\sda\sclub\n"
+            match_this = r"^\s*In\sda\sclub\n"
             matched = re.search(match_this, sprite.say_history)
             if matched:
                 test_2 = True
@@ -628,7 +720,7 @@ def five_works(p_scripts, p_points):
                                                                              'Lucky', ]
                                                                    })
             run_3 = do_sprite(sprite, script, True)
-            match_this = r"^Lucky\nOops\sI\sdid\sit\sagain\nBaby\sone\smore\stime\n"
+            match_this = r"^\s*Baby\sone\smore\stime\sOops\sI\sdid\sit\sagain\sLucky"
             matched = re.search(match_this, sprite.say_history)
             if matched:
                 test_3 = True
@@ -648,6 +740,41 @@ def five_works(p_scripts, p_points):
     p_test['fail_message'] += "<b>Be sure you are not hard-coding the number of items in the list.</b><br>" \
                               "The code has to work with lists of length 1 and 5 (and 205), not just length 6.<br>"
     if found_5 and test_1 and test_2 and test_3 and run_1 and run_2 and run_3:
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
+
+def tester(p_scripts, p_points):
+    """
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+    :param p_points: Number of points this test is worth (int)
+    :return: The test dictionary
+    """
+    import re
+    from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
+    from app.scratch_labs.scratch import match_string
+    p_test = {"name": "testing<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Pressing '1' key welcomes each name individually.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Pressing '1' key does not welcome each name individually. <br><br>",
+              "points": 0
+              }
+    # assume just one
+    for key in p_scripts:
+        script = p_scripts[key]
+        sprite = brickLayer(0, 0, 0, pendown=False, variables={"songs": ['Brahms op 118 no 1',
+                                                                         'Brahms op 118 no 2',
+                                                                         'Brahms op 118 no 3',
+                                                                         'Brahms op 118 no 4',
+                                                                         'Brahms op 118 no 5',
+                                                                         'Brahms op 118 no 6', ]
+                                                               })
+        run_1 = do_sprite(sprite, script, True)
+
+    if True:
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test

@@ -580,7 +580,7 @@ def scratch_feedback_43a_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
         arrange_blocks_v2, free_points
     from app.scratch_labs.scratch_4_3 import one_works, songs_list, songs_list_min_items, one_looks_ok, two_looks_ok, \
-        three_looks_ok, four_looks_ok, five_looks_ok, two_works, three_works, five_works
+        three_looks_ok, four_looks_ok, five_looks_ok, two_works, three_works, four_works, five_works, tester
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -602,11 +602,13 @@ def scratch_feedback_43a_alternate():
         tests.append(test_songs_list)
         test_songs_list_min_items = songs_list_min_items(json_data, 5)
         tests.append(test_songs_list_min_items)
-        free_points = free_points(5)
-        tests.append(free_points)
+
         if test_songs_list_min_items['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
+            #test_tester = tester(scripts, 5)
+            free_points = free_points(5)
+            tests.append(free_points)
             test_one_looks_ok = one_looks_ok(scripts, 5)
             tests.append(test_one_looks_ok)
             test_one_works = one_works(scripts, 5)
@@ -621,6 +623,8 @@ def scratch_feedback_43a_alternate():
             tests.append(test_three_works)
             test_four_looks_ok = four_looks_ok(scripts, 5)
             tests.append(test_four_looks_ok)
+            test_four_works = four_works(scripts, 5)
+            tests.append(test_four_works)
             test_five_looks_ok = five_looks_ok(scripts, 5)
             tests.append(test_five_looks_ok)
             test_five_works = five_works(scripts, 5)
