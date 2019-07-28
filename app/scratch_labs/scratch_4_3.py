@@ -570,7 +570,7 @@ def four_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '1' key skips the first two and last two songs but says the others."
+    p_test = {"name": "Checking that pressing '4' key skips the first two and last two songs but says the others."
                       "  See instructions "
                       "from what this should look like "
                       " (" + str(p_points) + " points).<br>",
