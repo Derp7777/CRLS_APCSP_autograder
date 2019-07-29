@@ -18,10 +18,7 @@ class robot(object):
             proposed_square = [self.x - 5, self.y]
         else:
             raise Exception("Direction can only be 0 - 3.  Direction is: " + str(self.direction))
-        if proposed_square in self.barriers:
-            return False
-        else:
-            return True
+        return not proposed_square in self.barriers
 
     def turnleft(self):
         self.direction = (self.direction + 3) % 4

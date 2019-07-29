@@ -539,12 +539,8 @@ def object_created(p_filename, p_class_name, p_times, *, points=0):
                               "points": points
                               }
     regex = r"[a-zA-Z0-9]\s*=\s*" + p_class_name
-    matches = 0
     with open(p_filename) as infile:
-        for line in infile.readlines():
-            match = re.search(regex, line, re.X | re.M | re.S)
-            if match:
-                matches += 1
+        matches = len([1 for line in infile.readlines() if re.search(regex, line, re.X | re.M | re.S)])
     infile.close()
     if matches >= p_times:
         p_test_function_called['pass'] = True
@@ -655,7 +651,8 @@ def find_list_items(p_filename_data, p_string):
     on_off = -1
     reconstructed_list = []
     quotation = ''
-    for letter in str(match):  # TODO
+
+    for letter in str(match):  # TODO consider using ast.literal_eval()?
         if letter == '"' or letter == "'":
             if on_off == -1:
                 on_off *= -1  # turn on
@@ -694,4 +691,3 @@ if __name__ == "__main__":
     filename_data = "hello world    prizes = [\"asdf\", '23', 'llll']"
     # abc = find_list_items('prizes \s* = \s* \[ (.+) \]', filename_data)
     abc = find_list_items(filename_data, r'prizes \s* = \s* \[ (.+) \]')
-

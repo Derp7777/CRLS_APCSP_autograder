@@ -1,5 +1,3 @@
-
-
 import random
 import unittest
 import io
@@ -18,11 +16,8 @@ class testAutograde(unittest.TestCase):
             else:
                 retrieved_name = attribute_dict[key]
                 name_key = key
-        success = False
-        if getattr(goofy, name_key) == 'Goofy' and getattr(goofy,pocket_key) ==  ['wallet', 'paper', 'rock', 'scissors']:
-            success = True
-        self.assertEqual(True, success)
-
+        self.assertTrue(getattr(goofy, name_key) == 'Goofy' and
+                        getattr(goofy, pocket_key) == ['wallet', 'paper', 'rock', 'scissors'])
 
     def test_2(self):
         goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
@@ -52,7 +47,7 @@ class testAutograde(unittest.TestCase):
             else:
                 retrieved_name = attribute_dict[key]
                 name_key = key
-        self.assertEqual(['wallet', 'paper', 'rock', 'scissors' ], getattr(goofy, pocket_key),
+        self.assertEqual(['wallet', 'paper', 'rock', 'scissors'], getattr(goofy, pocket_key),
                          "Added Dr. Wu (of type DisneyBody) to Goofy with ['strawberries']<br>"
                          "Expect to get Goofy with ['wallet', 'paper', 'rock', 'scissors'] (i.e. no change"
                          "to Goofy, Goofy does'nt care about strawberries.<br>"
@@ -80,7 +75,6 @@ class testAutograde(unittest.TestCase):
                          "Goofy pocket is " + str(goofy.pocket)
                          )
 
-
     def test_5(self):
         from contextlib import redirect_stdout
 
@@ -94,16 +88,15 @@ class testAutograde(unittest.TestCase):
         match_2 = len(re.findall(r"paper", print_string, re.X | re.M | re.S))
         match_3 = len(re.findall(r"rock", print_string, re.X | re.M | re.S))
         match_4 = len(re.findall(r"scissors", print_string, re.X | re.M | re.S))
-        passed = False
-        if match_1 > 0 and match_2 > 0 and match_3 > 0 and match_4 > 0:
-            passed = True
-        self.assertEqual(True, passed, "Expect the __str__ method to return Goofy's pocket contents."
-                                       "Goofy's pocket is  ['wallet', 'paper', 'rock', 'scissors'] <br>so return "
-                                       "should include wallet, paper, rock, scissors.<br>"
-                                       "Found this many matches:<br>"
-                                       "Wallet: " + str(match_1) + "<br>" + "paper: " + str(match_2) +
-                         "<br> rock: " + str(match_3) + "<br>"
-                         "scissors: " + str(match_4) + "<br> in this output: " + print_string + "<br>")
+        self.assertTrue(match_1 > 0 and match_2 > 0 and match_3 > 0 and match_4 > 0,
+                        "Expect the __str__ method to return Goofy's pocket contents."
+                        "Goofy's pocket is  ['wallet', 'paper', 'rock', 'scissors'] <br>so return "
+                        "should include wallet, paper, rock, scissors.<br>"
+                        "Found this many matches:<br>"
+                        "Wallet: " + str(match_1) + "<br>" + "paper: " + str(match_2) +
+                        "<br> rock: " + str(match_3) + "<br>"
+                                                       "scissors: " + str(
+                            match_4) + "<br> in this output: " + print_string + "<br>")
 
 
 if __name__ == '__main__':
