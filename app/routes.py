@@ -641,11 +641,12 @@ def scratch_feedback_43a_alternate():
 def scratch_feedback_43b_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
         arrange_blocks_v2, free_points
-    from app.scratch_labs.scratch_4_3 import one_works, songs_list, songs_list_min_items, one_looks_ok, two_looks_ok, \
-        three_looks_ok, four_looks_ok, five_looks_ok, two_works, three_works, four_works, five_works, tester
+    from app.scratch_labs.scratch_4_3 import oneb_works, songs_list, songs_list_min_items, oneb_looks_ok, \
+        twob_looks_ok, \
+        threeb_looks_ok,  twob_works, threeb_works, fourb_works, fiveb_works, tester
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 45, 'manually_scored': 10, 'finished_scoring': False}
 
     # Test file name
     filename = request.args['filename']
@@ -668,28 +669,22 @@ def scratch_feedback_43b_alternate():
         if test_songs_list_min_items['pass'] is False:
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
         else:
-            free_points = free_points(5)
-            tests.append(free_points)
-            test_one_looks_ok = one_looks_ok(scripts, 5)
-            tests.append(test_one_looks_ok)
-            test_one_works = one_works(scripts, 5)
-            tests.append(test_one_works)
-            test_two_looks_ok = two_looks_ok(scripts, 5)
-            tests.append(test_two_looks_ok)
-            test_two_works = two_works(scripts, 5)
-            tests.append(test_two_works)
-            test_three_looks_ok = three_looks_ok(scripts, 5)
-            tests.append(test_three_looks_ok)
-            test_three_works = three_works(scripts, 5)
-            tests.append(test_three_works)
-            test_four_looks_ok = four_looks_ok(scripts, 5)
-            tests.append(test_four_looks_ok)
-            test_four_works = four_works(scripts, 5)
-            tests.append(test_four_works)
-            test_five_looks_ok = five_looks_ok(scripts, 5)
-            tests.append(test_five_looks_ok)
-            test_five_works = five_works(scripts, 5)
-            tests.append(test_five_works)
+            test_oneb_looks_ok = oneb_looks_ok(scripts, 5)
+            tests.append(test_oneb_looks_ok)
+            test_oneb_works = oneb_works(scripts, 5)
+            tests.append(test_oneb_works)
+            test_twob_looks_ok = twob_looks_ok(scripts, 5)
+            tests.append(test_twob_looks_ok)
+            test_twob_works = twob_works(scripts, 5)
+            tests.append(test_twob_works)
+            test_threeb_looks_ok = threeb_looks_ok(scripts, 5)
+            tests.append(test_threeb_looks_ok)
+            test_threeb_works = threeb_works(scripts, 5)
+            tests.append(test_threeb_works)
+            test_fourb_works = fourb_works(scripts, 5)
+            tests.append(test_fourb_works)
+            test_fiveb_works = fiveb_works(scripts, 5)
+            tests.append(test_fiveb_works)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True

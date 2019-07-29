@@ -44,38 +44,22 @@ def eval_boolean(p_boolean, p_sprite):
     """
     import re
 
-    print("aaa inside p_boolean {}".format(p_boolean))
+    print("aaa inside eval_boolean.  p_boolean {}".format(p_boolean))
 
     p_boolean = re.sub(",", '', p_boolean)
     p_boolean = re.sub('=', '==', p_boolean)
     p_boolean = sub_variables(p_boolean, p_sprite)
-    print("aaa inside {}".format(p_boolean))
-    #
-    # p_boolean = re.sub("'", '', p_boolean)
-    # p_boolean = re.sub(r"\[", '(', p_boolean)
-    # p_boolean = re.sub("]", ')', p_boolean)
-
-#     for key in p_sprite.variables:
-#         if re.search(key, p_boolean, re.X | re.M | re.S):
-#             p_boolean = re.sub('VARIABLE_' + key, str(p_sprite.variables[key]), p_boolean)
-#     sub_in = True
-#     counter = 1
-#     while sub_in:
-#         print(p_boolean)
-#         counter += 1
-#         if counter > 11:
-#             break
-#         found = re.search(r'\(([\d_a-zA-Z]+)\)', p_boolean, re.X | re.M | re.S)
-#         if found:
-#             sub_this = found.group(1)
-# #            print("Found! boolean {} and sub this  {} ".format(p_boolean, sub_this))
-#             p_boolean = re.sub(r'\(' + sub_this + r'\)', sub_this, p_boolean)
-#             sub_in = True
-#         else:
-#             sub_in = False
+    print("aaa inside eval, after variable subs {}".format(p_boolean))
     words = p_boolean.split()
     p_boolean = ''
     print("aaa inside words {}".format(words))
+    # got a blank?
+    if len(words) == 2:
+        if words[0] == '==' or words[0] == '>' or words[0] == '<':
+            words.insert(0,"' '")
+        else:
+            words.append("' '")
+    print("aaa inside wordsafter space check {}".format(words))
 
     for word in words:
         if word != '==' and word != '>' and word != '<':
@@ -129,8 +113,7 @@ def sub_variables(p_words, p_sprite):
                 p_words = re.sub(match_string, answer, p_words, 1)
             else:
                 sensing_answers = False
-        print("after jjj {}".format(p_sprite.variables))
-        # p_words = re.sub(sub_this, str(p_sprite.variables[variable_name]), p_words)
+    print("aaa after all variable substitutios {}".format(p_words))
     return p_words
 
 
@@ -376,6 +359,37 @@ def do_sprite(p_sprite, moves, success):
                 evaluated = num1 - num2
                 print("jjj ran operator_subtract and got this {}".format(evaluated))
                 return evaluated
+            elif move == 'operator_length':
+                if isinstance(moves[1], list):
+                    operator_string = do_sprite(p_sprite, moves[1], success)
+                else:
+                    operator_string = moves[1]
+                operator_string = sub_variables(operator_string, p_sprite )
+                print("iii length operator string is {} length is {}".format(operator_string, len(operator_string)))
+                return len(operator_string)
+            elif move == 'operator_letter_of':
+                print("tried operator letter of")
+                if isinstance(moves[1], list):
+                    number = do_sprite(p_sprite, moves[1], success)
+                else:
+                    number = moves[1]
+                print("aaa number {}".format(number))
+                number = str(number)
+                number = sub_variables(number, p_sprite)
+                try:
+                    number = int(number)
+                except ValueError:
+                    raise Exception("Your number for operator_letter_of isn't an integer?  Got this: {}".
+                                    format(moves[1]))
+                if isinstance(moves[2], list):
+                    operator_string = do_sprite(p_sprite, moves[2], success)
+                else:
+                    operator_string = moves[2]
+                operator_string = sub_variables(operator_string, p_sprite)
+                if number - 1 < 0 or number > len(operator_string):
+                    raise Exception("Tried to get letter more or less than word. Number is: {} word is : {}".
+                                    format(number, operator_string))
+                return operator_string[number - 1].lower()
             elif move == 'operator_add':
                 if isinstance(moves[1], list):
                     num1 = do_sprite(p_sprite, moves[1], success)
@@ -478,9 +492,19 @@ def do_sprite(p_sprite, moves, success):
                 return string1 + string2
             elif move == 'control_if_else':
                 print("ooo moves{}  i{}".format(moves, i))
-                operator = moves[i + 1][0]
-                operator = str(operator)
-                condition = eval_boolean(operator, p_sprite)
+                operator = moves[i + 1]
+                if isinstance(operator[0], list):
+                    left = str(do_sprite(p_sprite, operator[0], success))
+                else:
+                    left = str(operator[0])
+                if isinstance(operator[2], list):
+                    right = str(do_sprite(p_sprite, operator[2], success))
+                else:
+                    right = str(operator[2])
+                middle = operator[1]
+                all_list = [left, middle, right]
+                print("This is the operator {}".format(operator))
+                condition = eval_boolean(str(all_list), p_sprite)
                 if condition:
                     ret_val = do_sprite(p_sprite, moves[2], success)
                 else:
@@ -488,9 +512,19 @@ def do_sprite(p_sprite, moves, success):
                 break
             elif move == 'control_if':
                 print("ooo control_if moves{}  i{}".format(moves, i))
-                operator = moves[i + 1][0]
-                operator = str(operator)
-                condition = eval_boolean(operator, p_sprite)
+                operator = moves[i + 1]
+                if isinstance(operator[0], list):
+                    left = str(do_sprite(p_sprite, operator[0], success))
+                else:
+                    left = str(operator[0])
+                if isinstance(operator[2], list):
+                    right = str(do_sprite(p_sprite, operator[2], success))
+                else:
+                    right = str(operator[2])
+                middle = operator[1]
+                all_list = [left, middle, right]
+                print("This is the operator {}".format(operator))
+                condition = eval_boolean(str(all_list), p_sprite)
                 if condition:
                     ret_val = do_sprite(p_sprite, moves[2], success)
                 break

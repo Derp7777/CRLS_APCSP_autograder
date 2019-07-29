@@ -532,6 +532,14 @@ def build_scratch_script(starting_block_id, p_blocks):
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
             script.append([operand1, 'and', operand2])
+        elif current_block['opcode'] == 'operator_length':
+            operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
+            script.extend(['operator_length', operator_string])
+        elif current_block['opcode'] == 'operator_letter_of':
+            letter = extract_value(current_block['inputs']['LETTER'], p_blocks)
+            operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
+            script.extend(['operator_letter_of', letter, operator_string])
+
         elif current_block['opcode'] == 'operator_equals':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
