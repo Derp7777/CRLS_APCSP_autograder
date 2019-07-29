@@ -352,7 +352,6 @@ def do_sprite(p_sprite, moves, success):
                     num2 = moves[2]
                 num1 = sub_variables(str(num1), p_sprite)
                 num2 = sub_variables(str(num2), p_sprite)
-
                 try:
                     temp = float(num1)
                 except ValueError:
@@ -374,6 +373,40 @@ def do_sprite(p_sprite, moves, success):
                     num2 = float(num2)
                 evaluated = num1 - num2
                 print("jjj ran operator_subtract and got this {}".format(evaluated))
+                return evaluated
+            elif move == 'operator_mod':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of mod can't be converted to float.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of mod can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                print("aaa mod numbers are this num1 {} num2 {}".format(num1, num2))
+                evaluated = num1 % num2
+                print("jjj ran operator_mod and got this {}".format(evaluated))
                 return evaluated
             elif move == 'operator_divide':
                 if isinstance(moves[1], list):

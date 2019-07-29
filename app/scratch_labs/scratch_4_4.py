@@ -231,7 +231,6 @@ def four_looks_ok(p_scripts, p_points):
     return p_test
 
 
-
 def five_looks_ok(p_scripts, p_points):
     """
       :param p_scripts: json data from file, which is the code of the scratch file. (dict)
@@ -276,7 +275,7 @@ def five_looks_ok(p_scripts, p_points):
         if test_delete_list['pass'] is False:
             p_test['fail_message'] += "Did not find any example of deleting everything in list after key is pressed.  " \
                                       "The program assumes you created a list already.  This list will need to be blank" \
-                                      "as each time you run the program you will be tarting this new list over..<br>"
+                                      "as each time you run the program you will be tarting this new list over.<br>"
         if test_repeat['pass'] is False:
             p_test['fail_message'] += "You need to loop through the list multiple times. " \
                                       " Need a repeat (or better, repeat until)" \
@@ -298,6 +297,81 @@ def five_looks_ok(p_scripts, p_points):
         if found_key and test_setvar['pass'] and  test_delete_list['pass'] and \
                 test_repeat['pass'] and test_changevar['pass'] and\
                 test_looksay['pass']:
+            p_test['pass'] = True
+            p_test['points'] += p_points
+    return p_test
+
+
+def six_looks_ok(p_scripts, p_points):
+    """
+      :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+      :param p_points: Number of points this test is worth (int)
+      :return: The test dictionary
+      """
+    from app.scratch_labs.scratch import match_string
+    p_test = {"name": "Checking that pressing '6' key looks approximately correct"
+                      " (" + str(p_points) + " points).<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Pressing '6' key looks approximately correct.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h65> "
+                              "Pressing '6' key does not look approximately correct. <br>",
+              "points": 0
+              }
+
+    press = '6'
+    found_key = False
+    for key in p_scripts:
+        script = p_scripts[key]
+        test_found_6 = match_string(r"event_whenkeypressed', \s '6'", script)
+        if test_found_6['pass']:
+            found_key = True
+            test_setvar = match_string(r"event_whenkeypressed', \s '6' .+  data_setvariableto ", script)
+
+            test_delete_list = match_string(r"event_whenkeypressed', \s '6' .+  data_deletealloflist ", script)
+            test_repeat = match_string(r"event_whenkeypressed', \s '6' .+  control_repeat", script)
+            test_changevar = match_string(r"event_whenkeypressed', \s '6' .+  control_repeat  "
+                                          r".+  data_changevariableby ", script)
+            test_if = match_string(r"event_whenkeypressed', \s '6' .+ control_repeat  .+ control_if", script)
+            test_looksay = match_string(r"event_whenkeypressed', \s '6'  .+  control_repeat "
+                                        r".+ looks_sayforsecs", script)
+            test_mod = match_string(r"event_whenkeypressed', \s '6'  .+  control_repeat "
+                                    r".+ operator_mod", script)
+    if found_key is False:
+        p_test['fail_message'] += "Did not find 'when " + press + " key is pressed ' <br>"
+    else:
+        if test_setvar['pass'] is False:
+            p_test['fail_message'] += "Did not find any example of setting a variable after key is pressed.  " \
+                                      "You" \
+                                      "will need a counter variable of some sort to loop through the list.<br>"
+
+        if test_delete_list['pass'] is False:
+            p_test['fail_message'] += "Did not find any example of deleting everything in list after key is pressed.  " \
+                                      "The program assumes you created a list already.  This list will need to be blank" \
+                                      "as each time you run the program you will be tarting this new list over.<br>"
+        if test_repeat['pass'] is False:
+            p_test['fail_message'] += "You need to loop through the list multiple times. " \
+                                      " Need a repeat (or better, repeat until)" \
+                                      " of some sort ' <br>"
+
+        if test_if['pass'] is False:
+            p_test['fail_message'] += "You need an 'if' of some sort inside the loop" \
+                                      " to test to see if number is negative or positive" \
+                                      ".<br>"
+
+        if test_changevar['pass'] is False:
+            p_test['fail_message'] += "Did not find any example of changing a variable after key is pressed.  You" \
+                                      "will need a counter variable of some sort to loop through the list" \
+                                      " .<br>"
+        if test_looksay['pass'] is False:
+            p_test['fail_message'] += "You need to say the new list at the end.  Needs a 'say for XXX seconds' " \
+                                      "block after the repeat is over.<br>"
+        if test_mod['pass'] is False:
+            p_test['fail_message'] += "You need to say mod in the loop to test if a number is even.<br>"
+
+        if found_key and test_setvar['pass'] and  test_delete_list['pass'] and \
+                test_repeat['pass'] and test_changevar['pass'] and\
+                test_looksay['pass'] and test_mod['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
     return p_test
@@ -635,7 +709,7 @@ def five_works(p_scripts, p_points):
     import re
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
-    p_test = {"name": "Checking that pressing '5' key makes and says"
+    p_test = {"name": "Checking that pressing '5' key makes and says "
                       "a new list, same as the old list but all numbers positive."
                       "  See instructions "
                       "from what this should look like "
@@ -644,7 +718,7 @@ def five_works(p_scripts, p_points):
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "Pressing '5' key makes a new list, same as the old list but all numbers positive.<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "Pressing '5' key does not  make a new lis same as the old list but all numbers positive."
+                              "Pressing '5' key does not  make a new list same as the old list but all numbers positive."
                               " <br><br>",
               "points": 0
               }
@@ -705,6 +779,91 @@ def five_works(p_scripts, p_points):
     p_test['fail_message'] += "<b>Be sure you are not hard-coding the number of items in the list.</b><br>" \
                               "The code has to work with lists of length 1 and 5 (and 205), not just length 6.<br>"
     if found_5 and test_1 and test_2 and test_3 and run_1 and run_2 and run_3:
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
+
+def six_works(p_scripts, p_points):
+    """
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+    :param p_points: Number of points this test is worth (int)
+    :return: The test dictionary
+    """
+    import re
+    from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
+    from app.scratch_labs.scratch import match_string
+    p_test = {"name": "Checking that pressing '6' key makes and says "
+                      "a new list, with only even numbers from original list."
+                      "  See instructions "
+                      "from what this should look like "
+                      " (" + str(p_points) + " points).<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "Pressing '6' key makes and says a new list, "
+                              "with only even numbers from original list.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "Pressing '6' key does not make a new list with only even numbers from original list."
+                              " <br><br>",
+              "points": 0
+              }
+    found_6 = False
+    test_1 = False
+    test_2 = False
+    test_3 = False
+
+    for key in p_scripts:
+        script = p_scripts[key]
+        test_6_key = match_string(r"event_whenkeypressed', \s '6' .+  data_setvariableto .+ control_repeat .+ "
+                                  r"looks_sayforsecs", script)
+        if test_6_key['pass']:
+            found_6 = True
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"numbers": [5, 2, -4, 0, ], 'new_list': [3, 1],
+                                                                   })
+            run_1 = do_sprite(sprite, script, True)
+            match_this = r"^\['2',\s*'-4',\s*'0']"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_1 = True
+            if test_1 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: ['5, 2, -4, 0']<br> " \
+                                          "Expected output: <br>['2', '-4', '0'] <br><br>" \
+                                          "Actual output: <br>" + history_newlines + "<br><br>"
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"numbers": [999, ], 'new_list': [3, 1],})
+            run_2 = do_sprite(sprite, script, True)
+            match_this = r"^\[]"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_2 = True
+            if test_2 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: [999]<br> " \
+                                          "Expected output: <br><br><br>" \
+                                          "Actual output:<br> " + history_newlines + "<br><br>"
+            sprite = brickLayer(0, 0, 0, pendown=False, variables={"numbers": [1, 2, 3, 4, 5, -1, -2, -3, -4, -5, 555, ]
+                                                                   , 'new_list': [3, 1], })
+            run_3 = do_sprite(sprite, script, True)
+            match_this = r"^\['2',\s*'4',\s*'-2',\s*'-4']"
+            matched = re.search(match_this, sprite.say_history)
+            if matched:
+                test_3 = True
+            if test_3 is False:
+                history_newlines = re.sub(r"\n", "<br>", sprite.say_history)
+                p_test['fail_message'] += "Input list: [1, 2, 3, 4, 5, -1, -2, -3, -4, -5, 555,]<br> " \
+                                          "Expected output: <br>['2', '4', " \
+                                          "'-2', '-4'] <br><br>" \
+                                          "Actual output:<br> " + history_newlines + "<br><br>"
+
+    if found_6 is False:
+        p_test['fail_message'] += "In your code, did not find 'when 6 key pressed' in your code " \
+                                  "followed by some expected elements - setting a variable to a value " \
+                                  "(to track the index or counter)," \
+                                  "a repeat of some sort, and a say of some sort.<br><br>"
+
+    p_test['fail_message'] += "<b>Be sure you are not hard-coding the number of items in the list.</b><br>" \
+                              "The code has to work with lists of length 1 and 5 (and 205), not just length 6.<br>"
+    if found_6 and test_1 and test_2 and test_3 and run_1 and run_2 and run_3:
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test
