@@ -101,8 +101,8 @@ def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
         print(matches)
         if matches > p_num:
             p_test_find_questions['pass'] = False
-            p_test_find_questions['fail_message'] += "Code has over " + str(p_num) + " ifs.<br>" +\
-                                                     "Searched for ifs in this string:<br> " + p_filename_data +\
+            p_test_find_questions['fail_message'] += "Code has over " + str(p_num) + " ifs.<br>" + \
+                                                     "Searched for ifs in this string:<br> " + p_filename_data + \
                                                      "<br>  If you think this should pass, control-F and search for " \
                                                      "'if' in your code""<br>  Found this many ifs: " + \
                                                      str(matches) + ".<br>"
@@ -155,8 +155,8 @@ def find_elif(p_filename_data, p_num, p_points, *, minmax='min'):
         if matches > p_num:
             p_test_find_questions['pass'] = False
             p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
-                                                     "Code does not have at least " + str(p_num) + " elifs.<br>" +\
-                                                     "Searched for elifs in this string:<br> " + p_filename_data +\
+                                                     "Code does not have at least " + str(p_num) + " elifs.<br>" + \
+                                                     "Searched for elifs in this string:<br> " + p_filename_data + \
                                                      "<br>  If you think this should pass, control-F and search for " \
                                                      "'elif' in your code""<br>  Found this many elifs: " + \
                                                      str(matches) + ".<br>"
@@ -204,8 +204,8 @@ def find_else(p_filename_data, p_num, p_points, *, minmax='min'):
         if matches > p_num:
             p_test_find_questions['pass'] = False
             p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
-                                                     "Code does not have at least " + str(p_num) + " elses.<br>" +\
-                                                     "Searched for elses in this string:<br> " + p_filename_data +\
+                                                     "Code does not have at least " + str(p_num) + " elses.<br>" + \
+                                                     "Searched for elses in this string:<br> " + p_filename_data + \
                                                      "<br>  If you think this should pass, control-F and search for " \
                                                      "'else' in your code""<br>  Found this many elses: " + \
                                                      str(matches) + ".<br>"
@@ -251,8 +251,8 @@ def find_print(p_filename_data, p_num, p_points, *, minmax='min'):
         if matches > p_num:
             p_test_find_questions['pass'] = False
             p_test_find_questions['fail_message'] += "<h5 style=\"color:red;\">Fail.</h5> " \
-                                                     "Code does not have at least " + str(p_num) + " prints.<br>" +\
-                                                     "Searched for prints in this string:<br> " + p_filename_data +\
+                                                     "Code does not have at least " + str(p_num) + " prints.<br>" + \
+                                                     "Searched for prints in this string:<br> " + p_filename_data + \
                                                      "<br>  If you think this should pass, control-F and search for " \
                                                      "'print' in your code""<br>  Found this many prints: " + \
                                                      str(matches) + ".<br>"
@@ -460,8 +460,8 @@ def find_function(p_filename, p_function_name, p_num_parameters, *, points=0):
         p_test_function_exists['pass'] = False
         cmd = 'grep "def" ' + p_filename
         c = delegator.run(cmd)
-        p_test_function_exists['fail_message'] += "The file " + p_filename + " has these functions: <br> " +\
-                                                  c.out + "<br>" + " but not " + p_function_name + " with" +\
+        p_test_function_exists['fail_message'] += "The file " + p_filename + " has these functions: <br> " + \
+                                                  c.out + "<br>" + " but not " + p_function_name + " with" + \
                                                   " exactly " + str(p_num_parameters) + " input parameter(s). <br>"
     return p_test_function_exists
 
@@ -508,9 +508,10 @@ def find_class(p_filename, p_class_name, p_parent, *, points=0):
         cmd = 'grep "class" ' + p_filename
         c = delegator.run(cmd)
         p_test_class_exists['fail_message'] += "The file " + p_filename + " contents is this: : <br> " + \
-                                               filename_data + "<br>" + " but not " + p_class_name + "("\
+                                               filename_data + "<br>" + " but not " + p_class_name + "(" \
                                                + str(p_parent) + "). <br>"
     return p_test_class_exists
+
 
 # Inputs: p_filename, contents of the file (string).
 #         p_class_name, fclass name I am looking for (string)
@@ -521,7 +522,6 @@ def find_class(p_filename, p_class_name, p_parent, *, points=0):
 
 
 def object_created(p_filename, p_class_name, p_times, *, points=0):
-
     from app.python_labs.read_file_contents import read_file_contents
     import re
     p_test_function_called = {"name": "Testing that there are objects of type  " + p_class_name +
