@@ -560,7 +560,7 @@ def build_scratch_script(starting_block_id, p_blocks):
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
             print("hhh num1 {} num2 {}".format(num1, num2))
-            script.extend(['operator_subtract', num1, num2])
+            script.extend(['operator_add', num1, num2])
         elif current_block['opcode'] == 'operator_divide':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)

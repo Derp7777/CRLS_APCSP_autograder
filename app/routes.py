@@ -699,7 +699,8 @@ def scratch_feedback_44():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, \
         arrange_blocks_v2
     from app.scratch_labs.scratch_4_4 import numbers_list, numbers_list_min_items, two_looks_ok, one_works, two_works, \
-        three_looks_ok, three_works, four_looks_ok, four_works, five_looks_ok, five_works, six_looks_ok, six_works
+        three_looks_ok, three_works, four_looks_ok, four_works, five_looks_ok, five_works, six_looks_ok, six_works, \
+        seven_works, eight_works
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -747,6 +748,10 @@ def scratch_feedback_44():
             tests.append(test_six_looks_ok)
             test_six_works = six_works(scripts, 5)
             tests.append(test_six_works)
+            test_seven_works = seven_works(scripts, 5)
+            tests.append(test_seven_works)
+            test_eight_works = eight_works(scripts, 5)
+            tests.append(test_eight_works)
             test_help = find_help(json_data, 5)
             tests.append(test_help)
             score_info['finished_scoring'] = True
