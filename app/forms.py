@@ -24,6 +24,7 @@ class UploadScratchForm(FlaskForm):
                                        ('2.6', '2.6'), ('3.2_alternate', '3.2_alternate'),
                                        ('3.3_3.4_alternate', '3.3_3.4_alternate'), ('4.2_alternate', '4.2_alternate'),
                                        ('4.3a_alternate', '4.3a_alternate'), ('4.3b_alternate', '4.3b_alternate'),
+                                       ('4.4','4.4'),
                                        ('karel1', 'karel1'), ('karel2a', 'karel2a'),
                                        ('karel2b', 'karel2b'),
                                        ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),

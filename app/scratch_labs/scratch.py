@@ -477,6 +477,9 @@ def build_scratch_script(starting_block_id, p_blocks):
             variable_name = 'VARIABLE_' + variable_name
             value = extract_value(current_block['inputs']['VALUE'], p_blocks)
             script.append(['data_changevariableby', variable_name, value])
+        elif current_block['opcode'] == 'data_deletealloflist':
+            listname = current_block['fields']['LIST'][0]
+            script.append(['data_deletealloflist', listname])  # tested with append
         elif current_block['opcode'] == 'data_itemoflist':
             list_name = current_block['fields']['LIST'][0]
             index = extract_value(current_block['inputs']['INDEX'], p_blocks)
@@ -553,6 +556,15 @@ def build_scratch_script(starting_block_id, p_blocks):
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
             print("hhh num1 {} num2 {}".format(num1, num2))
             script.extend(['operator_subtract', num1, num2])
+        elif current_block['opcode'] == 'operator_divide':
+            num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
+            num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
+            script.extend(['operator_divide', num1, num2])  # tested
+        elif current_block['opcode'] == 'operator_multiply':
+            num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
+            num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
+            print("hhh num1 {} num2 {}".format(num1, num2))
+            script.extend(['operator_multiply', num1, num2])
         elif current_block['opcode'] == 'operator_lt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)

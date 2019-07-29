@@ -230,10 +230,17 @@ def do_sprite(p_sprite, moves, success):
                 break
             elif move == 'data_changevariableby':
                 variable_plus_variable = moves[1]
-                if re.search("\d \. \d", moves[2], re.X | re.M | re.S):
-                    delta_value = float(moves[2])
+                print("aaa moves2 {}".format(moves[2]))
+                delta_value = moves[2]
+                if isinstance(moves[2], list):
+                    ret_val = do_sprite(p_sprite, moves[2], success)
+                    delta_value = ret_val
                 else:
-                    delta_value = int(moves[2])
+                    delta_value = moves[2]
+                if re.search("\d \. \d", str(delta_value), re.X | re.M | re.S):
+                    delta_value = float(delta_value)
+                else:
+                    delta_value = int(delta_value)
                 variable = re.sub('VARIABLE_', '', variable_plus_variable)
                 if variable in p_sprite.variables.keys():
                     if re.search("\d \. \d", str(p_sprite.variables[variable]), re.X | re.M | re.S):
@@ -256,7 +263,7 @@ def do_sprite(p_sprite, moves, success):
                 print("fff returning this for index {} list name {}".format(index, list_name))
                 if isinstance(index, list):
                     index = do_sprite(p_sprite, index, success)
-                index = sub_variables(index, p_sprite)
+                index = sub_variables(str(index), p_sprite)
                 print("iiu index {}".format(index))
                 index = int(index)
                 # print("fff index {}".format(index))
@@ -281,6 +288,12 @@ def do_sprite(p_sprite, moves, success):
                                     "Another possibility is that you are hard coding your counter somewhere"
                                     "and it works for certain size lists but not small lists. ")
                 return item
+            elif move == 'data_deletealloflist':
+                list_name = moves[i + 1]
+                print("jjj data_deletealloflist")
+                p_sprite.variables[list_name] = []
+
+                break
             elif move == 'data_addtolist':
                 item = moves[i + 1]
                 list_name = moves[i + 2]
@@ -291,7 +304,7 @@ def do_sprite(p_sprite, moves, success):
                     item = do_sprite(p_sprite, item, success)
 
                 print("jjj item is this {}".format(item))
-                item = sub_variables(item, p_sprite)
+                item = sub_variables(str(item), p_sprite)
                 p_sprite.variables[list_name].append(item)
 
                 break
@@ -305,7 +318,7 @@ def do_sprite(p_sprite, moves, success):
                     item = do_sprite(p_sprite, item, success)
 
                 print("jjj item is this {}".format(item))
-                item = int(sub_variables(item, p_sprite))
+                item = int(sub_variables(str(item), p_sprite))
                 p_sprite.variables[list_name].pop(item - 1)
 
                 break
@@ -337,6 +350,9 @@ def do_sprite(p_sprite, moves, success):
                     num2 = do_sprite(p_sprite, moves[2], success)
                 else:
                     num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+
                 try:
                     temp = float(num1)
                 except ValueError:
@@ -359,12 +375,82 @@ def do_sprite(p_sprite, moves, success):
                 evaluated = num1 - num2
                 print("jjj ran operator_subtract and got this {}".format(evaluated))
                 return evaluated
+            elif move == 'operator_divide':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+
+                print("this is what I got num1 {} num2 {}".format(num1, num2))
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                evaluated = num1 / num2
+                print("jjj ran operator_divide and got this {}".format(evaluated))
+                return evaluated
+            elif move == 'operator_multiply':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                evaluated = num1 * num2
+                print("jjj ran operator_multiply and got this {}".format(evaluated))
+                return evaluated
+
             elif move == 'operator_length':
                 if isinstance(moves[1], list):
                     operator_string = do_sprite(p_sprite, moves[1], success)
                 else:
                     operator_string = moves[1]
-                operator_string = sub_variables(operator_string, p_sprite )
+                operator_string = sub_variables(str(operator_string), p_sprite )
                 print("iii length operator string is {} length is {}".format(operator_string, len(operator_string)))
                 return len(operator_string)
             elif move == 'operator_letter_of':
@@ -385,7 +471,7 @@ def do_sprite(p_sprite, moves, success):
                     operator_string = do_sprite(p_sprite, moves[2], success)
                 else:
                     operator_string = moves[2]
-                operator_string = sub_variables(operator_string, p_sprite)
+                operator_string = sub_variables(str(operator_string), p_sprite)
                 if number - 1 < 0 or number > len(operator_string):
                     raise Exception("Tried to get letter more or less than word. Number is: {} word is : {}".
                                     format(number, operator_string))
@@ -399,6 +485,9 @@ def do_sprite(p_sprite, moves, success):
                     num2 = do_sprite(p_sprite, moves[2], success)
                 else:
                     num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+
                 try:
                     temp = float(num1)
                 except ValueError:
@@ -470,7 +559,7 @@ def do_sprite(p_sprite, moves, success):
                         # words = words_pre_sub
                     else:
                         words = words_pre_sub
-                p_sprite.say_history += words + "\n"
+                p_sprite.say_history += str(words) + "\n"
                 print("pppo {}".format(p_sprite.say_history))
                 break
             elif move == 'sensing_answer':
