@@ -111,8 +111,8 @@ def _clean_block(block):
     del block['shadow']
     del block['topLevel']
     if 'x' in block.keys():
-            del block['x']
-            del block['y']
+        del block['x']
+        del block['y']
     return block
 
 
@@ -185,7 +185,7 @@ def match_string(regex, p_json, *, points=0, num_matches=1):
     found = len(re.findall(regex, str(p_json), re.X | re.M | re.S))
 
     p_test = {"name": "Looking for a string in code (" + str(points) + " points)<br>",
-              "pass": True,
+              "pass": found >= num_matches,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found this string in the code:  " + str(regex) + "<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
@@ -193,12 +193,8 @@ def match_string(regex, p_json, *, points=0, num_matches=1):
                               "Looked for this string: " + str(regex) + "<br>" +
                               "Looked in this code: " + str(p_json) + "<br>" +
                               "Found this many matches : " + str(found) + "<br>",
-              "points": 0
+              "points": points if found >= num_matches else 0
               }
-    if found >= num_matches:
-        p_test['points'] += points
-    else:
-        p_test['pass'] = False
     return p_test
 
 
@@ -213,10 +209,7 @@ def extract_move_steps(p_json):
 
     regex = r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'(\d+)']]}"
     matches = re.findall(regex, str(p_json), re.X | re.M | re.S)
-    if matches:
-        return matches
-    else:
-        return []
+    return matches if matches else []
 
 
 def extract_turn_degrees(p_json):
@@ -230,10 +223,7 @@ def extract_turn_degrees(p_json):
 
     regex = r"{'opcode':\s+'motion_turn(right|left)',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'(\d+)']]}"
     matches = re.findall(regex, str(p_json), re.X | re.M | re.S)
-    if matches:
-        return matches
-    else:
-        return []
+    return matches if matches else []
 
 
 def count_sprites(p_json):
@@ -244,9 +234,7 @@ def count_sprites(p_json):
     """
     num_sprites = 0
     for target in p_json['targets']:
-        if target['isStage'] is True:
-            pass
-        else:
+        if target['isStage'] is not True:
             num_sprites += 1
     return num_sprites
 
@@ -282,9 +270,7 @@ def every_sprite_green_flag(p_json, p_points):
               "points": 0
               }
     for target in p_json['targets']:
-        if target['isStage'] is True:
-            pass
-        else:
+        if target['isStage'] is not True:
             if match_string(r'event_whenflagclicked', target)['pass'] is False:
                 p_test['pass'] = False
                 p_test['fail_message'] += 'This sprite does not have a green flag: ' + target['name'] + '<br>'
@@ -312,9 +298,7 @@ def every_sprite_broadcast_and_receive(p_json, p_points):
               "points": 0
               }
     for target in p_json['targets']:
-        if target['isStage'] is True:
-            pass
-        else:
+        if target['isStage'] is not True:
             if match_string(r'event_broadcast', target)['pass'] is False or \
                     match_string(r'event_whenbroadcastreceived', target)['pass'] is False:
                 p_test['pass'] = False

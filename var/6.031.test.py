@@ -11,7 +11,7 @@ class testAutograde(unittest.TestCase):
         output = add(mcglathery_dict, 'fire', 'charmander')
         self.assertEqual(output, {'fire': ['charmander']},
                          "<br>Checking mcglathery_dictionary 1. Adding 'fire' and 'charmander',"
-                         " expect output {'fire':'charmander'} <br> Got this: " + str(output) )
+                         " expect output {'fire':'charmander'} <br> Got this: " + str(output))
 
     def test_2(self):
         mcglathery_dict = {'fire': ['charmander'], 'ice': ['iceperson']}

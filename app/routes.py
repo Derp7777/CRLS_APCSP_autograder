@@ -263,7 +263,7 @@ def scratch_feedback_karel1():
         # for item in new_main_script:
         #     if item['opcode'] == "procedures_call":
         #         main_script_3.append(item['mutation']['proccode'])
-        # print(f"Mian script 3 {main_script_3}")
+        # print(f"Main script 3 {main_script_3}")
         test_help = find_help(json_data, 5)
         tests.append(test_help)
         score_info['finished_scoring'] = True

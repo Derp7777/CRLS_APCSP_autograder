@@ -10,7 +10,7 @@ class testAutograde(unittest.TestCase):
         goofy = DisneyBody('Goofy', ['wallet', 'paper', 'rock', 'scissors'])
         attribute_dict = vars(goofy)
         for key in attribute_dict:
-            if isinstance(getattr(goofy, key), list):
+            if isinstance(getattr(goofy, key), list):  # damn that's clever
                 retrieved_pocket = getattr(goofy, key)
                 pocket_key = key
             else:
