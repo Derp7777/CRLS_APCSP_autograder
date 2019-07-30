@@ -158,7 +158,7 @@ def scratch_feedback_14_15():
             score_info['finished_scoring'] = True
             for test in tests:
                 if test['pass']:
-                        score_info['score'] += test['points']
+                    score_info['score'] += test['points']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -213,7 +213,7 @@ def scratch_feedback_1x_family_migration_story():
             score_info['finished_scoring'] = True
             for test in tests:
                 if test['pass']:
-                        score_info['score'] += test['points']
+                    score_info['score'] += test['points']
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
@@ -237,7 +237,7 @@ def scratch_feedback_karel1():
         unzip_sb3(filename)
         json_data = read_json_file()
         coder_json = extract_coder_json(json_data)
-        #print(f"CODE JSON {coder_js
+        # print(f"CODE JSON {coder_js
         # on}")
         [moves, user_blocks, repeat_scripts] = arrange_karel_blocks(coder_json)
         print(f"moves are here {moves} \n user blocks {user_blocks} \n repeat scripts {repeat_scripts}")
@@ -269,13 +269,12 @@ def scratch_feedback_karel1():
         score_info['finished_scoring'] = True
         for test in tests:
             if test['pass']:
-                    score_info['score'] += test['points']
+                score_info['score'] += test['points']
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_1040')
 def feedback_1040():
-
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_questions
@@ -310,7 +309,7 @@ def feedback_1040():
         else:
             # io test 1- a b c
             test_io_1 = io_test(filename, r'.+ a1 .+ a2 .+ a3 ', 1, points=5)
-            test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " +\
+            test_io_1['name'] += "Check things are in correct order - wishing for a, b, c " + \
                                  " should print 'your wishes are a, b, and c.' <br>" \
                                  "You must have at least 1 character of some sort between your wishes.<br>"
             tests.append(test_io_1)
@@ -328,7 +327,7 @@ def feedback_1040():
             # io test 2 - a b c, b2, b3, b1
             test_io_2 = io_test(filename, r'.+ a1 .+ a2 .+ a3 .+ b2 .+ b3 .+ b1 ', 1, points=5)
             test_io_2['name'] += "Check things are in correct order - wishing for a, b, c, d, e, f " + \
-                                 " should print 'your wishes are a, b, and c' <br>" +\
+                                 " should print 'your wishes are a, b, and c' <br>" + \
                                  " and 'your wishes are e, f, and d' <br>" \
                                  "You must have at least 1 character of some sort between your wishes.<br>"
             tests.append(test_io_2)
@@ -348,7 +347,6 @@ def feedback_1040():
 
 @app.route('/feedback_1060')
 def feedback_1060():
-
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_questions, find_string
     from app.python_labs.io_test import io_test_find_all, io_test
@@ -386,7 +384,7 @@ def feedback_1060():
                                                     r'(verb|noun|adjective|adverb|preposition|place) _* [0-9]* \s* = '
                                                     r'\s* input\(',
                                                     5, points=5)
-            test_find_parts_of_speech['name'] += "Testing that variables are named after parts of speech. <br>"\
+            test_find_parts_of_speech['name'] += "Testing that variables are named after parts of speech. <br>" \
                                                  "If this test fails, rename variables to parts of speech " \
                                                  "per instructions.<br>" \
                                                  "Also note, Python variable name convention is LOWERCASE, so this " \
@@ -442,7 +440,6 @@ def feedback_1060():
 
 @app.route('/feedback_2020')
 def feedback_2020():
-
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.io_test import io_test, io_test_find_all
     from app.python_labs.find_items import find_questions, find_string
@@ -531,7 +528,6 @@ def feedback_2020():
 
 @app.route('/feedback_2032a')
 def feedback_2032a():
-
     from app.python_labs.filename_test import filename_test
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_if
@@ -586,7 +582,6 @@ def feedback_2032a():
 
 @app.route('/feedback_2032b')
 def feedback_2032b():
-
     from app.python_labs.filename_test import filename_test
     from app.python_labs.find_items import find_if
     from app.python_labs.read_file_contents import read_file_contents
@@ -617,7 +612,7 @@ def feedback_2032b():
         tests.append(test_ifs)
 
         # test all 8 cases
-        debug_statement = 'Program asks for if you are Yuka Kinoshita, your stomach size, and money in that order <br>'\
+        debug_statement = 'Program asks for if you are Yuka Kinoshita, your stomach size, and money in that order <br>' \
                           'If you are failing 2 tests, read example 8 from the presentation.'
         test_runs = python_2_032b(filename, filename_data, debug_statement=debug_statement)
         tests.append(test_runs)
@@ -638,7 +633,6 @@ def feedback_2032b():
 
 @app.route('/feedback_2040')
 def feedback_2040():
-
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_all_strings, find_questions, find_if, find_elif, find_else
     from app.python_labs.python_2_040 import python_2_040
@@ -714,7 +708,6 @@ def feedback_2040():
 
 @app.route('/feedback_2051a')
 def feedback_2051a():
-
     from app.python_labs.find_items import find_string, find_questions, find_all_strings
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.python_2_05x import python_2_051a
@@ -795,7 +788,6 @@ def feedback_2051a():
 
 @app.route('/feedback_2051b')
 def feedback_2051b():
-
     from app.python_labs.find_items import find_if, find_questions, find_list, find_elif, find_else
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.python_2_05x import python_2_051b_1
@@ -877,7 +869,6 @@ def feedback_2051b():
 
 @app.route('/feedback_3011')
 def feedback_3011():
-
     from app.python_labs.read_file_contents import read_file_contents
     from app.python_labs.find_items import find_questions, find_list, find_random, find_print
     from app.python_labs.python_3_011 import python_3_011_2, python_3_011_1
@@ -950,7 +941,6 @@ def feedback_3011():
 
 @app.route('/feedback_3020')
 def feedback_3020():
-
     from app.python_labs.find_items import find_function, function_called, find_list
     from app.python_labs.filename_test import filename_test
     from app.python_labs.function_test import extract_all_functions, extract_single_function, run_unit_test, \
@@ -1139,14 +1129,14 @@ def feedback_3026():
 def feedback_4011():
     from app.python_labs.filename_test import filename_test
     from app.python_labs.find_items import find_function, find_loop, function_called, find_if
-    from app.python_labs.function_test import run_unit_test, extract_single_function,\
+    from app.python_labs.function_test import run_unit_test, extract_single_function, \
         extract_all_functions, create_testing_file
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1221,7 +1211,7 @@ def feedback_4021():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 37,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 37, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1304,7 +1294,7 @@ def feedback_4022():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 37,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 37, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1370,10 +1360,9 @@ def feedback_4022():
                 score_info['finished_scoring'] = True
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-    
+
 @app.route('/feedback_4025')
 def feedback_4025():
-
     from app.python_labs.pep8 import pep8
     from app.python_labs.helps import helps
     from app.python_labs.filename_test import filename_test
@@ -1384,7 +1373,7 @@ def feedback_4025():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 114,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 114, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1482,7 +1471,7 @@ def feedback_6011():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 69,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1895,7 +1884,7 @@ def feedback_7034():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 34.5,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 34.5, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']
@@ -1940,7 +1929,7 @@ def feedback_7034():
                 score_info['score'] += test['points']
 
         score_info['finished_scoring'] = True
-        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4031')
@@ -2021,7 +2010,7 @@ def feedback_4031():
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
-    
+
 @app.route('/feedback_4036')
 def feedback_4036():
     from app.python_labs.find_items import find_function
@@ -2032,7 +2021,7 @@ def feedback_4036():
 
     user = {'username': 'CRLS Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 89,  'manually_scored': 11, 'finished_scoring': False}
+    score_info = {'score': 0, 'max_score': 89, 'manually_scored': 11, 'finished_scoring': False}
 
     # Test 1: file name
     filename = request.args['filename']

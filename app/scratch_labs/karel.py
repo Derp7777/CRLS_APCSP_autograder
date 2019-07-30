@@ -18,7 +18,7 @@ class robot(object):
             proposed_square = [self.x - 5, self.y]
         else:
             raise Exception("Direction can only be 0 - 3.  Direction is: " + str(self.direction))
-        return not proposed_square in self.barriers
+        return proposed_square not in self.barriers
 
     def turnleft(self):
         self.direction = (self.direction + 3) % 4
@@ -41,7 +41,7 @@ class robot(object):
     def pickbeeper(self):
         print("PICKING UP A BEEPER")
         coordinate = [self.x, self.y]
-        print(f"coordinate {coordinate}, self beeters {self.beepers}")
+        print(f"coordinate {coordinate}, self beepers {self.beepers}")
 
         if coordinate in self.beepers:
             self.beepers.remove(coordinate)
@@ -56,7 +56,6 @@ def _karel_helper():
 
 
 def do_karel(p_karel, moves, success):
-
     if success is False:
         return False
     # print(f"AAA entirety of moves {moves}")
@@ -225,13 +224,13 @@ def _order_procedure_blocks(starting_block_id, p_target):
     # if 'inputs' in p_target['blocks'][starting_block_id]:
     #     if 'SUBSTACK' in p_target['blocks'][starting_block_id]['inputs']:
     #         substack_block_id = p_target['blocks'][starting_block_id]['inputs']['SUBSTACK'][1]
-    #         script.append([p_target['blos'][substack_block_id]])
+    #         script.append([p_target['blocks'][substack_block_id]])
     # if substack_block_id:
     # #     print("SUBSTACK BLOCK_ID FOUND 1")
     #
     #     script.append(['control_repeat', p_target['blocks'][substack_block_id]])
     #     substack_block_id = None
-#    while next_block_id is not None or substack_block_id is not None:
+    #    while next_block_id is not None or substack_block_id is not None:
     while next_block_id is not None:
         temp_block = p_target['blocks'][next_block_id]
         temp_block['ID'] = next_block_id  # #stick the ID onto the dictionary
@@ -263,9 +262,9 @@ def _order_procedure_blocks(starting_block_id, p_target):
 
 # get starting block
 # if substack, add that first.
-    # add the control repeat
-    # add the repeat stuff as a list.  call itself - script = p_target['blocks'][block ID of first thing in repeat]
-    # append that script to main script as a list.
+# add the control repeat
+# add the repeat stuff as a list.  call itself - script = p_target['blocks'][block ID of first thing in repeat]
+# append that script to main script as a list.
 # if next next next next then keep adding straight up.
 
 # move move
@@ -295,7 +294,7 @@ def arrange_karel_blocks(p_json):
                     print(f"working this code {block_id}, this opcode {target['blocks'][block_id]['opcode']}")
                     if target['blocks'][block_id]['opcode'] == "procedures_prototype":  # Get the procedures
                         if target['blocks'][block_id]['mutation']['proccode'] not in given_blocks:
-                            parent_id = target['blocks'][block_id]['parent']   # get the procedures_definition
+                            parent_id = target['blocks'][block_id]['parent']  # get the procedures_definition
                             block_start_id = target['blocks'][parent_id]['next']  # get the actual first thing
                             script = _order_procedure_blocks(block_start_id, target)
 
@@ -358,7 +357,7 @@ def arrange_karel_blocks(p_json):
                                             temp_repeat_commands.append('karelloop_' + item['inputs']['SUBSTACK'][1])
                                     print("REPEATER")
                                     print(temp_repeat_commands)
-#                                    repeat_scripts[block_id] = temp_repeat_commands
+                                    #                                    repeat_scripts[block_id] = temp_repeat_commands
                                     repeat_scripts[parent_id] = temp_repeat_commands
 
     print("main script, pre:")

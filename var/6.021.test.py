@@ -22,7 +22,7 @@ class testAutograde(unittest.TestCase):
                          )
 
     def test_3(self):
-        names = ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta' ]
+        names = ['Brolly', 'Goku', 'Gohan', 'Piccolo', 'Vegeta']
         answer1 = data_generator(names, 20)
         answer2 = data_generator(names, 20)
         self.assertNotEqual(answer1, answer2, "These two should be different because of random numbers<br>"

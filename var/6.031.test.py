@@ -21,7 +21,7 @@ class testAutograde(unittest.TestCase):
                          "<br>Checking mcglathery_dictionary 2.  Adding 'ice' and 'iceperson2' to "
                          "{'fire':['charmander'], 'ice':['iceperson']}."
                          "<br> Expect output {['fire':['charmander'], 'ice':['iceperson','iceperson2']} <br>"
-                         "Got this: " + str(output) )
+                         "Got this: " + str(output))
 
     def test_3(self):
         mcglathery_dict = {'fire': ['charmander']}

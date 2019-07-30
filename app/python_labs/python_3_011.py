@@ -67,7 +67,7 @@ def python_3_011_2(p_filename, p_filename_data, p_points):
             if re.search(house, c.out):
                 answers.append(house)
 
-    print("houses "  + str(houses))
+    print("houses " + str(houses))
     print("answers" + str(answers))
     for house in houses:
         if house not in answers:

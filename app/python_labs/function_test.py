@@ -92,7 +92,7 @@ def extract_all_functions(orig_file):
 
         while line:
             line = infile.readline()
-            start_def = re.search(r"^(def|class) \s+ .+ ", line,  re.X | re.M | re.S)
+            start_def = re.search(r"^(def|class) \s+ .+ ", line, re.X | re.M | re.S)
             # print(start_def)
             empty_counter = 0
             if start_def:
@@ -104,13 +104,13 @@ def extract_all_functions(orig_file):
                     # counter += 1
                     # print("counter " + str(counter))
                     # if counter == 15:
-                    #     raise Exception("what the heeck")
+                    #     raise Exception("what the heck")
                     line = infile.readline()
                     if line == '':
                         break
                     # print("aaa next line " + line)
                     end_of_function = re.search(r"^[a-zA-Z]", line, re.X | re.M | re.S)
-                    new_function = re.search(r"^(def|class) \s+ .+ ", line,  re.X | re.M | re.S)
+                    new_function = re.search(r"^(def|class) \s+ .+ ", line, re.X | re.M | re.S)
                     # print("end? " + str(end_of_function))
                     # print("new?" + str(new_function))
                     if end_of_function and not new_function:
@@ -135,17 +135,17 @@ def extract_single_function(p_orig_file, p_function):
         while line:
             # print("looking for this function : " + p_function)
             line = infile.readline()
-            start_def = re.search(r"^(def|class) \s+ " + p_function , line,  re.X | re.M | re.S)
+            start_def = re.search(r"^(def|class) \s+ " + p_function, line, re.X | re.M | re.S)
             if start_def:
                 # print("entering function!")
                 # print('writing this' + str(line))
                 extracted_function += line
-                #print("reading this" + str(line))
+                # print("reading this" + str(line))
                 inside_function = True
                 while inside_function:
-                #     print('reading this ' + str(line))
+                    #     print('reading this ' + str(line))
                     line = infile.readline()
-                    inside_function = re.search(r"^(\s+ | \# ) .+ " , line,  re.X | re.M | re.S)
+                    inside_function = re.search(r"^(\s+ | \# ) .+ ", line, re.X | re.M | re.S)
                     if inside_function:
                         # print("writing this inside function " + str(line))
                         extracted_function += line

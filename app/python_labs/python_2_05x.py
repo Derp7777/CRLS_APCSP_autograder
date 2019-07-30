@@ -63,8 +63,8 @@ def python_2_051b_1(p_filename, points):
                "pass": True,
                "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  Test case #1 for 2.051a works!",
                "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Check your test cases.<br>"
-                               "Be sure your program works with capital letters input from " \
-                                                 "keyboard (i.e. C R L S not c r l s).<br>"
+                               "Be sure your program works with capital letters input from "
+                               "keyboard (i.e. C R L S not c r l s).<br>"
                                "Be sure you are asking the user for 5 votes.<br>",
                "points": 0,
                }
@@ -95,8 +95,8 @@ def python_2_051b_2(p_filename, points):
                "pass": True,
                "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  Test case #2 for 2.051a works!",
                "fail_message": "<h5 style=\"color:red;\">Fail.</h5>  Check your test cases.<br>"
-                               "Be sure your program works with capital letters input from " \
-                                                 "keyboard (i.e. C R L S not c r l s).<br>"
+                               "Be sure your program works with capital letters input from "
+                               "keyboard (i.e. C R L S not c r l s).<br>"
                                "Be sure you are asking the user for 5 votes.<br>",
                "points": 0,
                }
@@ -111,8 +111,9 @@ def python_2_051b_2(p_filename, points):
 
 if __name__ == "__main__":
     from app.python_labs.read_file_contents import read_file_contents
+
     print("yes")
-#    filename = '/home/ewu/abc/2.040/2019_mayasater_2.040.py'
+    #    filename = '/home/ewu/abc/2.040/2019_mayasater_2.040.py'
     filename = '/Users/dimmyfinster/PycharmProjects/untitled5/2019_anais_2.050a.py'
     filename_data = read_file_contents(filename)
     bbb = python_2_051a(filename, filename_data)

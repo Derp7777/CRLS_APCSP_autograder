@@ -19,14 +19,13 @@ class testAutograde(unittest.TestCase):
                                "looked for 'birthday' in output, but didn't find it.<br>"
                                "Here is what the output was: <br>" + birthday_song_output)
 
-
     def test_2(self):
         f = io.StringIO()
         with redirect_stdout(f):
             birthday_song('joe')
         birthday_song_output = f.getvalue()
         birthday_song_output = birthday_song_output.rstrip()
-        found = re.search("joe" , birthday_song_output,  re.X | re.M | re.S)
+        found = re.search("joe", birthday_song_output,  re.X | re.M | re.S)
         self.assertTrue(found, "<br><br>Extracted function birthday_song, ran 'birthday_song('joe'), "
                                "looked for 'joe' in output, but didn't find it.<br>"
                                "Here is what the output was: <br>" + birthday_song_output)
@@ -60,14 +59,15 @@ class testAutograde(unittest.TestCase):
 
         matches = len(re.findall(r"\s of \s", pick_card_output, re.X | re.M | re.S))
         self.assertTrue(0 < matches < 2, "<br>Running the pick_card function should give ONE card and there"
-                                        " should be a printout with 'of' in it.  For example, 2 of hearts."
-                                        "<br>We do NOT want to pick all five cards here because that makes"
-                                        " the program less reusable.  For example, if your pick_card picks"
-                                        " one card, you can reuse it for poker, blackjack, and any other "
-                                        "game.  If your pick_card picks 5, you can ONLY use it for a "
-                                        "game where you pick 5.<br>"
-                                        "If this failed unexpectedly, check your spacing.<br>"
-                                        "Here is what the output was:<br>" + pick_card_output)
+                                         " should be a printout with 'of' in it.  For example, 2 of hearts."
+                                         "<br>We do NOT want to pick all five cards here because that makes"
+                                         " the program less reusable.  For example, if your pick_card picks"
+                                         " one card, you can reuse it for poker, blackjack, and any other "
+                                         "game.  If your pick_card picks 5, you can ONLY use it for a "
+                                         "game where you pick 5.<br>"
+                                         "If this failed unexpectedly, check your spacing.<br>"
+                                         "Here is what the output was:<br>" + pick_card_output)
+
 
 if __name__ == '__main__':
     unittest.main()

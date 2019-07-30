@@ -24,7 +24,7 @@ def helps(p_filename, p_points):
                                    "For example 'Luis helped by testing that input abc gave output def as expected'"
                                    "will score.  <br>"
                                    "Helps such as 'Joe helped test my code' will probably be overturned on review.<br>"
-                                   "This translates to " + str(p_points) + " points deduction.<br>" +\
+                                   "This translates to " + str(p_points) + " points deduction.<br>"
                                    "Your help can NOT be from teachers Atwood, Wu, or Martinez",
                    'points': 0
                    }

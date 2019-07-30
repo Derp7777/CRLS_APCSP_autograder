@@ -18,10 +18,10 @@ class testAutograde(unittest.TestCase):
         stack3 = stack1 + stack2
         self.assertTrue(stack3.singles == 3 and stack3.fives == 1 and stack3.tens == 1 and stack3.twenties == 3
                         and stack3.hundreds == 8, "Verifying that moneystack of (1, 1, 1, 2, 3) <br>"
-                        "added to moneystack of (2, 0, 0, 1, 5) <br>"
-                        "gives a new stack of (3, 1, 1, 3, 8).<br>"
-                        "Actual result is:"
-                        "<br>singles: " + str(stack3.singles) +
+                                                  "added to moneystack of (2, 0, 0, 1, 5) <br>"
+                                                  "gives a new stack of (3, 1, 1, 3, 8).<br>"
+                                                  "Actual result is:"
+                                                  "<br>singles: " + str(stack3.singles) +
                         "<br>fives: " + str(stack3.fives) +
                         "<br>tens: " + str(stack3.tens) +
                         "<br>twenties: " + str(stack3.twenties) +
@@ -34,15 +34,14 @@ class testAutograde(unittest.TestCase):
         # TODO could the next one just be stack3 == MoneyStack(3, 1, 1, 4, 13)?
         self.assertTrue(stack3.singles == 3 and stack3.fives == 1 and stack3.tens == 1 and stack3.twenties == 4
                         and stack3.hundreds == 13, "Verifying that moneystack of (4, 1, 1, 2, 3) <br>"
-                        "added to moneystack of (9, 2, 2, 5, 9) <br>"
-                        "gives a new stack of (3, 1, 1, 4, 13).<br>"
-                        "Actual result is:"
-                        "<br>singles: " + str(stack3.singles) +
+                                                   "added to moneystack of (9, 2, 2, 5, 9) <br>"
+                                                   "gives a new stack of (3, 1, 1, 4, 13).<br>"
+                                                   "Actual result is:"
+                                                   "<br>singles: " + str(stack3.singles) +
                         "<br>fives: " + str(stack3.fives) +
                         "<br>tens: " + str(stack3.tens) +
                         "<br>twenties: " + str(stack3.twenties) +
                         "<br>hundreds: " + str(stack3.hundreds))
-
 
 
 if __name__ == '__main__':

@@ -40,17 +40,17 @@ def python_2_032a(p_filename, p_filename_data, *, debug_statement=''):
         return p_pass_tests
     pass_count = 0
     tests = [io_test(p_filename, r'False', 1),
-    io_test(p_filename, r'False', 2),
-    io_test(p_filename, r'True', 3),
-    io_test(p_filename, r'False', 4),
-    io_test(p_filename, r'False', 5),
-    io_test(p_filename, r'False', 6),
-    io_test(p_filename, r'False', 7),
-    io_test(p_filename, r'False', 8)]
-    
+             io_test(p_filename, r'False', 2),
+             io_test(p_filename, r'True', 3),
+             io_test(p_filename, r'False', 4),
+             io_test(p_filename, r'False', 5),
+             io_test(p_filename, r'False', 6),
+             io_test(p_filename, r'False', 7),
+             io_test(p_filename, r'False', 8)]
+
     pass_count = [x['pass'] for x in tests].count(True)
-    p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" +\
-                                   "These passed tests translate to a score of " + str(pass_count * 1.5) +\
+    p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" + \
+                                   "These passed tests translate to a score of " + str(pass_count * 1.5) + \
                                    "/12.<br>Hints in case you did not pass all tests:<br>"
     p_pass_tests['pass_message'] += debug_statement
 
@@ -104,20 +104,19 @@ def python_2_032b(p_filename, p_filename_data, *, debug_statement=''):
 
     pass_count = 0
     tests = [io_test(p_filename, 'True', 1),
-    io_test(p_filename, 'False', 2),
-    io_test(p_filename, 'True', 3),
-    io_test(p_filename, 'False', 4),
-    io_test(p_filename, 'True', 5),
-    io_test(p_filename, 'False', 6),
-    io_test(p_filename, 'False', 7),
-    io_test(p_filename, 'False', 8)]
+             io_test(p_filename, 'False', 2),
+             io_test(p_filename, 'True', 3),
+             io_test(p_filename, 'False', 4),
+             io_test(p_filename, 'True', 5),
+             io_test(p_filename, 'False', 6),
+             io_test(p_filename, 'False', 7),
+             io_test(p_filename, 'False', 8)]
     pass_count = [x['pass'] for x in tests].count(True)
-    
 
     p_pass_tests['score'] = pass_count
 
-    p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" +\
-                                   "These passed tests translate to a score of " + str(pass_count * 1.5) +\
+    p_pass_tests['pass_message'] = "You have " + str(pass_count) + "/8 tests pass.<br>" + \
+                                   "These passed tests translate to a score of " + str(pass_count * 1.5) + \
                                    "/12.<br>Hints in case you did not pass all tests:<br>"
     p_pass_tests['pass_message'] += debug_statement
 
