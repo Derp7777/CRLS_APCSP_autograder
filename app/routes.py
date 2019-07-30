@@ -1,6 +1,6 @@
 from flask import render_template, url_for, request, redirect, flash
 from app import app
-from app.forms import UploadForm, UploadScratchForm
+from app.forms import UploadForm, UploadScratchForm, UploadDocLinkForm
 from werkzeug.utils import secure_filename
 import os
 
@@ -70,6 +70,115 @@ def scratch():
     form = UploadScratchForm()
     user = {'username': 'CRLS Scratch Scholar!!'}
     return render_template('index.html', title='Home', user=user, form=form)
+
+
+@app.route('/docs', methods=['GET', 'POST'])
+def docs():
+    from app.docs_labs.docs import get_google_drive_id
+    if request.method == 'POST':
+        form = UploadDocLinkForm()
+        link = get_google_drive_id(form.link.data)
+        print(link)
+        # link = request.files['files']
+#        flash(link)
+        # if file.filename == '':
+        #     flash('No file selected')
+        #     return redirect(request.url)
+        # if not allowed_file(file.filename):
+        #     flash('This type of file not allowed.  Only files ending in .py.'
+        #           '  In particular, Google doc and text files are not allowed.'
+        #           'You have to turn in a Scratch 3 file')
+        #     return redirect(request.url)
+        # if file and allowed_file(file.filename):
+        #     filename = secure_filename(file.filename)
+        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #     if request.form['lab'] in ['Scratch 1.2',
+        #                                ]:
+        return redirect(url_for('docs_feedback_' + request.form['lab'].replace(".", ""), link=link))
+
+    form = UploadDocLinkForm()
+    user = {'username': 'CRLS Intro to CS-IT1/ APCSP Scholar!!'}
+    return render_template('index.html', title='Home', user=user, form=form)
+
+
+@app.route('/docs/docs_feedback_scratch_12')
+def docs_feedback_scratch_12():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 38, 'manually_scored': 12, 'finished_scoring': True}
+
+    print(request.args)
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1b2 = exact_answer('question 1 b2', [r'b\.AAA\sINLINEOBJECT\ntabledata?\s*looks?'], text, points=1)
+    test1b3 = keyword_and_length('question 1 b3', ['say', 'seconds', 'time', 'text', 'bubble'], text,
+                                 search_string=r'b\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata',  points=1)
+    test1c2 = exact_answer('question 1 c2', [r'c\.AAA\sINLINEOBJECT\ntabledata?\s*sound?'], text, points=1)
+    test1c3 = keyword_and_length('question 1 c3', ['play', 'sound', 'meow'], text,
+                                 search_string=r'c\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata',  points=1)
+    test1d2 = exact_answer('question 1 d2', [r'd\.AAA\sINLINEOBJECT\ntabledata?\s*looks?'], text, points=1)
+    test1d3 = keyword_and_length('question 1 d3', ['costume', 'switch', 'look'], text,
+                                 search_string=r'd\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata',  points=1)
+    test1e2 = exact_answer('question 1 e2', [r'e\.AAA\sINLINEOBJECT\ntabledata?\s*motion?'], text, points=1)
+    test1e3 = keyword_and_length('question 1 e3', ['move', 'glide', 'location', 'smooth', 'slow'], text,
+                                 search_string=r'e\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata',  points=1)
+    test1f2 = exact_answer('question 1 f2', [r'f\.AAA\sINLINEOBJECT\ntabledata?\s*looks?'], text, points=1)
+    test1f3 = keyword_and_length('question 1 f3', ['size', 'change', 'size',], text,
+                                 search_string=r'f\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata', points=1)
+    test1g2 = exact_answer('question 1 g2', [r'g\.AAA\sINLINEOBJECT\ntabledata?\s*control?'], text, points=1)
+    test1g3 = keyword_and_length('question 1 g3', ['repeat', 'control', ], text,
+                                 search_string=r'g\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata', points=1)
+    test1h2 = exact_answer('question 1 h2', [r'h\.AAA\sINLINEOBJECT\ntabledata?\s*looks?'], text, points=1)
+    test1h3 = keyword_and_length('question 1 h3', ['color', 'sprite', 'change', ], text,
+                                 search_string=r'h\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata', points=1)
+    test1i2 = exact_answer('question 1 i2', [r'i\.AAA\sINLINEOBJECT\ntabledata?\s*motion?'], text, points=1)
+    test1i3 = keyword_and_length('question 1 i3', ['move', 'go', 'location', ], text,
+                                 search_string=r'i\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata', points=1)
+    test1j2 = exact_answer('question 1 j2', [r'j\.AAA\sINLINEOBJECT\n.+?tabledata?\s*pen?'], text, points=1)
+    test1j3 = keyword_and_length('question 1 j3', ['pen', 'change', 'size', ], text,
+                                 search_string=r'j\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata\sk', points=1)
+    test1k2 = exact_answer('question 1 k2', [r'k\.AAA\sINLINEOBJECT\ntabledata?\s*pen?'], text, points=1)
+    test1k3 = keyword_and_length('question 1 k3', ['pen', 'change', 'color', 'set'], text,
+                                 search_string=r'k\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)tabledata\sl', points=1)
+    test1l2 = exact_answer('question 1 l2', [r'l\.AAA\sINLINEOBJECT\ntabledata?\s*motion?'], text, points=1)
+    test1l3 = keyword_and_length('question 1 l3', ['point', 'sprite', 'mouse'], text,
+                                 search_string=r'l\.AAA\sINLINEOBJECT\n .+? tabledata?\s* (.+?)2', points=1)
+    test2a = keyword_and_length('question 2a', ['motion', 'move', 'moving', 'category', 'speed', 'way', 'blocks',
+                                                'glide', 'turn', 'go', 'set', 'sprite'], text,
+                                search_string=r'tabledata\sa\.\sWhat\sdo\sthe\sblocks\sin\sthe\s'
+                                              r'Motion\scategory\sdo\?\s+You\smay\swant\sto\sgive\ssome\sexamples\sof\s'
+                                              r'what\syou\scan\sdo\.\ntabledata (.+?) tabledata',
+                                points=4, min_matches=2)
+    test2b = keyword_and_length('question 2b', ['look', 'appearance', 'effect', 'talk', 'say', 'disappear',
+                                                'category', 'blocks',
+                                                'set', 'sprite'], text,
+                                search_string=r'tabledata\sb\.\sWhat\sdo\sthe\sblocks\sin\sthe\s'
+                                              r'Looks\scategory\sdo\?\s+You\smay\swant\sto\sgive\ssome\sexamples\sof\s'
+                                              r'what\syou\scan\sdo\.\ntabledata (.+?) tabledata',
+                                points=4, min_matches=2)
+    test2c = keyword_and_length('question 2c', ['noise', 'sound', 'music', 'effect', 'cat', 'meow',
+                                                'category', 'blocks',
+                                                'set', 'sprite'], text,
+                                search_string=r'tabledata\sc\.\sWhat\sdo\sthe\sblocks\sin\sthe\s'
+                                              r'Sound\scategory\sdo\?\s+You\smay\swant\sto\sgive\ssome\sexamples\sof\s'
+                                              r'what\syou\scan\sdo\.\ntabledata (.+?) tabledata',
+                                points=4, min_matches=2)
+    test2d = keyword_and_length('question 2d', ['tools', 'pen', 'thickness', 'color', 'size', 'erase', 'clear', 'draw'
+                                                'sprite'], text,
+                                search_string=r'tabledata\sd\.\sWhat\sdo\sthe\sblocks\sin\sthe\s'
+                                              r'Pen\scategory\sdo\?\s+You\smay\swant\sto\sgive\ssome\sexamples\sof\s'
+                                              r'what\syou\scan\sdo\.\ntabledata (.+)',
+                                points=4, min_matches=2)
+    tests.extend([test1b2, test1b3, test1c2, test1c3, test1d2, test1d3, test1e2, test1e3, test1f2, test1f3, test1g2,
+                  test1g3, test1h2, test1h3, test1i2, test1i3, test1j2, test1j3, test1k2, test1k3, test1l2, test1l3,
+                  test2a, test2b, test2c, test2d])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
 @app.route('/scratch/scratch_feedback_13')

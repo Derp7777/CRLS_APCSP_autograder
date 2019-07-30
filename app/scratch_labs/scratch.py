@@ -573,102 +573,20 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'operator_lt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-
-            # if len(current_block['inputs']['OPERAND1']) == 2:
-            #     operand1 = current_block['inputs']['OPERAND1'][1][1]
-            # else:
-            #     if isinstance(current_block['inputs']['OPERAND1'][1], str):
-            #         operand1_id = current_block['inputs']['OPERAND1'][1]
-            #         operand1 = build_scratch_script(operand1_id, p_blocks)
-            #     elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
-            #         operand1 = current_block['inputs']['OPERAND1'][1][1]
-            #         operand1 = "VARIABLE_" + operand1
-            # if len(current_block['inputs']['OPERAND2']) == 2:
-            #     operand2 = current_block['inputs']['OPERAND2'][1][1]
-            # else:
-            #     if isinstance(current_block['inputs']['OPERAND2'][1], str):
-            #         operand2_id = current_block['inputs']['OPERAND2'][1]
-            #         operand2 = build_scratch_script(operand2_id, p_blocks)
-            #     elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
-            #
-            #         operand2 = current_block['inputs']['OPERAND2'][1][1]
-            #         operand2 = "VARIABLE_" + operand2
             print("QWERTY operator_lt operand 1 {} operand {}".format(operand1, operand2))
             script.extend([operand1, '<', operand2])
         elif current_block['opcode'] == 'operator_gt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-
-            # if len(current_block['inputs']['OPERAND1']) == 2:
-            #     operand1 = current_block['inputs']['OPERAND1'][1][1]
-            # else:
-            #     if isinstance(current_block['inputs']['OPERAND1'][1], str):
-            #         operand1_id = current_block['inputs']['OPERAND1'][1]
-            #         operand1 = build_scratch_script(operand1_id, p_blocks)
-            #     elif str(current_block['inputs']['OPERAND1'][1][0]) == str(12): #straight variable
-            #         operand1 = current_block['inputs']['OPERAND1'][1][1]
-            #         operand1 = "VARIABLE_" + operand1
-            # if len(current_block['inputs']['OPERAND2']) == 2:
-            #     operand2 = current_block['inputs']['OPERAND2'][1][1]
-            # else:
-            #     if isinstance(current_block['inputs']['OPERAND2'][1], str):
-            #         operand2_id = current_block['inputs']['OPERAND2'][1]
-            #         operand2 = build_scratch_script(operand2_id, p_blocks)
-            #     elif str(current_block['inputs']['OPERAND2'][1][0]) == str(12):  # straight variable
-            #         operand2_id = current_block['inputs']['OPERAND2'][1]
-            #         operand2 = build_scratch_script(operand2_id, p_blocks)
             script.extend([operand1, '>', operand2])
         elif current_block['opcode'] == 'operator_join':
             string1 = extract_value(current_block['inputs']['STRING1'], p_blocks)
             string2 = extract_value(current_block['inputs']['STRING2'], p_blocks)
-
-            # reserved_commands = ['data_itemoflist', 'data_lengthoflist']
-            # if len(current_block['inputs']['STRING1'][1]) == 2:  # no change
-            #     string1 = current_block['inputs']['STRING1'][1][1]
-            # elif str(current_block['inputs']['STRING1'][1][0]) == str(12):  # this is a varialbe
-            #     string1 = "VARIABLE_" + current_block['inputs']['STRING1'][1][1]
-            # elif str(current_block['inputs']['STRING1'][0]) == str(3):  # this is a another block (join)
-            #     next_id = current_block['inputs']['STRING1'][1]
-            #     string1 = build_scratch_script(next_id, p_blocks)
-            # if len(current_block['inputs']['STRING2'][1]) == 2:
-            #     string2 = current_block['inputs']['STRING2'][1][1]
-            # elif str(current_block['inputs']['STRING2'][1][0]) == str(12):  # this is a varialbe
-            #     string2 = "VARIABLE_" + current_block['inputs']['STRING2'][1][1]
-            # elif str(current_block['inputs']['STRING2'][0]) == str(3):  # this is a another block (join)
-            #     next_id = current_block['inputs']['STRING2'][1]
-            #     string2 = build_scratch_script(next_id, p_blocks)
-            # print("rrr str1 {} str2{} type str1{} type str2{}".format(string1, string2, type(string1),
-            #                                                           type(string2)))
-            # if isinstance(string1, list):
-            #     if string1[0] not in reserved_commands:
-            #          string1 = string1[0]
-            # if isinstance(string2, list):
-            #      if string2[0] not in reserved_commands:
-            #          string2 = string2[0]
-
             script.extend(['join', string1, string2]) #extend tested
         elif current_block['opcode'] == 'operator_random':
             print("ccc entering random")
             num_from = extract_value(current_block['inputs']['FROM'], p_blocks)
             num_to = extract_value(current_block['inputs']['TO'], p_blocks)
-
-            # if len(current_block['inputs']['FROM'][1]) == 2:  # no change
-            #     num_from = current_block['inputs']['FROM'][1][1]
-            # elif str(current_block['inputs']['FROM'][1][0]) == str(12):  # this is a varialbe
-            #     num_from = "VARIABLE_" + current_block['inputs']['FROM'][1][1]
-            # elif str(current_block['inputs']['FROM'][0]) == str(3):  # this is a another block
-            #     next_id = current_block['inputs']['FROM'][1]
-            #     num_from = build_scratch_script(next_id, p_blocks)
-            # print("ccc num_from {} ".format(num_from))
-            # if len(current_block['inputs']['TO'][1]) == 2:
-            #     num_to = current_block['inputs']['TO'][1][1]
-            # elif str(current_block['inputs']['TO'][1][0]) == str(12):  # this is a varialbe
-            #     num_to = "VARIABLE_" + current_block['inputs']['TO'][1][1]
-            # elif str(current_block['inputs']['TO'][0]) == str(3):  # this is a another block
-            #     next_id = current_block['inputs']['TO'][1]
-            #     num_to = build_scratch_script(next_id, p_blocks)
-            # print("ccc num_to{} ".format(num_to))
-
             script.extend(['operator_random', num_from, num_to])
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]

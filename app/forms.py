@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField, SelectField
+from wtforms import FileField, SubmitField, SelectField, StringField
 
 
 class UploadForm(FlaskForm):
@@ -29,4 +29,10 @@ class UploadScratchForm(FlaskForm):
                                        ('karel2b', 'karel2b'),
                                        ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),
                                        ('karel3d', 'karel3d')])
+    submit = SubmitField('Submit for autograding')
+
+
+class UploadDocLinkForm(FlaskForm):
+    link = StringField('Copy+paste link of Google document here')
+    lab = SelectField('Lab?', choices=[('scratch_1.2', 'scratch_1.2'), ])
     submit = SubmitField('Submit for autograding')
