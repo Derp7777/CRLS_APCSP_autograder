@@ -58,6 +58,5 @@ class testAutograde(unittest.TestCase):
                                        "<br>Expect to see 430 in the output.<br>  Output is this:" + str(output))
 
 
-
 if __name__ == '__main__':
     unittest.main()

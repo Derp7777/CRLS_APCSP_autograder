@@ -167,6 +167,6 @@ if __name__ == "__main__":
 
     #                        ['(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'], 1, 5)
     abc = io_test_find_all('/home/ewu/CRLS_APCSP_Mac_Autograder/2.051/2019_ewu_1.040.py',
-                            [r'(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'], 1, 5)
+                           [r'(\^ | \s+ ) b2 (\s+ | \? | \. | , | !)'], 1, 5)
 
     print(abc)

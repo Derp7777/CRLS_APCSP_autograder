@@ -388,23 +388,25 @@ def find_all_strings(p_filename_data, p_search_strings, p_points):
     :param p_points:  points this is worth (int)
     :return: dictionary of test info
     """
-    passed = []
-    debug = []
-    for p_search_string in p_search_strings:  # TODO
-        test_find_string = find_string(p_filename_data, p_search_string, 1, points=0)
-        if test_find_string['pass']:
-            passed.append(p_search_string)
-            debug.append(test_find_string)
+    # passed = []
+    # debug = []
+    # for p_search_string in p_search_strings:
+    #     test_find_string = find_string(p_filename_data, p_search_string, 1, points=0)
+    #     if test_find_string['pass']:
+    #         passed.append(p_search_string)
+    #         debug.append(test_find_string)
+    passed = [p_search_string for p_search_string in p_search_strings
+              if find_string(p_filename_data, p_search_string, 1, points=0)['pass']]
 
     p_test_find_strings = {"name": "Testing that ALL of these strings are there: " + str(p_search_strings) +
                                    " (" + str(p_points) + " points) <br>",
-                           "pass": True,
+                           "pass": passed == p_search_strings,
                            "pass_message": "<h5 style=\"color:green;\">Pass!</h5> Found ALL of these these strings: "
                                            "" + str(p_search_strings) + ".<br>",
                            "fail_message": "<h5 style=\"color:red;\">Fail.</h5> Didn't find all strings in "
                                            "" + str(p_search_strings) + ". <br" +
                                            " But did find these strings: " + str(passed) + ". <br>",
-                           'points': 0
+                           'points': p_points if passed == p_search_strings else 0
                            }
     if passed != p_search_strings:
         p_test_find_strings['pass'] = False
@@ -676,18 +678,18 @@ def find_list_items(p_filename_data, p_string):
 if __name__ == "__main__":
     # find_function('/tmp/abc.py', 'hello', 3)
     # asdf = "[a-z]{1,2} \s* = \s* input \( [^']+ \) "
-    # filename_data = '# print("yes") abc  = input(asdf) input(asdf) wish1 =' \
+    # m_filename_data = '# print("yes") abc  = input(asdf) input(asdf) wish1 =' \
     #                 ' input("give me wish")n wish2 = input("give me wish")n wish3 = input("give me wish")  ' \
     #                 'print("your wishes are " + wish1 + ", " + wish2 + ", " + wish3)# Joe helped me'
     #
-    # abc = find_string(filename_data, asdf, 1, 0)
+    # abc = find_string(m_filename_data, asdf, 1, 0)
     # print(abc)
     # asdf = '(verb|noun|adjective|adverb|preposition) .+ \s* = \s* input\('
-    # filename_data = 'print("asdf") verb = input("yes") noun = input("yes") adjective = input("yes") ' \
+    # m_filename_data = 'print("asdf") verb = input("yes") noun = input("yes") adjective = input("yes") ' \
     #                 'noun3 = input("yes") adjective10 = input("yes") print(verb + " " + ' \
     #                 'noun + " .?! " + adjective + " noun" + noun3 + " " + adjective10) # joe helped me '
-    # abc = find_string(filename_data, asdf, 5, 0)
+    # abc = find_string(m_filename_data, asdf, 5, 0)
     # print(abc)
-    filename_data = "hello world    prizes = [\"asdf\", '23', 'llll']"
-    # abc = find_list_items('prizes \s* = \s* \[ (.+) \]', filename_data)
-    abc = find_list_items(filename_data, r'prizes \s* = \s* \[ (.+) \]')
+    m_filename_data = "hello world    prizes = [\"asdf\", '23', 'llll']"
+    # abc = find_list_items('prizes \s* = \s* \[ (.+) \]', m_filename_data)
+    abc = find_list_items(m_filename_data, r'prizes \s* = \s* \[ (.+) \]')

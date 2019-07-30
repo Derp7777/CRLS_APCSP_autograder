@@ -1,42 +1,34 @@
 def find_double_for(p_function_data):
     import re
-    matches = len(re.findall(r'(for|while)', p_function_data, re.X | re.M | re.S))
-    if matches >= 2:
-        return True
-    else:
-        return False
+    return len(re.findall(r'(for|while)', p_function_data, re.X | re.M | re.S)) >= 2
 
 
 def find_cheat_loop(p_function_data):
     import re
-    matches = len(re.findall(r'in \s+ range\(1\)', p_function_data, re.X | re.M | re.S))
-    if matches > 0:
-        return False
-    else:
-        return True
+    return len(re.findall(r'in \s+ range\(1\)', p_function_data, re.X | re.M | re.S)) > 0
 
 
 def find_good_print(p_function_data):
     import re
-    matches = len(re.findall(r'^\s \s \s \s print\(', p_function_data, re.X | re.M | re.S))
-    if matches > 0:
-        return True
-    else:
-        return False
+    return len(re.findall(r'^\s \s \s \s print\(', p_function_data, re.X | re.M | re.S)) > 0
+
+
+def double_or_cheat(p_function_data):
+    return find_double_for(p_function_data) is False or find_cheat_loop(p_function_data) is True
 
 
 def python_4_031_good_prints(p_filename):
     from app.python_labs.function_test import extract_all_functions, extract_single_function
-
-    programs = ['loop1', 'loop2', 'loop3', 'loop4', 'loop5', 'loop6', 'loop7', 'loop8']
     extract_all_functions(p_filename)
-    failed_tests = []
+    failed_tests = [program for program in ['loop1', 'loop2', 'loop3', 'loop4', 'loop5', 'loop6', 'loop7', 'loop8']
+                    if find_good_print(extract_single_function(p_filename, program))]
 
-    for program in programs:
-        function_data = extract_single_function(p_filename, program)
-        good_print = find_good_print(function_data)
-        if good_print is False:
-            failed_tests.append(program)
+    # for program in programs:
+    #     function_data = extract_single_function(p_filename, program)
+    #     good_print = find_good_print(function_data)
+    #     if good_print is False:
+    #         failed_tests.append(program)
+
     p_test = {"name": "The code should be efficient about prints (5 points). <br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  The is efficient about prints",
@@ -55,18 +47,18 @@ def python_4_031_good_prints(p_filename):
 
 def python_4_031_double_loops(p_filename):
     from app.python_labs.function_test import extract_all_functions, extract_single_function
-
-    programs = ['loop4', 'loop5', 'loop6', 'loop7', 'loop8']
     extract_all_functions(p_filename)
-    failed_tests = []
+    failed_tests = [program for program in ['loop4', 'loop5', 'loop6', 'loop7', 'loop8']
+                    if double_or_cheat(extract_single_function(p_filename, program))]
 
-    for program in programs:
-        function_data = extract_single_function(p_filename, program)
-        double_loop = find_double_for(function_data)
-        cheat_loop = find_cheat_loop(function_data)
-        print(' double ' + str(double_loop) + ' cheat ' + str(cheat_loop))
-        if double_loop is False or cheat_loop is False:
-            failed_tests.append(program)
+    # failed_tests = []
+    # for program in programs:
+    #     function_data = extract_single_function(p_filename, program)
+    #     double_loop = find_double_for(function_data)
+    #     cheat_loop = find_cheat_loop(function_data)
+    #     print(' double ' + str(double_loop) + ' cheat ' + str(cheat_loop))
+    #     if double_loop is False or cheat_loop is True:
+    #         failed_tests.append(program)
     p_test = {"name": "The code must have double loops EVERYWHERE (10 points). <br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  The has double loops in all required codes",
