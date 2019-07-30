@@ -21,7 +21,7 @@ class testAutograde(unittest.TestCase):
                     }
         answer = bob_kraft_translator(bob_dict, 'asdfasdf')
         print(answer)
-        self.assertTrue(re.search("do \s not \s know", answer, re.X | re.M | re.S))
+        self.assertTrue(re.search(r"do \s not \s know", answer, re.X | re.M | re.S))
 
 
 if __name__ == '__main__':

@@ -53,9 +53,9 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurrences, p_point
     if c.err:
         raise Exception('Failed, trying to run ' + cmd)
     outfile_data = c.out
-    p_string = p_string.replace(' ', '\s')
-    p_string = p_string.replace('$', '\$')
-    p_string = p_string.replace('+', '\+')
+    p_string = p_string.replace(' ', r'\s')
+    p_string = p_string.replace('$', r'\$')
+    p_string = p_string.replace('+', r'\+')
 
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 

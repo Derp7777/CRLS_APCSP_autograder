@@ -21,7 +21,7 @@ class testAutograde(unittest.TestCase):
         with redirect_stdout(f):
             loop2()
         loop_output = f.getvalue().rstrip().lower()
-        found = re.search("4 \s 5 \s 6 \s 7 \s 8 \s 9 \s 10 \s 11", loop_output, re.X | re.M | re.S)
+        found = re.search(r"4 \s 5 \s 6 \s 7 \s 8 \s 9 \s 10 \s 11", loop_output, re.X | re.M | re.S)
         self.assertTrue(found, r'Looked for this: r"4 \s 5 \s 6 \s 7 \s 8 \s 9 \s 10 \s 11" <br>'
                                'In this string: <br>' + loop_output)
 
@@ -30,7 +30,7 @@ class testAutograde(unittest.TestCase):
         with redirect_stdout(f):
             loop3()
         loop_output = f.getvalue().rstrip().lower()
-        found = re.search("1 \s  \* \s 3 \s \* \s 5 \s \* \s 7 \s \* \s 9 \s \* \s 11", loop_output,
+        found = re.search(r"1 \s  \* \s 3 \s \* \s 5 \s \* \s 7 \s \* \s 9 \s \* \s 11", loop_output,
                           re.X | re.M | re.S)
         self.assertTrue(found, r'Looked for this: r"1 \s  \* \s 3 \s \* \s 5 \s \* \s 7 \s \* \s 9 \s \* \s 11" '
                                r'<br>'
