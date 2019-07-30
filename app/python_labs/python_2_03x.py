@@ -38,7 +38,6 @@ def python_2_032a(p_filename, p_filename_data, *, debug_statement=''):
                                        'Please edit your python code and try again.<br>'
         p_pass_tests['pass'] = False
         return p_pass_tests
-    pass_count = 0
     tests = [io_test(p_filename, r'False', 1),
              io_test(p_filename, r'False', 2),
              io_test(p_filename, r'True', 3),
@@ -102,7 +101,6 @@ def python_2_032b(p_filename, p_filename_data, *, debug_statement=''):
         p_pass_tests['pass'] = False
         return p_pass_tests
 
-    pass_count = 0
     tests = [io_test(p_filename, 'True', 1),
              io_test(p_filename, 'False', 2),
              io_test(p_filename, 'True', 3),

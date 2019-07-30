@@ -143,7 +143,7 @@ def feedback_104():
         else:
             tests.append(test_inputs)
 
-            # Check for asing variable questions
+            # Check for asking variable questions
             process_grep1 = subprocess.Popen(['/bin/grep', "input([\"']", filename], stdout=subprocess.PIPE)
             process_wc = subprocess.Popen(['wc', '-l'], stdin=process_grep1.stdout, stdout=subprocess.PIPE)
             process_grep1.wait()
@@ -197,7 +197,7 @@ def feedback_104():
             tests.append(test_order)
 
             # format: list of test
-        # list item: dictsionary: pass: True/False, pass_message, fail_message\\
+        # list item: dictionary: pass: True/False, pass_message, fail_message\\
         # tests:
         # 1. file name is correct x
         # 2. pep8 x

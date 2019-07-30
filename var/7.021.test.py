@@ -24,16 +24,13 @@ class testAutograde(unittest.TestCase):
                     attr2 = key
                 else:
                     attr3 = key
-        success = False
-        if getattr(leia, value_key) == 400 and \
-                (getattr(leia, attr2) == 'Leia action figure' and getattr(leia, attr3) == 'poor' or
-                 getattr(leia, attr3) == 'Leia action figure' and getattr(leia, attr2) == 'poor'):
-            success = True
+        success = getattr(leia, value_key) == 400 and \
+                  (getattr(leia, attr2) == 'Leia action figure' and getattr(leia, attr3) == 'poor' or
+                   getattr(leia, attr3) == 'Leia action figure' and getattr(leia, attr2) == 'poor')
         self.assertEqual(True, success, 'Testing to see that attributes are set correctly.<br>'
                                         'Found these attributes for Leia object (expected "Leia action figure",'
                                         '"poor", and "400").  :<br>'
-                                        'value 1: ' + value_key +
-                         ' attribute2: ' + attr2 + "<br> attribute3: " + attr3)
+                                        'value 1: ' + value_key + ' attribute2: ' + attr2 + "<br> attribute3: " + attr3)
 
     def test_2(self):
         leia = Collectible('Leia action figure', 'poor', 400)
