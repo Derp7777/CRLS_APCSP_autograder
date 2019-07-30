@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField, SelectField
+from wtforms import FileField, SubmitField, SelectField, StringField
 
 
 class UploadForm(FlaskForm):
@@ -19,6 +19,20 @@ class UploadForm(FlaskForm):
 class UploadScratchForm(FlaskForm):
     file = FileField('Select file')
     lab = SelectField('Lab?', choices=[('1.3', '1.3'), ('1.4_1.5', '1.4_1.5'),
-                                       ('1.x_family_migration_story', '1.x_family_migration_story'),
-                                       ('karel1', 'karel1'), ])
+                                       ('1.x_family_migration_story', '1.x_family_migration_story'), ('2.2', '2.2'),
+                                       ('2.4_alternate', '2.4_alternate'), ('2.5_alternate', '2.5_alternate'),
+                                       ('2.6', '2.6'), ('3.2_alternate', '3.2_alternate'),
+                                       ('3.3_3.4_alternate', '3.3_3.4_alternate'), ('4.2_alternate', '4.2_alternate'),
+                                       ('4.3a_alternate', '4.3a_alternate'), ('4.3b_alternate', '4.3b_alternate'),
+                                       ('4.4','4.4'),
+                                       ('karel1', 'karel1'), ('karel2a', 'karel2a'),
+                                       ('karel2b', 'karel2b'),
+                                       ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),
+                                       ('karel3d', 'karel3d')])
+    submit = SubmitField('Submit for autograding')
+
+
+class UploadDocLinkForm(FlaskForm):
+    link = StringField('Copy+paste link of Google document here')
+    lab = SelectField('Lab?', choices=[('scratch_1.2', 'scratch_1.2'), ])
     submit = SubmitField('Submit for autograding')
