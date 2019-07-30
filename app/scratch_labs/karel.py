@@ -169,8 +169,6 @@ def simplify_blocks(p_main_script, p_repeat_blocks, p_blocks):
     for i, item in enumerate(p_main_script):
         if isinstance(item, list):
             p_main_script[i] = simplify_blocks(p_main_script[i], p_repeat_blocks, p_blocks)
-        else:
-            continue
     return p_main_script
 
 
@@ -201,8 +199,6 @@ def sub_user_blocks(p_main_script, p_user_blocks):
     for i, item in enumerate(p_main_script):
         if isinstance(item, list):
             p_main_script[i] = sub_user_blocks(p_main_script[i], p_user_blocks)
-        else:
-            continue
     return p_main_script
 
 
@@ -219,7 +215,7 @@ def _order_procedure_blocks(starting_block_id, p_target):
     temp_block = p_target['blocks'][starting_block_id]
     temp_block['ID'] = starting_block_id  # #stick the ID onto the dictionary
     script = [temp_block]
-    print(f"SCRPIT OF STARTING ID {script} BLOCK {starting_block_id}")
+    print(f"SCRIPT OF STARTING ID {script} BLOCK {starting_block_id}")
     current_block_id = starting_block_id
     if 'mutation' in p_target['blocks'][starting_block_id].keys():
         print(f"current block info {p_target['blocks'][starting_block_id]['mutation']['proccode']}")
@@ -243,17 +239,17 @@ def _order_procedure_blocks(starting_block_id, p_target):
         current_block_id = next_block_id
         next_block_id = p_target['blocks'][current_block_id]['next']
         print(f"CURRENT BLOCK {p_target['blocks'][current_block_id]}  BLOCK ID {current_block_id}")
-            # if 'inputs' in p_target['blocks'][current_block_id]:
-            #     print("INPUT IS HERE")
-            #     print(p_target['blocks'][current_block_id])
-            #     if 'SUBSTACK' in p_target['blocks'][current_block_id]['inputs']:
-            #         substack_block_id = p_target['blocks'][current_block_id]['inputs']['SUBSTACK'][1]
-            #         print("SUBSTACK IS HERE")
-            # if substack_block_id:
-            #     print("SUBSTACK BLOCK_ID FOUND 2")
-            #     subscript = _order_procedure_blocks(p_target['blocks'][substack_block_id], p_target)
-            #     script.append(subscript)
-            #     substack_block_id = None
+        # if 'inputs' in p_target['blocks'][current_block_id]:
+        #     print("INPUT IS HERE")
+        #     print(p_target['blocks'][current_block_id])
+        #     if 'SUBSTACK' in p_target['blocks'][current_block_id]['inputs']:
+        #         substack_block_id = p_target['blocks'][current_block_id]['inputs']['SUBSTACK'][1]
+        #         print("SUBSTACK IS HERE")
+        # if substack_block_id:
+        #     print("SUBSTACK BLOCK_ID FOUND 2")
+        #     subscript = _order_procedure_blocks(p_target['blocks'][substack_block_id], p_target)
+        #     script.append(subscript)
+        #     substack_block_id = None
         # if next_block_id is not None:
         #     # print(f"WHAT {p_target['blocks'][next_block_id]}")
         #     if 'inputs' in p_target['blocks'][next_block_id].keys():
@@ -267,9 +263,9 @@ def _order_procedure_blocks(starting_block_id, p_target):
 
 # get starting block
 # if substack, add that first.
-        # add the control repeat
-        # add the repeat stuff as a list.  call itself - script = p_target['blocks'][block ID of first thing in repeat]
-        # append that script to main script as a list.
+    # add the control repeat
+    # add the repeat stuff as a list.  call itself - script = p_target['blocks'][block ID of first thing in repeat]
+    # append that script to main script as a list.
 # if next next next next then keep adding straight up.
 
 # move move
@@ -315,7 +311,7 @@ def arrange_karel_blocks(p_json):
                                         #     print(item['inputs']['TIMES'])
                                         #     times = item['inputs']['TIMES'][1][1]
                                         #     action = 'control_repeat_' + str(times)
-                                        #cleaned_custom_block.append(item['inputs']['SUBSTACK'][1])
+                                        # cleaned_custom_block.append(item['inputs']['SUBSTACK'][1])
                                         cleaned_custom_block.append(item['ID'])
                             # cleaned_custom_block = [item['mutation']['proccode']
                             #                         if 'mutation' in item.keys() else item['inputs']['SUBSTACK'][1]
@@ -336,7 +332,7 @@ def arrange_karel_blocks(p_json):
                                     main_script.append(item['ID'])
                     elif target['blocks'][block_id]['parent'] is None and \
                             target['blocks'][block_id]['opcode'] != 'procedures_call':
-                        print("hmm.  these are scripts hanging out in noewhere"
+                        print("hmm.  these are scripts hanging out in nowhere"
                               " {} {} ".format(block_id, target['blocks'][block_id]))
                         script = _order_procedure_blocks(block_id, target)
                         scripts[block_id] = script
@@ -420,6 +416,7 @@ def find_turnright(p_user_blocks, p_points):
         p_test['fail_message'] += "There is not a user-defined turnright block (fail)."
     return p_test
 
+
 def extract_coder_json(p_json):
     """
 
@@ -427,12 +424,11 @@ def extract_coder_json(p_json):
     :param p_json: json for entire file
     :return: json for just the code
     """
-    blocks_to_delete = []
-    for i, sprite in enumerate(p_json['targets']):
-        if sprite['name'] == 'Coder':
-            pass
-        else:
-            blocks_to_delete.append(i)
+    blocks_to_delete = [i for i, sprite in enumerate(p_json['targets']) if sprite['name'] != 'Coder']
+    # blocks_to_delete = []
+    # for i, sprite in enumerate(p_json['targets']):
+    #     if not sprite['name'] == 'Coder':
+    #         blocks_to_delete.append(i)
     p_coder_json = p_json
     counter = 0
     for block in blocks_to_delete:
@@ -449,12 +445,13 @@ def extract_block_names(p_json):
     :param p_json: json for just the coder
     :return: list of moves
     """
-    blocks_to_delete = []
-    for i, sprite in enumerate(p_json['targets']):
-        if sprite['name'] == 'Coder':
-            pass
-        else:
-            blocks_to_delete.append(i)
+    blocks_to_delete = [i for i, sprite in enumerate(p_json['targets']) if sprite['name'] != 'Coder']
+    # blocks_to_delete = []
+    # for i, sprite in enumerate(p_json['targets']):
+    #     if sprite['name'] == 'Coder':
+    #         pass
+    #     else:
+    #         blocks_to_delete.append(i)
 
     p_coder_json = p_json
     counter = 0

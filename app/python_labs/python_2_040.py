@@ -2,7 +2,7 @@ def python_2_040(p_filename, p_filename_data):
 
     import re
     from app.python_labs.io_test import io_test
-
+    # TODO there are some pep8 regex errors
     match_obj_prize1 = re.search(r'prize1 \s* = \s* (\'|") ([a-zA-Z0-9!-\.\$\+\s]+) (\'|")',
                                  p_filename_data, re.X | re.M | re.S)
     match_obj_prize2 = re.search(r'prize2 \s* = \s* (\'|") ([a-zA-Z0-9!-\.\$\+\s]+) (\'|")',

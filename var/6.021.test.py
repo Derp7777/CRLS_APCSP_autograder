@@ -16,8 +16,8 @@ class testAutograde(unittest.TestCase):
         martinez_list = ['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku']
         self.assertEqual(martinez_dictionary(martinez_list),
                          {'Goku': 300, 'Trunks': 100, 'Vegeta': 200, 'Krillan': 100},
-                         "Test for martinez_dictionary, " \
-                         "['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'], expect back" \
+                         "Test for martinez_dictionary, "
+                         "['Goku', 'Goku', 'Trunks', 'Vegeta', 'Vegeta', 'Krillan', 'Goku'], expect back"
                          "{'Goku': 300, 'Trunks': 100, 'Vegeta':200, 'Krillan':100}' <br>"
                          )
 

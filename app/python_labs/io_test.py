@@ -1,4 +1,4 @@
-def _var_dir():
+def _var_dir():  # TODO add some way to test on my machine instead of making blind edits (i'm sorry if i cause any bugs)
     """
     This helper function returns the var dir, depending on if code is run at CRLS or at Eric's Mac
     :return:The var dir for the CRLS autograder
@@ -35,16 +35,17 @@ def _var_filename(p_filename, p_test_num):
 # Input parameters: p_filename - filename (string)
 #                   p_test - the number of test to run
 #                   p_string - regex string you are going to search the output for (string)
-#                   p_occurences - number of times you want this string to show up (int)
+#                   p_occurrences - number of times you want this string to show up (int)
 #                   p_points - the number of points this test is worth
 # Output: Dictionary of test_list_created
 # This module runs tests and tries to find all strings in output
 
-def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points):
+
+def io_test_find_string(p_filename, p_string, p_test_num, p_occurrences, p_points):
     import delegator
     import re
 
-    var_dir = var_dir()
+    var_dir = var_dir()  # TODO should this be _var_dir()?
     var_filename = _var_filename(p_filename, p_test_num)
 
     cmd = 'python3 ' + p_filename + ' < ' + var_dir + '/' + var_filename
@@ -59,7 +60,7 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
     p_matches = len(re.findall(p_string, outfile_data, re.X | re.M | re.S))
 
     p_test_io = {"name": "Testing input/output  (" + str(p_points) + " points).<br>" +
-                         "In output, looking for " + str(p_string) + " " + str(p_occurences) + " times. <br>",
+                         "In output, looking for " + str(p_string) + " " + str(p_occurrences) + " times. <br>",
                  "pass": True,
                  "pass_message": "Pass! Input/output gave expected result. <br>",
                  "fail_message": "Fail. Input/output gave unexpected result. <br>" +
@@ -67,9 +68,9 @@ def io_test_find_string(p_filename, p_string, p_test_num, p_occurences, p_points
                                  " in this: " + str(outfile_data) + ".<br>"
                                  "Found it " + str(p_matches) + " times.<br>",
                  }
-    if p_matches < p_occurences:
+    if p_matches < p_occurrences:
         p_test_io['pass'] = False
-        p_test_io['occurences'] = p_matches
+        p_test_io['occurrences'] = p_matches
     return p_test_io
 
 
