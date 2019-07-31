@@ -152,7 +152,7 @@ def exact_answer(p_label, p_answers, p_text, *, points=0):
     return p_test
 
 
-def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matches=1, min_length=4, points=0):
+def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matches=1, min_length=5, points=0):
     """
     checks that the answer has x number of required keywords and a minimum word length.
     :param p_label: the label of the problem (i.e. 3a, 3b.) (str)

@@ -944,7 +944,7 @@ def find_turnright(p_user_blocks, p_points):
     :param p_points: number of points this is worth (int)
     :return:true of false
     """
-    p_test = {"name": "Testing that there is a user-defined turn right (" + str(p_points) + " points) <br>",
+    p_test = {"name": "Testing that there is a user-defined turnright (" + str(p_points) + " points) <br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
                               "There is a user-defined turn right!"
@@ -963,7 +963,8 @@ def find_turnright(p_user_blocks, p_points):
             p_test['fail_message'] += "turnright needs to turn right (2 possible definitions will pass) (fail)"
     else:
         p_test['pass'] = False
-        p_test['fail_message'] += "There is not a user-defined turnright block (fail)."
+        p_test['fail_message'] += "There is not a user-defined turnright block (fail).<br>" \
+                                  "The block needs to be named <b> exactly </b> turnright."
     return p_test
 
 
@@ -985,8 +986,8 @@ def find_repeatfive(p_user_blocks, p_points):
               'points': 0
               }
     for key in p_user_blocks:
-        if str(p_user_blocks[key]) == "[['control_repeat', '5', [['move', 'pickbeeper']]]]" or \
-                str(p_user_blocks[key]) == "[['control_repeat', '5', [['pickbeeper', 'move']]]]":
+        if str(p_user_blocks[key]) == "['control_repeat', '5', ['move', 'pickbeeper']]" or \
+                str(p_user_blocks[key]) == "['control_repeat', '5', ['pickbeeper', 'move']]":
             p_test['points'] += p_points
             p_test['pass'] = True
             break
