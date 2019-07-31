@@ -525,6 +525,8 @@ def _check_block(p_main_script, p_repeat_blocks, p_blocks):
                 opcode = p_blocks[key]['opcode']
                 if opcode == 'control_repeat':
                     times = p_blocks[key]['inputs']['TIMES'][1][1]
+                    print("aaa TIMES HERE {} ".format(times))
+
                     p_main_script[i] = ['control_repeat', times, p_repeat_blocks[key]]
                 else:
                     p_main_script[i] = p_repeat_blocks[key]
@@ -658,7 +660,7 @@ def _sub_dict_into_dict_helper(p_dict_subbed, p_dict_subber, p_blocks):
                 if item in p_dict_subber.keys():
                     opcode = p_blocks[item]['opcode']
                     if opcode == 'control_repeat' or opcode == 'control_forever':
-                        if opcode == 'control_repeat':
+                        if opcode == 'control_forever':
                             times = 150
                         else:
                             times = p_blocks[item]['inputs']['TIMES'][1][1]
@@ -693,7 +695,7 @@ def sub_dict_into_dict(p_dict_subbed, p_dict_subber, p_blocks):
     """
     _sub_dict_into_dict_helper(p_dict_subbed, p_dict_subber, p_blocks)
     for key in p_dict_subbed:
-        print(f"aaa simplify this key key {key}")
+        print(f"aaa simplify this key: {key}")
         print(f"aaa enumerate {p_dict_subbed[key]} type  {type(p_dict_subbed[key])}")
         for i, item in enumerate(p_dict_subbed[key]):
             if isinstance(item, list):
@@ -876,6 +878,9 @@ def arrange_karel_blocks(p_json):
     user_blocks_string = str(user_blocks)
     counter = 1
     updated_scripts = user_blocks
+    print("what the heck, updated scripts here: {}".format(updated_scripts))
+    print("what the heck, repeat scripts here: {}".format(repeat_scripts))
+
     print("ddd TRYING TO SIMPLIFY THE USER SCRIPTS")
     while replace_items:
         counter += 1
@@ -986,8 +991,8 @@ def find_repeatfive(p_user_blocks, p_points):
               'points': 0
               }
     for key in p_user_blocks:
-        if str(p_user_blocks[key]) == "['control_repeat', '5', ['move', 'pickbeeper']]" or \
-                str(p_user_blocks[key]) == "['control_repeat', '5', ['pickbeeper', 'move']]":
+        if str(p_user_blocks[key]) == "[['control_repeat', '5', [['move', 'pickbeeper']]]]" or \
+                str(p_user_blocks[key]) == "[['control_repeat', '5', [['pickbeeper', 'move']]]]":
             p_test['points'] += p_points
             p_test['pass'] = True
             break
