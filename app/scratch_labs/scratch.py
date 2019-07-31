@@ -777,9 +777,14 @@ def count_stage_changes(p_json):
     :return: all matches, as a list of integers
     """
     import re
+    changes = 0
     for target in p_json['targets']:
         if target['isStage'] is True:
             matches = len(re.findall(r'(looks_switchcostumeto|looks_nextbackdrop)', str(p_json), re.X | re.M | re.S))
+        else:
+            matches = len(re.findall(r'(looks_nextbackdrop|looks_switchbackdropto)', str(p_json), re.X | re.M | re.S))
+        if matches:
+            changes += matches
     return matches
 
 

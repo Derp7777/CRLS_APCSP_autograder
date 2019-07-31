@@ -12,7 +12,7 @@ def min_two_sprites(p_json, p_points):
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found at least two sprites in the code!<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "Code does not have at least two spries.<br>",
+                              "Code does not have at least two sprites.<br>",
               "points": 0
               }
     if num_sprites >= 2:

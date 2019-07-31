@@ -19,6 +19,7 @@ class brickLayer(object):
         amount = int(amount)
         self.y += round(math.cos(self.direction) * amount)
         self.x += round(math.sin(self.direction) * amount)
+        print("end move selfx {} selfy {} hist {}".format(self.x, self.y, self.move_history))
         self.move_history.append([self.x, self.y])
         if self.pendown is True:
 
@@ -30,6 +31,7 @@ class brickLayer(object):
                 return True
             else:
                 return False
+
 
     def turn(self, amount):
         self.direction += amount
@@ -86,7 +88,7 @@ def sub_variables(p_words, p_sprite):
     p_words = re.sub("'", '', p_words)
     p_words = re.sub(r"\[", '', p_words)
     p_words = re.sub("]", '', p_words)
-    print('aaa presub words {}'.format(p_words))
+    print('aaa in sub_variables, before subbing {}'.format(p_words))
     if re.search("VARIABLE_", p_words):
         for key in sorted(p_sprite.variables, key=len, reverse=True):
             print("aaa key for subbing vars {}".format(key))
@@ -142,22 +144,24 @@ def do_sprite(p_sprite, moves, success):
             if move == 'event_whenkeypressed':
                 break
             if move == 'motion_movesteps':
-                if re.search("VARIABLE_", moves[i+1]):
-                    print("uuu moves[i+1] {}".format(moves[i+1]))
-                    match = re.search(r"VARIABLE_(.+)", moves[i+1], re.X | re.M | re.S)
-                    variable_name = match.group(1)
-                    print("uuu variable name {}".format(variable_name))
-                    print("uuu  p_sprite.variables[variable_name] {}".format(p_sprite.variables[variable_name]))
-#                    amount = re.sub(r"VARIABLE_.+'", str(p_sprite.variables[variable_name]),  moves[i+1],
-                    #                re.X | re.M | re.S)
-                    amount = int(p_sprite.variables[variable_name])
-                    print("uuu amountf {}".format(amount))
-                else:
-                    amount = moves[i+1]
+                amount = sub_variables(moves[i+1], p_sprite)
+#                 if re.search("VARIABLE_", moves[i+1]):
+#                     print("uuu moves[i+1] {}".format(moves[i+1]))
+#                     match = re.search(r"VARIABLE_(.+)", moves[i+1], re.X | re.M | re.S)
+#                     variable_name = match.group(1)
+#                     print("uuu variable name {}".format(variable_name))
+#                     print("uuu  p_sprite.variables[variable_name] {}".format(p_sprite.variables[variable_name]))
+# #                    amount = re.sub(r"VARIABLE_.+'", str(p_sprite.variables[variable_name]),  moves[i+1],
+#                     #                re.X | re.M | re.S)
+#                     amount = int(p_sprite.variables[variable_name])
+#                     print("uuu amountf {}".format(amount))
+#                 else:
+#                     amount = moves[i+1]
                 ret_val = p_sprite.move(amount)
                 if ret_val is False:
+                    print("RET VAL IS FALSE")
                     success = False
-                    break
+                break
             elif move == 'motion_turnleft':
                 degrees = float(moves[i+1])
                 degrees = -math.radians(degrees)
@@ -763,8 +767,7 @@ def press_one(p_scripts, p_points):
             success = do_sprite(sprite, script, True)
             if success:
                 break
-    # print("ggg sprite.x {} sprite.y {} dir {} targets {}".format(sprite.x, sprite.y, sprite.direction,
-    #                                                              sprite.draw_targets))
+
     find_repeat = match_string(r"\['event_whenkeypressed', \s* '1'], .+ \['control_repeat', \s '2'", p_scripts)
     if find_repeat['pass'] is False:
         p_test['fail_message'] += "Did not find a repeat with the correct number of times in the script. <br>"

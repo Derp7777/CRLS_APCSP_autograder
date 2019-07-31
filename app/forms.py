@@ -34,5 +34,6 @@ class UploadScratchForm(FlaskForm):
 
 class UploadDocLinkForm(FlaskForm):
     link = StringField('Copy+paste link of Google document here')
-    lab = SelectField('Lab?', choices=[('scratch_1.2', 'scratch_1.2'), ])
+    lab = SelectField('Lab?', choices=[('privacy_policies', 'privacy_policies'),
+                                       ('research_yourself', 'research_yourself'), ('scratch_1.2', 'scratch_1.2'), ])
     submit = SubmitField('Submit for autograding')

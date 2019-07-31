@@ -166,7 +166,7 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
     """
     import re
     p_test = {"name": "Checking that " + str(p_label) + " is has at least " + str(min_matches) + " words that we are "
-                      "looking for, with a minimum word length of " + str(min_length) + "(" + str(points) +
+                      "looking for, with a minimum word length of " + str(min_length) + " (" + str(points) +
                       " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  " +
@@ -189,7 +189,7 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
     else:
         final_search_string = search_string
     final_search_string = final_search_string.lower()
-
+    print("aaa this is label {} final-search_string {}".format(p_label, final_search_string))
     for answer in p_answers:
         answer = answer.lower()
         if re.search(answer, final_search_string, re.X | re.M | re.S):
