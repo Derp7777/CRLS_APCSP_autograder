@@ -195,6 +195,7 @@ def docs_feedback_scratch_12():
             score_info['score'] += test['points']
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
+
 @app.route('/docs/docs_feedback_privacy_policies')
 def docs_feedback_privacy_policies():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length

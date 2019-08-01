@@ -144,7 +144,7 @@ def do_sprite(p_sprite, moves, success):
             if move == 'event_whenkeypressed':
                 break
             if move == 'motion_movesteps':
-                amount = sub_variables(moves[i+1], p_sprite)
+                amount = sub_variables(str(moves[i+1]), p_sprite)
 #                 if re.search("VARIABLE_", moves[i+1]):
 #                     print("uuu moves[i+1] {}".format(moves[i+1]))
 #                     match = re.search(r"VARIABLE_(.+)", moves[i+1], re.X | re.M | re.S)

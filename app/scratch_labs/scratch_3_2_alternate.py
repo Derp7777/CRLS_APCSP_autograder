@@ -139,7 +139,7 @@ def find_make_triangle(p_scripts, p_points):
     :return: The test dictionary
     """
     from app.scratch_labs.scratch import procedure_exists
-    p_test = {"name": "Checking that there is a custom block called 'make_triangle' with one input parameter.  Input"
+    p_test = {"name": "Checking that there is a custom block called 'make_triangle' with one input parameter.  Input "
                       "parameter must be named 'size'."
                       " (" + str(p_points) + " points)<br>",
               "pass": False,
@@ -184,6 +184,8 @@ def make_triangle_works(p_scripts, p_points):
 
     test_run_one = False
     test_run_two = False
+    move_success_1 = False
+    move_success_2 = False
     if 'make_triangle %s' in p_scripts.keys():
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"size": 60})
         script = p_scripts['make_triangle %s']
@@ -199,9 +201,11 @@ def make_triangle_works(p_scripts, p_points):
             p_test['fail_message'] += "make_triangle custom block should create equilateral triangle but does not.<br>"
         first_move_distance = distance(sprite.move_history[0], sprite.move_history[1])
         if abs(60 - first_move_distance) > 60 * 0.01:
-            p_test['fail_message'] += "Distance between first and second move should be around 60 steps if I call" \
+            p_test['fail_message'] += "Distance between first and second move should be around 60 steps if I call " \
                                       "block with input of 60. <br> Instead, it's " \
-                                      "this distance:" + str(first_move_distance) + "<br>"
+                                      "this distance:" + str(first_move_distance) + "<br>" \
+                                      "This can happen if you forgot to use 'size' in your custom block and" \
+                                                                                    " hard-coded it.<br>"
         else:
             test_run_one = True
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"size": 100})
@@ -211,7 +215,9 @@ def make_triangle_works(p_scripts, p_points):
         if abs(100 - second_move_distance) > 100 * 0.01:
             p_test['fail_message'] += "Distance between first and second move should be around 100 steps if I call" \
                                       "block with input of 100. <br> Instead, it's " \
-                                      "this distance:" + str(second_move_distance) + "<br>"
+                                      "this distance:" + str(second_move_distance) + "<br>" \
+                                      "This can happen if you forgot to use 'size' in your custom block and" \
+                                                                                     " hard-coded it.<br>"
         else:
             test_run_two = True
     else:
