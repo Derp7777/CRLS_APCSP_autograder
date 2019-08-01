@@ -84,6 +84,38 @@ def docs():
     return render_template('index.html', title='Home', user=user, form=form)
 
 
+@app.route('/docs/docs_feedback_scratch_25_alternate')
+def docs_feedback_scratch_25_alternate():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 12, 'manually_scored': 0, 'finished_scoring': True}
+
+    print(request.args)
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 1b'], text, points=1)
+    test1b = exact_answer('question 1b', [r'1b .+? tabledata \s*  (false|False|f|F) \s* tabledata \s 1c'], text, points=1)
+    test1c = exact_answer('question 1c', [r'1c .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 1d'], text, points=1)
+    test1d = exact_answer('question 1d', [r'1d .+? tabledata \s*  (true|True|t|T) \s* Fill '], text, points=1)
+    test2a = exact_answer('question 2a', [r'2a .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 2b'], text, points=1)
+    test2b = exact_answer('question 2b', [r'2b .+? tabledata \s*  (false|False|f|F) \s* tabledata \s 2c'], text, points=1)
+    test2c = exact_answer('question 2c', [r'2c .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 2d'], text, points=1)
+    test2d = exact_answer('question 2d', [r'2d .+? tabledata \s*  (false|False|f|F) \s* Fill '], text, points=1)
+    test3a = exact_answer('question 2a', [r'3a .+? tabledata \s*  (false|False|f|F) \s* tabledata \s 3b'], text, points=1)
+    test3b = exact_answer('question 2b', [r'3b .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 3c'], text, points=1)
+    test3c = exact_answer('question 2c', [r'3c .+? tabledata \s*  (true|True|t|T) \s* tabledata \s 3d'], text, points=1)
+    test3d = exact_answer('question 2d', [r'3d .+? tabledata \s*  (true|True|t|T) \s*  '], text, points=1)
+
+    tests.extend([test1a, test1b, test1c, test1d, test2a, test2b, test2c, test2d, test3a, test3b, test3c, test3d])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/docs_feedback_scratch_12')
 def docs_feedback_scratch_12():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -162,7 +194,6 @@ def docs_feedback_scratch_12():
         if test['pass']:
             score_info['score'] += test['points']
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
-
 
 @app.route('/docs/docs_feedback_privacy_policies')
 def docs_feedback_privacy_policies():
@@ -432,9 +463,9 @@ def scratch_feedback_22():
 @app.route('/scratch/scratch_feedback_24_alternate')
 def scratch_feedback_24_alternate():
     from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help,\
-        find_variable, find_question, find_set_variable, arrange_blocks_v2
+        find_variable, find_question, find_set_variable, arrange_blocks_v2, match_string
     from app.scratch_labs.scratch_2_4_alternate import green_flag, test_color_change, one_question, two_question, \
-        name_variable_x4
+        name_variable_x4, color_variables
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
     score_info = {'score': 0, 'max_score': 70, 'manually_scored': 10, 'finished_scoring': False}
@@ -466,7 +497,7 @@ def scratch_feedback_24_alternate():
             tests.append(test_question_color)
             test_color = find_variable(json_data, 'color', 5)
             tests.append(test_color)
-            test_color_variable = find_set_variable(json_data, 'color', 'answer', points=5)
+            test_color_variable = color_variables(scripts, 5)
             tests.append(test_color_variable)
             test_stage = test_color_change(scripts, 5)
             tests.append(test_stage)

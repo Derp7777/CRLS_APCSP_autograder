@@ -55,7 +55,7 @@ def test_top_1(p_scripts, p_points):
             if motion_gotoxy:
                 motion_gotoxy = re.search(r"'operator_random'", str(block), re.X | re.M | re.S)
                 if motion_gotoxy:
-                    test_high_enough = re.search(r"'motion_gotoxy', \s+  \[\[ .+ ]],\s+ '([0-9]+)", str(block),
+                    test_high_enough = re.search(r"'motion_gotoxy', \s+  \[ .+ ],\s+ '([0-9]+)", str(block),
                                                  re.X | re.M | re.S)
                     if test_high_enough:
                         y = test_high_enough.group(1)
@@ -112,7 +112,7 @@ def test_hit_ground(p_scripts, p_points):
                                     re.X | re.M | re.S)
     if_touching_ground_move_else_no_move = re.search(r"(control_repeat|control_forever) .+ control_if_else .+ "
                                                      r"'sensing_touchingobject' .+ 'sensing_touchingobjectmenu', "
-                                                     r"\s* 'ground' .+? 'motion_changeyby',\s'0']], .+ "
+                                                     r"\s* 'ground' .+? 'motion_changeyby',\s'0'], .+ "
                                                      r"'motion_changeyby',\s'-",
                                                      str(p_scripts),
                                                      re.X | re.M | re.S)
@@ -179,7 +179,7 @@ def platform_or_ground(p_scripts, p_points):
                        str(p_scripts),
                        re.X | re.M | re.S)
     match2 = re.search(r"sensing_touchingobject .+ sensing_touchingobjectmenu .+ platform .+ 'or', .+"
-                       r"'sensing_touchingobject' .+ 'sensing_touchingobjectmenu .+ platform'",
+                       r"'sensing_touchingobject' .+ 'sensing_touchingobjectmenu .+ ground'",
                        str(p_scripts),
                        re.X | re.M | re.S)
     if match1 or match2:

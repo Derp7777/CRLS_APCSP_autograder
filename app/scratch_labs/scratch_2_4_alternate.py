@@ -32,6 +32,35 @@ def green_flag(p_json, p_points):
     return p_test
 
 
+def color_variables(p_scripts, p_points):
+    """
+    tests to see if set color to answer
+    :param p_scripts: the scripts given by arrange_karel
+    :param p_points: points this is worth
+    :return: test dictionary
+    """
+    from app.scratch_labs.scratch import match_string
+    p_test = {"name": "Testing that you are setting a variable 'color' to an answer to a question."
+                      " (" + str(p_points) + " points).",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass. <h5>"
+                              " There is a setting a variable 'color' to an answer to a question.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail. </h5>"
+                              " Does not appear to be setting a variable 'color' to an answer to a question.<br>",
+              'points': 0
+              }
+
+    for key in p_scripts:
+        print("aaa script {}".format(p_scripts[key]))
+        test_variable = match_string(r"\['data_setvariableto',\s'color',\s'sensing_answer']", p_scripts[key])
+        if test_variable:
+            p_test['pass'] = True
+    print("aaa p_test['pass'] {}".format(p_test['pass']))
+    if p_test['pass']:
+        p_test['points'] += p_points
+    return p_test
+
+
 def test_color_change(p_scripts, p_points):
     """
     tests to see if stage changes color if it answers 'blue
