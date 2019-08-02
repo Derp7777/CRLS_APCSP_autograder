@@ -430,6 +430,7 @@ def one_works(p_scripts, p_points):
                 p_test['fail_message'] += "Input list: [999]<br> " \
                                           "Expected output: <br>999<br><br>" \
                                           "Actual output:<br> " + history_newlines + "<br><br>"
+            print("eee start 1c")
             sprite = brickLayer(0, 0, 0, pendown=False, variables={"numbers": [1, 2, 3, 4, 5, -1, -2, -3, -4, -5, 555, ]
                                                                    })
             run_3 = do_sprite(sprite, script, True)

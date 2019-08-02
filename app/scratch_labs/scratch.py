@@ -466,8 +466,11 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'looks_sayforsecs':
             time = current_block['inputs']['SECS'][1][1]
             message = extract_value(current_block['inputs']['MESSAGE'], p_blocks)
-            script.extend(['looks_sayforsecs', message, time])  # Needs the append # 7/31 try again extend
-            print("script is this {}".format(script))
+            script.append(['looks_sayforsecs', message, time])  # Needs the append # 7/31 try again extend 8/1 need append
+
+            # 4.4 wants extend 4.3b wants append?
+            #return ['looks_sayforsecs', message, time]
+            print("looks_sayforsecs script is this {}".format(script))
         elif current_block['opcode'] == 'sensing_answer':
             return 'sensing_answer'
         elif current_block['opcode'] == 'data_setvariableto':
@@ -514,7 +517,7 @@ def build_scratch_script(starting_block_id, p_blocks):
             if 'SUBSTACK' not in current_block['inputs'].keys():
                 raise Exception("You have an if/else statement with nothing in the if.  "
                                 "Add something inside it before autograding")
-            if 'SUBSTACK2' not in  current_block['inputs'].keys():
+            if 'SUBSTACK2' not in current_block['inputs'].keys():
                 raise Exception("You have an if/else statement with nothing in the else.  "
                                 "Add something inside it before autograding")
 

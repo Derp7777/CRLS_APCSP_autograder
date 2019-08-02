@@ -71,7 +71,7 @@ def eval_boolean(p_boolean, p_sprite):
                 p_boolean += "'" + word + "' "
         else:
             p_boolean += ' ' + word + ' '  # pass through ==, >, or <
-    print("aaa inside {}".format(p_boolean))
+    print("aaa inside   eval boolean{}".format(p_boolean))
     ret_val = eval(p_boolean)
     print(ret_val)
     return ret_val
@@ -217,16 +217,14 @@ def do_sprite(p_sprite, moves, success):
                         return False
                 break
             elif move == 'data_setvariableto':
-                print("ccc set variable to.   variable: {} value: {}".format(moves[i+1], moves[i+2]))
+                print("ccc beginning of set variable to.   variable: {} value: {}".format(moves[i+1], moves[i+2]))
                 key = moves[i + 1]
                 value = moves[i + 2]
                 if isinstance(value, list):
-                    print("ccc running on this {}".format(value))
                     if str(value) == "['sensing_answer']":
                         value = p_sprite.variables['current_answer']
                     else:
                         value = do_sprite(p_sprite, value, success)
-                print("ccc value is this {}".format(value))
                 value = str(value)
                 value = sub_variables(value, p_sprite)
                 p_sprite.variables[key] = value
@@ -235,7 +233,7 @@ def do_sprite(p_sprite, moves, success):
                 break
             elif move == 'data_changevariableby':
                 variable_plus_variable = moves[1]
-                print("aaa moves2 {}".format(moves[2]))
+                print("aaa change variable.  Moves {} say_history {}".format(moves[2], p_sprite.say_history))
                 delta_value = moves[2]
                 if isinstance(moves[2], list):
                     ret_val = do_sprite(p_sprite, moves[2], success)
@@ -393,26 +391,26 @@ def do_sprite(p_sprite, moves, success):
                 num1 = sub_variables(str(num1), p_sprite)
                 num2 = sub_variables(str(num2), p_sprite)
                 print("operator_equals post sub num1 {} num2 {}".format(num1, num2))
-
-                try:
-                    temp = float(num1)
-                except ValueError:
-                    raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
-                                    .format(num1))
-                try:
-                    temp = float(num2)
-                except ValueError:
-                    raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
-                                    .format(num2))
-                tol = 0.01
-                if abs(round(float(num1)) - float(num1)) < tol:
-                    num1 = int(num1)
-                else:
-                    num1 = float(num1)
-                if abs(round(float(num2)) - float(num2)) < tol:
-                    num2 = int(num2)
-                else:
-                    num2 = float(num2)
+                #
+                # try:
+                #     temp = float(num1)
+                # except ValueError:
+                #     raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
+                #                     .format(num1))
+                # try:
+                #     temp = float(num2)
+                # except ValueError:
+                #     raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
+                #                     .format(num2))
+                # tol = 0.01
+                # if abs(round(float(num1)) - float(num1)) < tol:
+                #     num1 = int(num1)
+                # else:
+                #     num1 = float(num1)
+                # if abs(round(float(num2)) - float(num2)) < tol:
+                #     num2 = int(num2)
+                # else:
+                #     num2 = float(num2)
                 evaluated = num1 == num2
                 print("jjj ran operator_equals and got this {}".format(evaluated))
                 return evaluated
@@ -426,10 +424,10 @@ def do_sprite(p_sprite, moves, success):
                     num2 = do_sprite(p_sprite, moves[2], success)
                 else:
                     num2 = moves[2]
-                print("operator_gt pre sub num1 {} num2 {}".format(num1, num2))
+                #print("operator_gt pre sub num1 {} num2 {}".format(num1, num2))
                 num1 = sub_variables(str(num1), p_sprite)
                 num2 = sub_variables(str(num2), p_sprite)
-                print("operator_gt post sub num1 {} num2 {}".format(num1, num2))
+                #print("operator_gt post sub num1 {} num2 {}".format(num1, num2))
 
                 try:
                     temp = float(num1)
@@ -682,7 +680,7 @@ def do_sprite(p_sprite, moves, success):
                 else:
                     operator_string = moves[1]
                 operator_string = sub_variables(str(operator_string), p_sprite )
-                print("iii length operator string is {} length is {}".format(operator_string, len(operator_string)))
+                print("iii operator_length l string is {} length is {}".format(operator_string, len(operator_string)))
                 return len(operator_string)
             elif move == 'operator_letter_of':
                 print("tried operator letter of")
@@ -752,6 +750,7 @@ def do_sprite(p_sprite, moves, success):
                 break    
             elif move == 'looks_sayforsecs':
                 print("looks_say. beginning entire list " + str(moves))
+                print("looks say i is this {}".format(i))
                 say_this = moves[i+1]
 
                 print("what is saying?  Type?  {}".format(type(moves[i+1])))
@@ -835,6 +834,7 @@ def do_sprite(p_sprite, moves, success):
                 # else:
                 #     ret_val = do_sprite(p_sprite, moves[3], success)
                 print("two sets of moves moves2 {} moves 3 {}".format(moves[2], moves[3]))
+
                 if operator_result:
                     print("aaa operator_result is true")
                     ret_val = do_sprite(p_sprite, moves[2], success)
@@ -846,14 +846,13 @@ def do_sprite(p_sprite, moves, success):
             elif move == 'control_if':
                 print("ooo control_if moves{}  i{}".format(moves, i))
                 operator = moves[i + 1]
-                operator = moves[i + 1]
                 operator_result = do_sprite(p_sprite, operator, success)
                 print("aaa in control_if, result of operator {} ".format(operator_result))
-                operator_result = bool(operator_result)
+                #operator_result = bool(operator_result)
 
                 if operator_result:
                     ret_val = do_sprite(p_sprite, moves[2], success)
-
+                break
             # if isinstance(operator[0], list):
             #         left = str(do_sprite(p_sprite, operator[0], success))
             #     else:
@@ -879,23 +878,37 @@ def do_sprite(p_sprite, moves, success):
                         break
                 break
             elif move == 'control_repeat_until':
-                condition = moves[1]
+#                condition = moves[1]
+                operator = moves[i + 1]
+                print("ffff in repeat until operator {}".format(operator))
+                operator_result = do_sprite(p_sprite, operator, success)
 
-                new_condition = []
-                for x in condition:
-                    if isinstance(x, list):
-                        ret_val = do_sprite(p_sprite, x, success)
-                        new_condition.append(ret_val)
-                    else:
-                        new_condition.append(x)
-                print('oooo new condition {}  {}'.format(new_condition, type(new_condition)))
-                new_condition = str(new_condition)
-                true_false = eval_boolean(new_condition, p_sprite)
-                print("ooo condition {}".format(true_false))
-                while true_false is False:
-                    ret_val = do_sprite(p_sprite, moves[2], success)
-                    true_false = eval_boolean(new_condition, p_sprite)
+ #               new_condition = []
+ #                for x in condition:
+ #                    if isinstance(x, list):
+ #                        ret_val = do_sprite(p_sprite, x, success)
+ #                        new_condition.append(ret_val)
+ #                    else:
+ #                        new_condition.append(x)
+ #                print('oooo new condition {}  {}'.format(new_condition, type(new_condition)))
+ #                new_condition = str(new_condition)
+ #                true_false = eval_boolean(new_condition, p_sprite)
+ #                print("ooo condition {}".format(true_false))
+                wu_counter = 1
+                while operator_result is False:
+                    print("repeat until move is this {}".format(moves[2]))
+                    print("variables are this {}".format(p_sprite.variables))
                     print("ppp what is say hist".format(p_sprite.say_history))
+
+                    ret_val = do_sprite(p_sprite, moves[2], success)
+                    print("finished a loop variables {}".format(p_sprite.variables))
+                    print("ppp what is say hist".format(p_sprite.say_history))
+                    operator_result = do_sprite(p_sprite, operator, success)
+                    #true_false = eval_boolean(new_condition, p_sprite)
+                    print("ppp wu counter {}".format(wu_counter))
+                    wu_counter += 1
+                    if wu_counter > 1000:
+                        break
                 break
             elif re.search('VARIABLE_', move):
                 return move

@@ -608,12 +608,14 @@ def delete_two_questions(p_scripts, p_points):
                               "one for the item to delete <br>",
               "points": 0
               }
+    two_questions = False
     for key in p_scripts:
         script = p_scripts[key]
         test_two_questions = match_string(r"event_whenkeypressed', \s 'x' .+ sensing_askandwait .+ sensing_askandwait",
                                           script)
-
-    if test_two_questions['pass']:
+        if test_two_questions:
+            p_test['pass'] = True
+    if p_test['pass']:
         p_test['pass'] = True
         p_test['points'] += p_points
     return p_test

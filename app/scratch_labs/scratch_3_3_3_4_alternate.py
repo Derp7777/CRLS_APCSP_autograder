@@ -29,7 +29,7 @@ def day_of_week_works(p_scripts, p_points):
                                       "in say output when I called custom block day_of_week " \
                                       "with input parameter 1<br>  Got back this: <br>" \
                                       + sprite.say_history + "<br>"
-        sprite2 = brickLayer(0, 0, 0, pendown=False, variables={"day": 6})
+        sprite2 = brickLayer(0, 0, 0, pendown=False, variables={"day": 5})
         script = p_scripts['day_of_week %s']
         day_success_2 = do_sprite(sprite2, script, True)
         print("VALHALLA {}".format(sprite2.say_history))
