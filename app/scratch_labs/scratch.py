@@ -466,7 +466,7 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'looks_sayforsecs':
             time = current_block['inputs']['SECS'][1][1]
             message = extract_value(current_block['inputs']['MESSAGE'], p_blocks)
-            script.append(['looks_sayforsecs', message, time])  # Needs the append
+            script.extend(['looks_sayforsecs', message, time])  # Needs the append # 7/31 try again extend
             print("script is this {}".format(script))
         elif current_block['opcode'] == 'sensing_answer':
             return 'sensing_answer'
@@ -509,7 +509,7 @@ def build_scratch_script(starting_block_id, p_blocks):
             condition_id = current_block['inputs']['CONDITION'][1]
             if_script = build_scratch_script(substack_1_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
-            script.extend(['control_if', condition_script, if_script])  # updated 7/31 not sure
+            script.append(['control_if', condition_script, if_script])  # need append
         elif current_block['opcode'] == 'control_if_else':
             if 'SUBSTACK' not in current_block['inputs'].keys():
                 raise Exception("You have an if/else statement with nothing in the if.  "
@@ -530,14 +530,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             operand_id = current_block['inputs']['OPERAND'][1]
             operand = build_scratch_script(operand_id, p_blocks)
             script.extend(['operator_not', operand])
-        elif current_block['opcode'] == 'operator_or':
-            operand1_id = current_block['inputs']['OPERAND1'][1]
-            operand2_id = current_block['inputs']['OPERAND2'][1]
-            operand1 = build_scratch_script(operand1_id, p_blocks)
-            operand2 = build_scratch_script(operand2_id, p_blocks)
-            # operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
-            # operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, 'or', operand2])
         elif current_block['opcode'] == 'operator_mod':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
@@ -550,7 +542,18 @@ def build_scratch_script(starting_block_id, p_blocks):
             operand2 = build_scratch_script(operand2_id, p_blocks)
             # operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             # operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, 'and', operand2])
+            # script.extend([operand1, 'and', operand2])
+            script.extend(['operator_and', operand1, operand2])
+        elif current_block['opcode'] == 'operator_or':
+            operand1_id = current_block['inputs']['OPERAND1'][1]
+            operand2_id = current_block['inputs']['OPERAND2'][1]
+            operand1 = build_scratch_script(operand1_id, p_blocks)
+            operand2 = build_scratch_script(operand2_id, p_blocks)
+            # operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
+            # operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
+            # script.extend([operand1, 'or', operand2])
+            script.extend(['operator_or', operand1, operand2])
+
         elif current_block['opcode'] == 'operator_length':
             operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
             script.extend(['operator_length', operator_string])
@@ -558,12 +561,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             letter = extract_value(current_block['inputs']['LETTER'], p_blocks)
             operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
             script.extend(['operator_letter_of', letter, operator_string])
-
-        elif current_block['opcode'] == 'operator_equals':
-            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
-            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            #script.extend([operand1, '=', operand2])
-            script.extend(['operator_equals', operand1, operand2])
 
         elif current_block['opcode'] == 'operator_subtract':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
@@ -583,15 +580,21 @@ def build_scratch_script(starting_block_id, p_blocks):
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
             print("hhh num1 {} num2 {}".format(num1, num2))
             script.extend(['operator_multiply', num1, num2])
+        elif current_block['opcode'] == 'operator_equals':
+            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
+            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
+            # script.extend([operand1, '=', operand2])
+            script.extend(['operator_equals', operand1, operand2])
         elif current_block['opcode'] == 'operator_lt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
             print("QWERTY operator_lt operand 1 {} operand {}".format(operand1, operand2))
-            script.extend([operand1, '<', operand2])
+            script.extend(['operator_lt', operand1, operand2])
         elif current_block['opcode'] == 'operator_gt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, '>', operand2])
+            #script.extend([operand1, '>', operand2])
+            script.extend(['operator_gt', operand1, operand2])
         elif current_block['opcode'] == 'operator_join':
             string1 = extract_value(current_block['inputs']['STRING1'], p_blocks)
             string2 = extract_value(current_block['inputs']['STRING2'], p_blocks)
@@ -604,12 +607,13 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
-            script.append(['looks_switchbackdropto', backdrop])
+            script.extend(['looks_switchbackdropto', backdrop])
         elif current_block['opcode'] == 'looks_nextbackdrop':
             script = 'looks_nextbackdrop'
         elif current_block['opcode'] == 'looks_backdrops':
             backdrop = current_block['fields']['BACKDROP'][0]
-            script.append(backdrop)
+            return backdrop
+#            script.append(backdrop)
         elif current_block['opcode'] == 'pen_penDown':
             script.append('pen_penDown')
         elif current_block['opcode'] == 'pen_penUp':

@@ -79,12 +79,12 @@ def test_color_change(p_scripts, p_points):
                               " favorite color. <br>",
               'points': 0
               }
-    test_if = match_string(r'control_if .+ VARIABLE_color .+ = .+ blue', p_scripts)
+    test_if = match_string(r'control_if .+ operator_equals .+ VARIABLE_color .+ blue', p_scripts)
     if test_if['pass'] is False:
         p_test['fail_message'] += 'Does not appear to be an if color = blue<br>' \
                                   'variable color must be exactly color (spelling and capitalization count) and ' \
                                   'blue must be exactly "blue" (spelling and capitalization count) <br>'
-    test_if_change_nextbackdrop = match_string(r'control_if .+ VARIABLE_color .+ = .+ blue .+'
+    test_if_change_nextbackdrop = match_string(r'control_if .+ operator_equals .+ VARIABLE_color .+ blue .+'
                                                r' (looks_switchbackdropto|looks_nextbackdrop)', p_scripts)
     test_receive_broadcast = match_string(r'event_whenbroadcastreceived .+ '
                                           r'(looks_switchbackdropto|looks_nextbackdrop)', p_scripts)
@@ -165,10 +165,10 @@ def two_question(p_scripts, p_points):
               'points': 0
               }
     from app.scratch_labs.scratch import match_string
-    test_all_two = match_string(r'sensing_askandwait .+ control_if_else .+ \[ .+ \[ .+ looks_say .+ ] .+ '
-                                r'\[ .+ looks_say .+ ] .+ ] .+'
-                                r'sensing_askandwait .+ control_if_else .+ \[ .+ \[ .+ looks_say .+ ] .+ '
-                                r'\[ .+ looks_say .+ ] .+ ] .+ ', p_scripts)
+    test_all_two = match_string(r'sensing_askandwait .+ control_if_else .+ \[ .+ looks_say .+ ] .+ '
+                                r'\[ .+ looks_say .+ ]  .+'
+                                r'sensing_askandwait .+ control_if_else .+ \[ .+  looks_say .+ ] .+ '
+                                r'\[ .+ looks_say .+ ]  .+ ', p_scripts)
 
     if test_all_two['pass'] is False:
         p_test['fail_message'] += "Does not appear that you have TWO question AND an if/else AND two 'says' inside " \

@@ -42,11 +42,12 @@ def test_top_1(p_scripts, p_points):
     if test_flag_and_top['pass'] is False:
         p_test['fail_message'] += 'There needs to be a block that moves the sprite to the top of the screen ' \
                                   'near the beginning of the script.'
+    y = -300
     for key in p_scripts.keys():
         for block in p_scripts[key]:
-            y = -300
             motion_sety = re.search(r"'motion_sety'", str(block), re.X | re.M | re.S)
             if motion_sety:
+                print("aaa motionsety")
                 test_high_enough = re.search(r"'motion_sety', \s+ '(-?[0-9]+)'", str(block), re.X | re.M | re.S)
                 if test_high_enough:
                     y = test_high_enough.group(1)
@@ -66,6 +67,7 @@ def test_top_1(p_scripts, p_points):
                     if test_high_enough:
                         y = test_high_enough.group(1)
                         break
+    print("this is y {} this is all {} wut {}".format(y, test_high_enough.group(0), test_high_enough.group(1) ))
     if int(y) < 125:
         p_test['fail_message'] += 'Y position of sprite needs to be higher than 125.'
     if test_flag_and_top['pass'] and int(y) > 125:
@@ -174,11 +176,11 @@ def platform_or_ground(p_scripts, p_points):
                               "There is not a block that can est if sprite stops when touching platform or ground",
               'points': 0
               }
-    match1 = re.search(r"sensing_touchingobject .+ sensing_touchingobjectmenu .+ ground .+ 'or', .+"
+    match1 = re.search(r"operator_or .+ sensing_touchingobject .+ sensing_touchingobjectmenu .+ ground  .+"
                        r"'sensing_touchingobject' .+ 'sensing_touchingobjectmenu .+ platform'",
                        str(p_scripts),
                        re.X | re.M | re.S)
-    match2 = re.search(r"sensing_touchingobject .+ sensing_touchingobjectmenu .+ platform .+ 'or', .+"
+    match2 = re.search(r"operator_or .+ sensing_touchingobject .+ sensing_touchingobjectmenu .+ platform .+"
                        r"'sensing_touchingobject' .+ 'sensing_touchingobjectmenu .+ ground'",
                        str(p_scripts),
                        re.X | re.M | re.S)

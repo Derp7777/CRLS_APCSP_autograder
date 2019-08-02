@@ -41,16 +41,16 @@ def test_prizes_defined(p_scripts, p_points):
                               "<br>",
               'points': 0
               }
-    test_one = match_string(r'data_setvariableto .+ VARIABLE_prize1\', \s* .+? [a-z] .+? ] ', p_scripts)
+    test_one = match_string(r'data_setvariableto .+ prize1\', \s* .+? [a-z] .+? ] ', p_scripts)
     if test_one['pass'] is False:
         p_test['fail_message'] += "Value for variable prize1 does not appear to be set.<br>"
-    test_two = match_string(r'data_setvariableto .+ VARIABLE_prize2\', \s* .+? [a-z] .+? ] ', p_scripts)
+    test_two = match_string(r'data_setvariableto .+ prize2\', \s* .+? [a-z] .+? ] ', p_scripts)
     if test_two['pass'] is False:
         p_test['fail_message'] += "Value for variable prize2 does not appear to be set.<br>"
-    test_three = match_string(r'data_setvariableto .+ VARIABLE_prize3\', \s* .+? [a-z] .+? ] ', p_scripts)
+    test_three = match_string(r'data_setvariableto .+ prize3\', \s* .+? [a-z] .+? ] ', p_scripts)
     if test_three['pass'] is False:
         p_test['fail_message'] += "Value for variable prize3 does not appear to be set.<br>"
-    test_four = match_string(r'data_setvariableto .+ VARIABLE_prize4\', \s* .+? [a-z] .+? ] ', p_scripts)
+    test_four = match_string(r'data_setvariableto .+ prize4\', \s* .+? [a-z] .+? ] ', p_scripts)
     if test_four['pass'] is False:
         p_test['fail_message'] += "Value for variable prize4 does not appear to be set.<br>"
     if test_one['pass'] and test_two['pass'] and test_three['pass'] and test_four['pass']:
@@ -73,9 +73,9 @@ def any_conditional(p_scripts, p_points):
               'points': 0
               }
 
-    test = match_string(r'control_if .+? = .+? looks_say', p_scripts)
+    test = match_string(r'control_if .+? operator_equals .+? looks_say', p_scripts)
     if test['pass'] is False:
-        p_test['fail_message'] += 'Looked for <br> control_if .+ = looks_say .+ inside this: <br>' + str(p_scripts)
+        p_test['fail_message'] += 'Looked for <br> control_if .+ operator_equals .+? looks_say .+ inside this: <br>' + str(p_scripts)
     if test['pass']:
         p_test['points'] += p_points
         p_test['pass'] = True
@@ -95,18 +95,18 @@ def four_prizes(p_scripts, p_points):
                               "<br>",
               'points': 0
               }
-    test_one = match_string(r"control_if .+ = .+ looks_say .+ VARIABLE_prize1 .+", p_scripts)
-    test_two = match_string(r"control_if .+ = .+ looks_say .+ VARIABLE_prize2 .+", p_scripts)
-    test_three = match_string(r"control_if .+ = .+ looks_say .+ VARIABLE_prize3 .+", p_scripts)
-    test_four = match_string(r"control_if .+ = .+ looks_say .+ VARIABLE_prize4 .+", p_scripts)
+    test_one = match_string(r"control_if .+ operator_equals .+ looks_say .+ VARIABLE_prize1 .+", p_scripts)
+    test_two = match_string(r"control_if .+ operator_equals .+ looks_say .+ VARIABLE_prize2 .+", p_scripts)
+    test_three = match_string(r"control_if .+ operator_equals .+ looks_say .+ VARIABLE_prize3 .+", p_scripts)
+    test_four = match_string(r"control_if .+ operator_equals .+ looks_say .+ VARIABLE_prize4 .+", p_scripts)
     if test_one['pass'] is False:
-        p_test['fail_message'] += "Did not appear that prize1 works."
+        p_test['fail_message'] += "Did not appear that prize1 works.<br>"
     if test_two['pass'] is False:
-        p_test['fail_message'] += "Did not appear that prize2 works."
+        p_test['fail_message'] += "Did not appear that prize2 works.<br>"
     if test_three['pass'] is False:
-        p_test['fail_message'] += "Did not appear that prize3 works."
+        p_test['fail_message'] += "Did not appear that prize3 works.<br>"
     if test_four['pass'] is False:
-        p_test['fail_message'] += "Did not appear that prize4 works."
+        p_test['fail_message'] += "Did not appear that prize4 works.<br>"
     if test_one['pass'] and test_two['pass'] and test_three['pass'] and test_four['pass']:
         p_test['points'] += p_points
         p_test['pass'] = True

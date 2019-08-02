@@ -27,8 +27,9 @@ def day_of_week_works(p_scripts, p_points):
         if test_1['pass'] is False:
             p_test['fail_message'] += "Didn't find the word 'sunday' or 'Sunday' or 'SUNDAY' " \
                                       "in say output when I called custom block day_of_week " \
-                                      "with input parameter 1<br>"
-        sprite2 = brickLayer(0, 0, 0, pendown=False, variables={"day": 5})
+                                      "with input parameter 1<br>  Got back this: <br>" \
+                                      + sprite.say_history + "<br>"
+        sprite2 = brickLayer(0, 0, 0, pendown=False, variables={"day": 6})
         script = p_scripts['day_of_week %s']
         day_success_2 = do_sprite(sprite2, script, True)
         print("VALHALLA {}".format(sprite2.say_history))
@@ -36,8 +37,8 @@ def day_of_week_works(p_scripts, p_points):
         if test_2['pass'] is False:
             p_test['fail_message'] += "Didn't find the word 'friday', 'Friday', or 'FRIDAY' " \
                                       "in say output when I called custom block day_of_week " \
-                                      "with input parameter 5<br>  Got back this: <br>" \
-                                      + sprite.say_history
+                                      "with input parameter 6<br>  Got back this: <br>" \
+                                      + sprite2.say_history + "<br>"
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
@@ -145,34 +146,36 @@ def min_works(p_scripts, p_points):
     from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
     from app.scratch_labs.scratch import match_string
 
-    p_test = {"name": "Checking that the day_of_week custom block with one argument works"
+    p_test = {"name": "Checking that the min custom block with two arguments works"
                       " (" + str(p_points) + " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
-                              "The day_of_week custom block with one argument works.<br>",
+                              "The  min custom block with two arguments works.<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "The day_of_week custom block with one argument does not appear to work."
-                              "Is the input parameter named day?<br>"
-                              "BE SURE INPUT PARAMETER IS NAMED day OTHERWISE THIS TEST BREAKS.<br>",
+                              "The min custom block with two arguments does not appear to work."
+                              "Is the input parameter named min?<br>"
+                              "BE SURE INPUT PARAMETERS ARE NAMED number1 and numberr"
+                              " OTHERWISE THIS TEST BREAKS.<br>",
               "points": 0
               }
     if 'min %s %s' in p_scripts.keys():
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 5, "number2": 8})
+        print("aaa min test variables {}".format(sprite.variables))
         script = p_scripts['min %s %s']
         day_success_1 = do_sprite(sprite, script, True)
         print("VALHALLA {}".format(sprite.say_history))
         test_1 = match_string(r'5', sprite.say_history)
         if test_1['pass'] is False:
-            p_test['fail_message'] += "Called custom block 'min' with number1 = 5 and number2 = 8" \
-                                      "Expect '5', got this:<br>" + sprite.say_history
+            p_test['fail_message'] += "Called custom block 'min' with number1 = 5 and number2 = 8 <br>" \
+                                      "Expect '5', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 555, "number2": -8})
         day_success_2 = do_sprite(sprite, script, True)
         print("VALHALLA {}".format(sprite.say_history))
-        test_2 = match_string(r'555', sprite.say_history)
+        test_2 = match_string(r'-8', sprite.say_history)
         if test_2['pass'] is False:
-            p_test['fail_message'] += "Called custom block 'min' with number1 = 555 and number2 = -8" \
-                                      "Expect '555', got this:<br>" + sprite.say_history
+            p_test['fail_message'] += "Called custom block 'min' with number1 = 555 and number2 = -8 <br>" \
+                                      "Expect '-8', got this:<br>" + sprite.say_history
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
             p_test['pass'] = True
             p_test['points'] += p_points
@@ -319,6 +322,8 @@ def between_works_unequal(p_scripts, p_points):
     if 'between %s %s %s' in p_scripts.keys():
         print("ppp STARTING")
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 1, "number2": 2, "number3": 3})
+        print("aaa test 1 unequals variables {}".format(sprite.variables))
+
         script = p_scripts['between %s %s %s']
         between_success_1 = do_sprite(sprite, script, True)
         print("VALHALLA {}".format(sprite.say_history))
@@ -328,6 +333,8 @@ def between_works_unequal(p_scripts, p_points):
                                       "Expect 'False', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 1, "number2": 3, "number3": 2})
+        print("aaa test 2 unequals variables {}".format(sprite.variables))
+
         between_success_2 = do_sprite(sprite, script, True)
         test_2 = match_string(r'^False', sprite.say_history)
         if test_2['pass'] is False:
@@ -335,6 +342,7 @@ def between_works_unequal(p_scripts, p_points):
                                       "Expect 'False', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 1, "number3": 3})
+        print("aaa test 3 unequals variables {}".format(sprite.variables))
         between_success_3 = do_sprite(sprite, script, True)
         test_3 = match_string(r'^True', sprite.say_history)
         if test_3['pass'] is False:
@@ -343,6 +351,7 @@ def between_works_unequal(p_scripts, p_points):
 
         print("test4")
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 2, "number2": 3, "number3": 1})
+        print("aaa test 4 unequals variables {}".format(sprite.variables))
         between_success_4 = do_sprite(sprite, script, True)
         test_4 = match_string(r'^True', sprite.say_history)
         print("test4 say history {}".format(sprite.say_history))
@@ -351,6 +360,7 @@ def between_works_unequal(p_scripts, p_points):
                                       "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 1, "number3": 2})
+        print("aaa test 5 unequals variables {}".format(sprite.variables))
         between_success_5 = do_sprite(sprite, script, True)
         test_5 = match_string(r'^False', sprite.say_history)
         if test_5['pass'] is False:
@@ -358,6 +368,7 @@ def between_works_unequal(p_scripts, p_points):
                                       "Expect 'True', got this:<br>" + sprite.say_history + "<br>"
 
         sprite = brickLayer(0, 0, 0, pendown=False, variables={"number1": 3, "number2": 2, "number3": 1})
+        print("aaa test 6 unequals variables {}".format(sprite.variables))
         between_success_6 = do_sprite(sprite, script, True)
         test_6 = match_string(r'^False', sprite.say_history)
         if test_6['pass'] is False:
