@@ -562,7 +562,9 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'operator_equals':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, '=', operand2])
+            #script.extend([operand1, '=', operand2])
+            script.extend(['operator_equals', operand1, operand2])
+
         elif current_block['opcode'] == 'operator_subtract':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
@@ -618,7 +620,8 @@ def build_scratch_script(starting_block_id, p_blocks):
             color = current_block['inputs']['COLOR'][1][1]
             script.append(['pen_setPenColorToColor', color])
         elif current_block['opcode'] == 'argument_reporter_string_number':
-            script.append('VARIABLE_' + str(current_block['fields']['VALUE'][0]))
+            # script.extend(['VARIABLE_' + str(current_block['fields']['VALUE'][0])])
+            return 'VARIABLE_' + str(current_block['fields']['VALUE'][0])
         elif 'opcode' in current_block.keys():
             print("This opcode not done " + current_block['opcode'])
         next_block_id = current_block['next']

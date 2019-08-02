@@ -132,15 +132,16 @@ def do_sprite(p_sprite, moves, success):
     if success is False:
         print("ccc exiting, success if false")
         return False
-    print("aaa beginning of do sprite.  here are all  moves {} and vars {}".format(moves, p_sprite.variables))
+    print("aaa beginning of do sprite.  here are all  moves {} \n".format(moves))
     for i, move in enumerate(moves):
+        print("next move is this {}\n".format(move))
         if isinstance(move, list):
             ret_val = do_sprite(p_sprite, moves[i], success)
             if ret_val is False:
                 success = False
                 break
         else:
-            print("ggg move is this{}".format(move))
+            print("ggg  at beggining of loop not a list.  move is this{}".format(move))
             if move == 'event_whenkeypressed':
                 break
             if move == 'motion_movesteps':
@@ -376,6 +377,39 @@ def do_sprite(p_sprite, moves, success):
                 else:
                     num2 = float(num2)
                 evaluated = num1 - num2
+                print("jjj ran operator_subtract and got this {}".format(evaluated))
+                return evaluated
+            elif move == 'operator_subtract':
+                if isinstance(moves[1], list):
+                    num1 = do_sprite(p_sprite, moves[1], success)
+                else:
+                    num1 = moves[1]
+                if isinstance(moves[2], list):
+                    num2 = do_sprite(p_sprite, moves[2], success)
+                else:
+                    num2 = moves[2]
+                num1 = sub_variables(str(num1), p_sprite)
+                num2 = sub_variables(str(num2), p_sprite)
+                try:
+                    temp = float(num1)
+                except ValueError:
+                    raise Exception("First number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num1))
+                try:
+                    temp = float(num2)
+                except ValueError:
+                    raise Exception("Second number of subtraction can't be converted to int.  Number is: {}"
+                                    .format(num2))
+                tol = 0.01
+                if abs(round(float(num1)) - float(num1)) < tol:
+                    num1 = int(num1)
+                else:
+                    num1 = float(num1)
+                if abs(round(float(num2)) - float(num2)) < tol:
+                    num2 = int(num2)
+                else:
+                    num2 = float(num2)
+                evaluated = num1 == num2
                 print("jjj ran operator_subtract and got this {}".format(evaluated))
                 return evaluated
             elif move == 'operator_mod':
@@ -617,8 +651,9 @@ def do_sprite(p_sprite, moves, success):
 
                 return string1 + string2
             elif move == 'control_if_else':
-                print("ooo moves{}  i{}".format(moves, i))
+                print("ooo found a control if_else moves{}  i{}".format(moves, i))
                 operator = moves[i + 1]
+                print("pieces of operator left {} middle  {} rigth {} ".format(operator[0], operator[1], operator[2]))
                 if isinstance(operator[0], list):
                     left = str(do_sprite(p_sprite, operator[0], success))
                 else:
@@ -629,7 +664,7 @@ def do_sprite(p_sprite, moves, success):
                     right = str(operator[2])
                 middle = operator[1]
                 all_list = [left, middle, right]
-                print("This is the operator {}".format(operator))
+                print("inside control if/else This is the operator {} all_list {}".format(operator, all_list))
                 condition = eval_boolean(str(all_list), p_sprite)
                 if condition:
                     ret_val = do_sprite(p_sprite, moves[2], success)
@@ -649,7 +684,7 @@ def do_sprite(p_sprite, moves, success):
                     right = str(operator[2])
                 middle = operator[1]
                 all_list = [left, middle, right]
-                print("This is the operator {}".format(operator))
+                print("This is the operator {}".format(all_list))
                 condition = eval_boolean(str(all_list), p_sprite)
                 if condition:
                     ret_val = do_sprite(p_sprite, moves[2], success)
@@ -682,6 +717,10 @@ def do_sprite(p_sprite, moves, success):
                     true_false = eval_boolean(new_condition, p_sprite)
                     print("ppp what is say hist".format(p_sprite.say_history))
                 break
+            elif re.search('VARIABLE_', move):
+                return move
+            elif move == '=':
+                return move
             else:
                 print("xxx this move did not get done {}".format(move))
     return success

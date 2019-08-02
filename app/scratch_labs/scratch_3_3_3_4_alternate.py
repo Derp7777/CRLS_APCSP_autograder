@@ -26,7 +26,7 @@ def day_of_week_works(p_scripts, p_points):
         test_1 = match_string(r'(sunday|Sunday|SUNDAY)', sprite.say_history)
         if test_1['pass'] is False:
             p_test['fail_message'] += "Didn't find the word 'sunday' or 'Sunday' or 'SUNDAY' " \
-                                      "in say output when I called custom block day_of_week" \
+                                      "in say output when I called custom block day_of_week " \
                                       "with input parameter 1<br>"
         sprite2 = brickLayer(0, 0, 0, pendown=False, variables={"day": 5})
         script = p_scripts['day_of_week %s']
@@ -35,7 +35,7 @@ def day_of_week_works(p_scripts, p_points):
         test_2 = match_string(r'(friday|Friday|FRIDAY)', sprite2.say_history)
         if test_2['pass'] is False:
             p_test['fail_message'] += "Didn't find the word 'friday', 'Friday', or 'FRIDAY' " \
-                                      "in say output when I called custom block day_of_week" \
+                                      "in say output when I called custom block day_of_week " \
                                       "with input parameter 5<br>  Got back this: <br>" \
                                       + sprite.say_history
         if day_success_1 and day_success_2 and test_1['pass'] and test_2['pass']:
