@@ -170,7 +170,7 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
                       " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  " +
-                              str(p_label) + " appears correct!<br>",
+                              str(p_label) + " appears to pass the test or checkoff!<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> " +
                               str(p_label) + " does not appear correct.  Try again.<br>"
                                              "keywords must be spelled correctly (no typos), "
@@ -189,9 +189,10 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
     else:
         final_search_string = search_string
     final_search_string = final_search_string.lower()
-    print("aaa this is label {} final-search_string {}".format(p_label, final_search_string))
+    # print("aaa this is label {} final-search_string {}".format(p_label, final_search_string))
     for answer in p_answers:
         answer = answer.lower()
+        print("bbb answer {} string {}".format(answer, final_search_string))
         if re.search(answer, final_search_string, re.X | re.M | re.S):
             found_matches += 1
     if found_matches < min_matches:
