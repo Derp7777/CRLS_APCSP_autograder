@@ -239,6 +239,99 @@ def docs_feedback_encryption_4():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/docs_ip_addressing_dns')
+def docs_feedback_ip_addressing_dns():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 22, 'manually_scored': 28, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1 = keyword_and_length('question 1a', [r'(standard|rule)'], text,
+                                search_string=r'1. .+? tabledata (.+) 2a.', min_length=5,
+                                points=5)
+    test2a = keyword_and_length('question 2a', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a. .+? tabledata (.+) 2b.', min_length=1,
+                                points=1)
+    test2b = keyword_and_length('question 2b', [r'[a-zA-Z]+'], text,
+                                search_string=r'2b. .+? tabledata (.+) 3a', min_length=7, points=1)
+    test3a = keyword_and_length('question 3a', [r'32'], text,
+                                search_string=r'3a. .+? tabledata (.+) 3b', min_length=1, points=5)
+    test3b = keyword_and_length('question 3b', [r'4\s*billion', '2 .+32', '4,*294,*967,*296'], text,
+                                search_string=r'3b. .+? tabledata (.+) 4a', min_length=1, points=5)
+
+    test4a = keyword_and_length('question 4a', [r'[a-zA-Z]'], text,
+                                search_string=r'4a. .+? tabledata (.+) 4b', min_length=7, points=1)
+    test4b = keyword_and_length('question 4b', [r'[a-zA-Z]'], text,
+                                search_string=r'4b. .+? tabledata (.+) 5', min_length=7, points=1)
+    test5 = keyword_and_length('question 5', [r'[a-zA-Z]+'], text,
+                                search_string=r'5. .+? tabledata (.+) 6', min_length=6, points=1)
+    test6 = keyword_and_length('question 6', [r'[a-zA-Z]+'], text,
+                                search_string=r'6. .+? tabledata (.+) 7', min_length=10, points=1)
+    test7 = keyword_and_length('question 7', [r'[a-zA-Z]+'], text,
+                                search_string=r'7. .+? tabledata (.+) 8', min_length=5, points=1)
+    tests.extend([test1, test2a, test2b, test3a, test3b, test4a, test4b, test5, test6, test7,  ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/docs_routers_and_redundancy')
+def docs_feedback_routers_and_redundancy():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 11, 'manually_scored': 39, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1 = keyword_and_length('question 1', [r'[a-zA-Z]+'], text,
+                               search_string=r'1. .+? tabledata (.+) 2.', min_length=1,
+                               points=1)
+    test2 = keyword_and_length('question 2', [r'[a-zA-Z]+'], text,
+                               search_string=r'2. .+? tabledata (.+) 3.', min_length=5,
+                               points=1)
+    test3 = keyword_and_length('question 3', [r'[a-zA-Z]+'], text,
+                               search_string=r'3. .+? tabledata (.+) 4.', min_length=1,
+                               points=1)
+    test4 = keyword_and_length('question 4', [r'[a-zA-Z]+'], text,
+                               search_string=r'4. .+? tabledata (.+) Find', min_length=10,
+                               points=1)
+    test5 = keyword_and_length('question 5', [r'[a-zA-Z]+'], text,
+                               search_string=r'5. .+? tabledata (.+) 6.', min_length=1,
+                               points=1)
+    test6 = keyword_and_length('question 6', [r'[a-zA-Z]+'], text,
+                               search_string=r'6. .+? tabledata (.+) 7.', min_length=10,
+                               points=1)
+    test7 = keyword_and_length('question 7', [r'[a-zA-Z]+'], text,
+                               search_string=r'7. .+? tabledata (.+) 8.', min_length=5,
+                               points=1)
+    test8 = keyword_and_length('question 8', [r'[a-zA-Z]+'], text,
+                               search_string=r'8. .+? tabledata (.+) 9.', min_length=5,
+                               points=1)
+    test9 = keyword_and_length('question 9', [r'[a-zA-Z]+'], text,
+                               search_string=r'9. .+? tabledata (.+) 10a.', min_length=5,
+                               points=1)
+    test10a = keyword_and_length('question 10a', [r'[a-zA-Z]+'], text,
+                                 search_string=r'10a. .+? tabledata (.+) 10b.', min_length=5,
+                                 points=1)
+    test10b = keyword_and_length('question 10b', [r'[a-zA-Z]+'], text,
+                                 search_string=r'10b. .+? tabledata (.+) $', min_length=10,
+                                 points=1)
+
+    tests.extend([test1, test2, test3, test4, test5, test6, test7, test8, test9, test10a, test10b])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/docs_feedback_scratch_25_alternate')
 def docs_feedback_scratch_25_alternate():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length

@@ -37,7 +37,10 @@ class UploadDocLinkForm(FlaskForm):
     lab = SelectField('Lab?', choices=[('encryption_1', 'encryption_1'), ('encryption_2', 'encryption_2'),
                                        ('encryption_3', 'encryption_3'),
                                        ('encryption_4', 'encryption_4'),
+                                       ('ip_addressing_dns', 'ip_addressing_dns'),
                                        ('privacy_policies', 'privacy_policies'),
-                                       ('research_yourself', 'research_yourself'), ('scratch_1.2', 'scratch_1.2'),
+                                       ('research_yourself', 'research_yourself'),
+                                       ('routers_and_redundancy', 'routers_and_redundancy'),
+                                       ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
     submit = SubmitField('Submit for autograding')
