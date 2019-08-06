@@ -84,6 +84,137 @@ def docs():
     return render_template('index.html', title='Home', user=user, form=form)
 
 
+@app.route('/docs/binary_practice')
+def docs_feedback_binary_practice():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 71, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s* 0011 .+ tabledata \s*? 3 [^a-z] '], text, points=2)
+    test1b = exact_answer('question 1b', [r'1b .+? tabledata \s* 0100 .+ tabledata \s*?  4 [^a-z]'], text, points=2)
+    test1c = exact_answer('question 1c', [r'1c .+? tabledata \s* 0101 .+ tabledata \s*? 5 [^a-z]'], text, points=2)
+    test1d = exact_answer('question 1d', [r'1d .+? tabledata \s* 0110 .+ tabledata \s*? 6 [^a-z]'], text, points=2)
+    test1e = exact_answer('question 1e', [r'1e .+? tabledata \s* 0111 .+ tabledata \s*?  7 [^a-z]'], text, points=2)
+    test1f = exact_answer('question 1f', [r'1f .+? tabledata \s* 1000 .+ tabledata \s*?  8 [^a-z]'], text, points=2)
+    test1g = exact_answer('question 1g', [r'1g .+? tabledata \s* 1001 .+ tabledata \s*?  9 [^a-z]'], text, points=2)
+    test1h = exact_answer('question 1h', [r'1h .+? tabledata \s* 1010 .+ tabledata \s*?  10 [^a-z]'], text, points=2)
+    test1i = exact_answer('question 1i', [r'1i .+? tabledata \s* 1011 .+ tabledata \s*?  11 [^a-z]'], text, points=2)
+    test1j = exact_answer('question 1j', [r'1j .+? tabledata \s* 1100 .+ tabledata \s*?  12 [^a-z]'], text, points=2)
+    test1k = exact_answer('question 1k', [r'1k .+? tabledata \s* 1101 .+ tabledata \s*?  13 [^a-z]'], text, points=2)
+    test1l = exact_answer('question 1l', [r'1l .+? tabledata \s* 1110 .+ tabledata \s*?  14 [^a-z]'], text, points=2)
+    test1m = exact_answer('question 1m', [r'1m .+? tabledata \s* 1111 .+ tabledata \s*?  15 [^a-z]'], text, points=2)
+    test2a = exact_answer('question 2a', [r'2a. .+? tabledata \s* 0000 \s 0100 .+ tabledata \s* 4'], text, points=2)
+    test2b = exact_answer('question 2b', [r'2b. .+? tabledata \s* 0000 \s 1000 .+ tabledata \s* 8'], text, points=2)
+    test2c = exact_answer('question 2c', [r'2c. .+? tabledata \s* 0001 \s 0000 .+ tabledata \s* 16'], text, points=2)
+    test2d = exact_answer('question 2d', [r'2d. .+? tabledata \s* 0010 \s 0000 .+ tabledata \s* 32'], text, points=2)
+    test2e = exact_answer('question 2e', [r'2e. .+? tabledata \s* 0100 \s 0000 .+ tabledata \s* 64'], text, points=2)
+    test2f = exact_answer('question 2f',
+                          [r'2f. .+? tabledata \s* 1000 \s 0000 .+? tabledata \s* 128 .+? conversion \s practice'],
+                          text, points=2)
+    test3a = exact_answer('question 3a', [r'3a. .+? tabledata \s* 100 .+ tabledata \s* 5 .+? 3h'], text, points=2)
+    test3b = exact_answer('question 3b', [r'3b. .+? tabledata \s* 111 .+ tabledata \s* 7 .+? 3i'], text, points=2)
+    test3c = exact_answer('question 3c', [r'3c. .+? tabledata \s* 1101 .+ tabledata \s* 13 .+? 3j'], text, points=2)
+    test3d = exact_answer('question 3d', [r'3d. .+? tabledata \s* 0011\s1111 .+ tabledata \s* 63 .+? 3k'],
+                          text, points=2)
+    test3e = exact_answer('question 3e', [r'3e. .+? tabledata \s* 0100 \s 0000 .+ tabledata \s* 64 '],
+                          text, points=2)
+    test3f = exact_answer('question 3f', [r'3f. .+? tabledata \s* 1010 \s 1010 .+ tabledata \s* 170'], text, points=2)
+    test3g = exact_answer('question 3g', [r'3g. .+? tabledata \s* 1111 \s 1111 .+ tabledata \s* 255'], text, points=2)
+    test3h = exact_answer('question 3h', [r'3h. .+? tabledata \s* 0*? 101 .+ tabledata \s* 5 .+? 3b'], text, points=2)
+    test3i = exact_answer('question 3i', [r'3i. .+? tabledata \s* 0*? 1\s* 0001.+ tabledata \s* 17'], text, points=2)
+    test3j = exact_answer('question 3j', [r'3j. .+? tabledata \s* 0*? 11\s*1111 .+ tabledata \s* 63'], text, points=2)
+    test3k = exact_answer('question 3k', [r'3k. .+? tabledata \s* 0*? 100 \s* 0000 .+ tabledata \s* 128'], text, points=2)
+    test3l = exact_answer('question 3l', [r'3l. .+? tabledata \s* 0*? 111 \s* 1111 .+ tabledata \s* 127'], text, points=2)
+    test3m = exact_answer('question 3m', [r'3m. .+? tabledata \s* 0*? 1 \s* 0000 \s* 0000.+ tabledata \s* 256'],
+                          text, points=2)
+    test3n = exact_answer('question 3n', [r'3n. .+? tabledata \s* 0*? 10 \s* 0000 \s* 0010 .+ tabledata \s* 514'],
+                          text, points=2)
+    test4 = keyword_and_length('question 4', [r'[a-zA-Z]+'], text,
+                               search_string=r'4. \s there .+? tabledata (.+) 5. .+? many', min_length=10, points=1)
+    test5 = keyword_and_length('question 5', [r'[0-9]+'], text,
+                               search_string=r'5. \s how .+? tabledata (.+) 6. .+? cartoon', min_length=7, points=1)
+    test6 = keyword_and_length('question 6', [r'[0-9]+'], text,
+                               search_string=r'6. \s most .+? tabledata (.+) .+? cartoon', min_length=7, points=1)
+    tests.extend([test1a, test1b, test1c, test1d, test1e, test1f, test1g, test1h, test1i, test1j, test1k, test1l,
+                  test1m, test2a, test2b, test2c, test2d, test2e, test2f, test3a, test3b, test3c, test3d, test3e,
+                  test3f, test3g, test3h, test3i, test3j, test3k, test3l, test3m, test3n, test4, test5, test6])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/black_and_white_pixelation')
+def docs_feedback_black_and_white_pixelation():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 22, 'manually_scored': 73, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('question 1', [r'1 .+? tabledata \s* aaa \s* inlineobject .+ 2.'], text, points=1)
+    test2a = exact_answer('question 2a', [r'2a .+? tabledata \s* aaa \s* inlineobject .+ 2b.'], text, points=1)
+    test2b = exact_answer('question 2b', [r'2b .+? tabledata \s [0-9]+ .+? questions'], text, points=1)
+    test3a = exact_answer('question 3a', [r'3a. .+? tabledata \s* 255 .+? 255 .+ 3b.'], text, points=5)
+    test3b = keyword_and_length('question 3b', [r'[a-z]+'], text,
+                               search_string=r'3b.+? tabledata (.+) .+? 3c.', min_length=7, points=1)
+    test3c = exact_answer('question 3c', [r'3c. .+? tabledata \s* 65 .+? 041 .+ 3d.'], text, points=5)
+    test3d = keyword_and_length('question 3d', [r'[a-z]+'], text,
+                                search_string=r'3d.+? tabledata (.+) .+? 3e.', min_length=7, points=1)
+    test3e = exact_answer('question 3e', [r'3e. .+? tabledata \s* (1|17) .+ 3f.'], text, points=5)
+    test3f = keyword_and_length('question 3f', [r'[a-z]+'], text,
+                                search_string=r'3f.+? tabledata (.+) .+? 4.', min_length=7, points=1)
+    test4 = keyword_and_length('question 4', [r'[a-z]+'], text,
+                                search_string=r'4.+? tabledata (.+) .+? $', min_length=10, points=1)
+    tests.extend([test1a, test2a, test2b, test3a, test3b, test3c, test3d, test3e, test3f, test4])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+
+@app.route('/docs/encoding_color_images')
+def docs_feedback_encoding_color_images():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 13, 'manually_scored': 39, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1 = exact_answer('question 1', [r'1\. .+? tabledata \s* \d .+? step \s 2:'], text, points=1)
+    test2 = exact_answer('question 2', [r'2\. .+? tabledata \s* \d .+? step \s 3:'], text, points=1)
+    test3 = exact_answer('question 3', [r'3\. .+? tabledata \s* \d .+? questions'], text, points=1)
+    test4a = exact_answer('question 4a', [r'4a\. .+? tabledata \s* \d .+?4b'], text, points=1)
+    test4b = keyword_and_length('question 4b', [r'[a-z]+'], text,
+                               search_string=r'4b.+? tabledata (.+) .+? 5a', min_length=7, points=1)
+    test5a = exact_answer('question 5a', [r'5a\. .+? tabledata \s* 64 .+?5b'], text, points=5)
+    test5b = keyword_and_length('question 5b', [r'[a-z]+'], text,
+                                search_string=r'5b\. .+? tabledata (.+?) 6\.', min_length=7, points=1)
+    test6 = keyword_and_length('question 6', [r'[a-z]+'], text,
+                                search_string=r'6\. .+? tabledata (.+?)  7\.', min_length=7, points=1)
+    test7 = keyword_and_length('question 7', [r'[a-z]+'], text,
+                               search_string=r'7\. .+? tabledata (.+?)  $', min_length=10, points=1)
+    tests.extend([test1, test2, test3, test4a, test4b, test5a, test5b, test6, test7])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/docs_feedback_encryption_1')
 def docs_feedback_encryption_1():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -233,6 +364,69 @@ def docs_feedback_encryption_4():
     test5a = keyword_and_length('question 5a', [r'[a-zA-Z]+'], text,
                                 search_string=r'5a. .+? tabledata (.+) $', min_length=10, points=1)
     tests.extend([test1a, test2a, test2b, test3a, test3b, test4a, test5a, ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/hardware_esd_formfactors_cards')
+def docs_feedback_hardware_esd_formfactors_cards():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 29, 'manually_scored': 71, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s*  electr .+ static .+ discharg .+ 1b'], text, points=5)
+    test1b = keyword_and_length('question 1b', [r'[a-zA-Z]+'], text,
+                                search_string=r'1b. .+? tabledata (.+) 1c.', min_length=7, points=1)
+    test1c1 = exact_answer('question 1c-1', [r'1c. .+? tabledata .+ touch .+ side .+ 2.'], text, points=4)
+    test1c2 = exact_answer('question 1c-2', [r'1c. .+? tabledata .+ (wrist|strap|brac) .+ 2.'], text, points=3)
+    test1c3 = exact_answer('question 1c-3', [r'1c. .+? tabledata .+ (mat|rug) .+ 2.'], text, points=3)
+    test2a = exact_answer('question 2a', [r'2a. .+? tabledata .+ small .+ form .+ factor .+ 2b.',
+                                          r'2a. .+? tabledata .+ micro .+ 2b.',
+                                          r'2a. .+? tabledata .+ tower.+ 2b.',
+                                          r'2a. .+? tabledata .+ rack.+ 2b.'], text, points=3, required=2)
+    test2b = exact_answer('question 2b', [r'2b. .+? tabledata .+ [a-zA-Z] .+ pci'], text, points=1)
+    test3a = exact_answer('question 3a', [r'3a. .+? tabledata .+ inlineobject .+ 3b'], text, points=1)
+    test3b = exact_answer('question 3b', [r'3b. .+? tabledata .+ [a-zA-Z] .+ pci'], text, points=1)
+    test4a = keyword_and_length('question 4a', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a. .+? tabledata (.+) 4b', min_length=7, points=1)
+    test4b = exact_answer('question 4b', [r'4b. .+? tabledata .+ (1|16) .+ 4c'], text, points=5)
+    test4c = keyword_and_length('question 4c', [r'[a-zA-Z]+'], text,
+                                search_string=r'4c. .+? tabledata (.+) How', min_length=15, points=1)
+    tests.extend([test1a, test1b, test1c1, test1c2, test1c3, test2a, test2b, test3a, test3b, test4a, test4b, test4c])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/hex_minilab')
+def docs_feedback_hex_minilab():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 16, 'manually_scored': 0, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s* 5.+ tabledata \s*? 3 [^a-z] '], text, points=2)
+    test1b = exact_answer('question 1b', [r'1b .+? tabledata \s* c .+ tabledata \s*?  12 [^a-z]'], text, points=2)
+    test1c = exact_answer('question 1c', [r'1c .+? tabledata \s* a4 .+ tabledata \s*? 164 [^a-z]'], text, points=2)
+    test1d = exact_answer('question 1d', [r'1d .+? tabledata \s* 2f .+ tabledata \s*? 47 [^a-z]'], text, points=2)
+    test2a = exact_answer('question 2a', [r'2a. .+? tabledata \s* 1f .+ tabledata \s* 31'], text, points=2)
+    test2b = exact_answer('question 2b', [r'2b. .+? tabledata \s* 8 .+ tabledata \s* 8'], text, points=2)
+    test2c = exact_answer('question 2c', [r'2c. .+? tabledata \s* 51 .+ tabledata \s* 81'], text, points=2)
+    test2d = exact_answer('question 2d', [r'2d. .+? tabledata \s* FF .+ tabledata \s* 255'], text, points=2)
+
+    tests.extend([test1a, test1b, test1c, test1d, test2a, test2b, test2c, test2d, ])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']

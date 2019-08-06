@@ -123,17 +123,18 @@ def get_text(document_id):
     return p_doctext
 
 
-def exact_answer(p_label, p_answers, p_text, *, points=0):
+def exact_answer(p_label, p_answers, p_text, *, points=0, required=1):
     """
     checks that the answer is exactly correct.
     :param p_label: the label of the problem (i.e. 3a, 3b.) (str)
     :param p_answers: The text you are searching for REGEX.  LIST, in case multiple correct answers. (list)
     :param p_text: The text you are searching (str)
     :param points: how many this is worth
-    :return: 
+    :param required: how many of the answers in list you are required to have
+    :return: test dictionary
     """
     import re
-    p_test = {"name": "Checking that " + str(p_label) + " is exactly correct " + str(points) + " points)<br>",
+    p_test = {"name": "Checking that " + str(p_label) + " is exactly correct (" + str(points) + " points)<br>",
               "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  " +\
                               str(p_label) + " appears correct!<br>",
@@ -143,12 +144,20 @@ def exact_answer(p_label, p_answers, p_text, *, points=0):
                                              "but capitalization does not matter.<br>",
               "points": 0,
               }
+    passed = 0
     for answer in p_answers:
+        answer = answer.lower()
+        p_text = p_text.lower()
+        print("aaa text  {} answer {}".format(answer, p_text))
         if re.search(answer, p_text, re.X | re.M | re.S):
-            p_test['pass'] = True
-            break
-    if p_test['pass']:
+            passed += 1
+    #print("lala passed {} reqd {} ".format(passed, required))
+    if passed >= required:
+        p_test['pass'] = True
         p_test['points'] += points
+    elif passed >= 1 and required >= 2:  # passed, but not enough
+        p_test['fail_message'] += "Needed this many matches " + str(required) + "<br>Found this many matches " + \
+                                  str(passed) + "<br>"
     return p_test
 
 
@@ -176,12 +185,15 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
                                              "keywords must be spelled correctly (no typos), "
                                              "but capitalization does not matter.<br><br>",
               "points": 0,
+              "match": ''
               }
     found_matches = 0
     pass_len = False
     pass_match = False
 
     final_search_string = ''
+    p_text = p_text.lower()
+    # print("search this {} in this {}".format(search_string, p_text))
     if search_string:
         search_obj = re.search(search_string, p_text, re.X | re.M | re.S)
         if search_obj:
@@ -189,11 +201,14 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
     else:
         final_search_string = search_string
     final_search_string = final_search_string.lower()
-    # print("aaa this is label {} final-search_string {}".format(p_label, final_search_string))
+    p_test['match'] += final_search_string
+    #print("aaa this is label {} final-search_string {} ".format(p_label, final_search_string))
     for answer in p_answers:
         answer = answer.lower()
         # print("bbb answer {} string {}".format(answer, final_search_string))
         if re.search(answer, final_search_string, re.X | re.M | re.S):
+            print("lala found it!" + str(answer))
+
             found_matches += 1
     if found_matches < min_matches:
         p_test['fail_message'] += "Found this many words we were looking for: " + str(found_matches) + "<br>" \
