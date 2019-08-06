@@ -474,6 +474,36 @@ def docs_feedback_ip_addressing_dns():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/python_1020')
+def docs_feedback_python_1020():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 39, 'manually_scored': 10, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('question 1 expected',
+                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]+ \n tabledata .+  \s 2\.\n'],
+                          text, points=0.5)
+    test1b = exact_answer('question 1 actual',
+                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]* \n tabledata \s [a-zA-Z]+ \n tabledata \s [a-zA-Z0-9]* \n  tabledata \s 2\.\n'],
+                          text, points=0.5)
+    test1c = exact_answer('question 1 difference',
+                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]* \n tabledata \s [a-zA-Z]* \n tabledata \s [a-zA-Z0-9]+ \n  tabledata \s 2\.\n'],
+                          text, points=0.5)
+
+
+    tests.extend([test1a, test1b, test1c,])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/docs_routers_and_redundancy')
 def docs_feedback_routers_and_redundancy():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
