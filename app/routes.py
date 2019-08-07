@@ -486,18 +486,64 @@ def docs_feedback_python_1020():
     text = get_text(link)
 
     print(text)
-    test1a = exact_answer('question 1 expected',
-                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]+ \n tabledata .+  \s 2\.\n'],
+    test1a = exact_answer('question 1 expected', [r'\s1a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 1b\.\n'],
                           text, points=0.5)
-    test1b = exact_answer('question 1 actual',
-                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]* \n tabledata \s [a-zA-Z]+ \n tabledata \s [a-zA-Z0-9]* \n  tabledata \s 2\.\n'],
+    test1b = exact_answer('question 1 actual', [r'\s1b\. \n+ tabledata \s 9 .+ tabledata \s 1c\.\n'],
                           text, points=0.5)
     test1c = exact_answer('question 1 difference',
-                          [r'\s1\. \n  tabledata \s .+? \n  tabledata \s [a-zA-Z0-9]* \n tabledata \s [a-zA-Z]* \n tabledata \s [a-zA-Z0-9]+ \n  tabledata \s 2\.\n'],
+                          [r'\s1c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 2a\.'],
                           text, points=0.5)
-
-
-    tests.extend([test1a, test1b, test1c,])
+    test2a = exact_answer('question 2 expected', [r'\s2a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 2b\.\n'],
+                          text, points=0.5)
+    test2b = exact_answer('question 2 actual', [r'\s2b\. \n+ tabledata \s 0*\.6+ .+ tabledata \s 2c\.\n'],
+                          text, points=0.5)
+    test2c = exact_answer('question 2 difference',
+                          [r'\s2c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 3a\.'],
+                          text, points=0.5)
+    test3a = exact_answer('question 3 expected', [r'\s3a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 3b\.\n'],
+                          text, points=0.5)
+    test3b = exact_answer('question 3 actual', [r'\s3b\. \n+ tabledata \s 4\.5 .+ tabledata \s 3c\.\n'],
+                          text, points=0.5)
+    test3c = exact_answer('question 3 difference',
+                          [r'\s3c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 4a\.'],
+                          text, points=0.5)
+    test4a = exact_answer('question 4 expected', [r'\s4a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 4b\.\n'],
+                          text, points=0.5)
+    test4b = exact_answer('question 4 actual', [r'\s4b\. \n+ tabledata \s 50 .+ tabledata \s 4c\.\n'],
+                          text, points=0.5)
+    test4c = exact_answer('question 4 difference',
+                          [r'\s4c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 5a\.'],
+                          text, points=0.5)
+    test5a = exact_answer('question 5 expected', [r'\s5a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 5b\.\n'],
+                          text, points=0.5)
+    test5b = exact_answer('question 5 actual', [r'\s5b\. \n+ tabledata \s 2.0 .+ tabledata \s 5c\.\n'],
+                          text, points=0.5)
+    test5c = exact_answer('question 5 difference',
+                          [r'\s5c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 6a\.'],
+                          text, points=0.5)
+    test6a = exact_answer('question 6 expected', [r'\s6a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 6b\.\n'],
+                          text, points=0.5)
+    test6b = exact_answer('question 6 actual', [r'\s6b\. \n+ tabledata \s 1.0 .+ tabledata \s 6c\.\n'],
+                          text, points=0.5)
+    test6c = exact_answer('question 6 difference',
+                          [r'\s6c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ section'],
+                          text, points=0.5)
+    test7a = exact_answer('question 7 expected', [r'\s7a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 7b\.\n'],
+                          text, points=0.5)
+    test7b = exact_answer('question 7 actual', [r'\s7b\. \n+ tabledata \s error .+ tabledata \s 7c\.\n'],
+                          text, points=0.5)
+    test7c = exact_answer('question 7 difference',
+                          [r'\s7c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ 8a\.'],
+                          text, points=0.5)
+    test8a = exact_answer('question 8 expected', [r'\s8a\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s 8b\.\n'],
+                          text, points=0.5)
+    test8b = exact_answer('question 8 actual', [r'\s8b\. \n+ tabledata \s a .+ tabledata \s 8c\.\n'],
+                          text, points=0.5)
+    test8c = exact_answer('question 8 difference',
+                          [r'\s8c\. \n+ tabledata \s [a-zA-Z0-9] .+ tabledata \s print .+ section'],
+                          text, points=0.5)
+    tests.extend([test1a, test1b, test1c, test2a, test2b, test2c, test3a, test3b, test3c, test4a, test4b, test4c,
+                  test5a, test5b, test5c, test6a, test6b, test6c, test7a, test7b, test7c, test8a, test8b, test8c])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
