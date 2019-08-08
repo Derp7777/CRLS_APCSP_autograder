@@ -24,7 +24,7 @@ class UploadScratchForm(FlaskForm):
                                        ('2.6', '2.6'), ('3.2_alternate', '3.2_alternate'),
                                        ('3.3_3.4_alternate', '3.3_3.4_alternate'), ('4.2_alternate', '4.2_alternate'),
                                        ('4.3a_alternate', '4.3a_alternate'), ('4.3b_alternate', '4.3b_alternate'),
-                                       ('4.4','4.4'),
+                                       ('4.4', '4.4'),
                                        ('karel1', 'karel1'), ('karel2a', 'karel2a'),
                                        ('karel2b', 'karel2b'),
                                        ('karel3a', 'karel3a'), ('karel3b', 'karel3b'), ('karel3c', 'karel3c'),
@@ -47,6 +47,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('research_yourself', 'research_yourself'),
                                        ('routers_and_redundancy', 'routers_and_redundancy'),
                                        ('python_1.020', 'python_1.020'),
+                                       ('python_1.030', 'python_1.030'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
     submit = SubmitField('Submit for autograding')
