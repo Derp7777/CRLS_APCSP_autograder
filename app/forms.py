@@ -34,8 +34,9 @@ class UploadScratchForm(FlaskForm):
 
 class UploadDocLinkForm(FlaskForm):
     link = StringField('Copy+paste link of Google document here')
-    lab = SelectField('Lab?', choices=[('binary_practice', 'binary_practice'),
+    lab = SelectField('Lab?', choices=[('binary_practice_v4', 'binary_practice_v4'),
                                        ('black_and_white_pixelation', 'black_and_white_pixelation'),
+                                       ('bytes_and_file_sizes_v3', 'bytes_and_file_sizes_v3'),
                                        ('encoding_color_images', 'encoding_color_images'),
                                        ('encryption_1', 'encryption_1'), ('encryption_2', 'encryption_2'),
                                        ('encryption_3', 'encryption_3'),
