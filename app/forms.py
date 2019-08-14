@@ -42,6 +42,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('encryption_3', 'encryption_3'),
                                        ('encryption_4', 'encryption_4'),
                                        ('hardware_esd_formfactors_cards', 'hardware_esd_formfactors_cards'),
+                                       ('hexadecimal_numbers_v3', 'hexadecimal_numbers_v3'),
                                        ('hex_minilab', 'hex_minilab'),
                                        ('ip_addressing_dns', 'ip_addressing_dns'),
                                        ('privacy_policies', 'privacy_policies'),
@@ -49,6 +50,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('routers_and_redundancy', 'routers_and_redundancy'),
                                        ('python_1.020', 'python_1.020'),
                                        ('python_1.030', 'python_1.030'),
+                                       ('python_2.020', 'python_2.020'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
     submit = SubmitField('Submit for autograding')
