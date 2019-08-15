@@ -51,6 +51,8 @@ class UploadDocLinkForm(FlaskForm):
                                        ('python_1.020', 'python_1.020'),
                                        ('python_1.030', 'python_1.030'),
                                        ('python_2.020', 'python_2.020'),
+                                       ('python_2.032', 'python_2.032'),
+                                       ('python_2.040', 'python_2.040'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
     submit = SubmitField('Submit for autograding')
