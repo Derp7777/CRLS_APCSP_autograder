@@ -31,7 +31,7 @@ def index():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
             if request.form['lab'] in ['1.040', '1.060', '2.020', '2.032a', '2.032b', '2.040', '2.050a', '2.050b',
-                                       '3.011', '3.020', '3.026', '4.011', '4.021', '4.022', '4.025', '4.031',
+                                       '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.031',
                                        '4.036', '6.011', '6.021', '6.031', '6.041', '7.021', '7.031', '7.034', ]:
                 return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
@@ -991,6 +991,8 @@ def docs_feedback_python_2032():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+
+
 @app.route('/docs/python_2040')
 def docs_feedback_python_2040():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -1004,10 +1006,38 @@ def docs_feedback_python_2040():
 
     print(text)
     test1a = exact_answer('1a ', [r'1a\. .+? tabledata \s* pretty \s good \s grade .+? tabledata .+? 2a\.'], text, points=2)
-    test2a = exact_answer('1a ', [r'2a\. .+? tabledata \s*  .+? tabledata .+? 3a\.'], text, points=3)
-    test3a = exact_answer('1a ', [r'3a\. .+? tabledata \s* .+? Chec'], text, points=3)
+    test2a = exact_answer('2a ', [r'2a\. .+? tabledata \s*  .+? tabledata .+? 3a\.'], text, points=3)
+    test3a = exact_answer('3a ', [r'3a\. .+? tabledata \s* .+? Chec'], text, points=3)
 
     tests.extend([test1a,test2a, test3a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/python_2050')
+def docs_feedback_python_2050():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 8, 'manually_scored': 0, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('1a ', [r'1a\. .+? tabledata \s* [a-zA-Z] .+? tabledata .+? 1b\.'], text, points=1)
+    test2a = exact_answer('2a ', [r'2a\. .+? tabledata \s* [a-zA-Z] .+? tabledata .+? 2b\.'], text, points=1)
+    test3a = exact_answer('3a ', [r'3a\. .+? tabledata \s* [a-zA-Z] .+? tabledata .+? 3b\.'], text, points=1)
+    test4a = exact_answer('4a ', [r'4a\. .+? tabledata \s* [a-zA-Z] .+? tabledata .+? 4b\.'], text, points=1)
+    test1b = exact_answer('1b ', [r'1b\. .+? tabledata \s* a \s* d \s* .+? tabledata .+? 2a\.'], text, points=1)
+    test2b = exact_answer('2b ', [r'2b\. .+? tabledata \s* c .+? tabledata .+? 3a\.'], text, points=1)
+    test3b = exact_answer('3b ', [r'3b\. .+? tabledata \s* e .+? tabledata .+? 4a\.'], text, points=1)
+    test4b = exact_answer('4b ', [r'4b\. .+? tabledata \s* a .+? b.+? c .+? haha .+? e .+? check'], text, points=1)
+
+    tests.extend([test1a, test1b, test2a, test2b, test3a, test3b, test4a, test4b])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
@@ -3121,6 +3151,84 @@ def feedback_4011():
 
                 test_ifs = find_if(function_data, 3, 5, minmax='max')
                 tests.append(test_ifs)
+
+                # Find number of PEP8 errors and helps
+                test_pep8 = pep8(filename, 14)
+                tests.append(test_pep8)
+                test_help = helps(filename, 5)
+                tests.append(test_help)
+
+                for test in tests:
+                    if test['pass']:
+                        score_info['score'] += test['points']
+                score_info['finished_scoring'] = True
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+
+
+@app.route('/feedback_4012')
+def feedback_4012():
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_function, find_loop, function_called, find_if
+    from app.python_labs.function_test import run_unit_test, extract_single_function,\
+        extract_all_functions, create_testing_file
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 69,  'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '4.012')
+    tests.append(test_filename)
+    flash("got here")
+    print("got here")
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+
+        # Check for function
+        test_find_function = find_function(filename, 'samuel_l_algorithm', 1, points=5)
+        tests.append(test_find_function)
+
+        if test_find_function['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            extract_all_functions(filename)
+            function_data = extract_single_function(filename, 'samuel_l_algorithm')
+            create_testing_file(filename)
+
+            # Check for a loop of some sort (for or while)
+            test_loop = find_loop(function_data, 5)
+            test_loop['name'] += "Testing there is a loop in the samuel_l_algorithm function.<br>"
+            tests.append(test_loop)
+
+            if test_loop['pass'] is False:
+                return render_template('feedback.html', user=user, tests=tests, filename=filename,
+                                       score_info=score_info)
+            else:
+                # Check that function is called 3x
+                test_function_run = function_called(filename, 'samuel_l_algorithm', 3, points=5)
+                tests.append(test_function_run)
+
+                test_ifs = find_if(function_data, 3, 5, minmax='max')
+                tests.append(test_ifs)
+
+                test_function_1 = run_unit_test('4.012', 1, 10)
+                test_function_1['name'] += " (samuel_l_algorithm with 'Birdman or (The Unexpected Virtue of Ignorance)'" \
+                                           " returns 'bad) "
+                tests.append(test_function_1)
+
+                test_function_2 = run_unit_test('4.012', 2, 10)
+                test_function_2['name'] += " (samuel_l_algorithm with 'Snakes on a plane' returns 'good') "
+                tests.append(test_function_2)
+
+                test_function_3 = run_unit_test('4.012', 3, 10)
+                test_function_3['name'] += " (samuel_l_algorithm with 'aladdin' returns 'maybe') "
+                tests.append(test_function_3)
 
                 # Find number of PEP8 errors and helps
                 test_pep8 = pep8(filename, 14)
