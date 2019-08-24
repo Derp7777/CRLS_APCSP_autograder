@@ -473,6 +473,76 @@ def docs_feedback_ip_addressing_dns():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/lossless_compression')
+def docs_feedback_lossless_compression():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 13, 'manually_scored': 32, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('question 1a song name', [r'\s1a\. .+? tabledata \s [a-zA-Z\.0-9] .+? 2a\.'], text, points=5)
+    test2a = exact_answer('question 2a screenshot compressed txt',
+                          [r'\s2a\. .+? tabledata \s aaa \s inlineobject .+? 3a\.'], text, points=1)
+    test3a = exact_answer('question 3a screenshot dictionary',
+                          [r'\s3a\. .+? tabledata \s aaa \s inlineobject .+? 4a\.'], text, points=1)
+    test4a = exact_answer('question 4a  stats',
+                          [r'\s4a\. .+? tabledata \s aaa \s inlineobject .+? 5a\.'], text, points=1)
+    test5a = keyword_and_length('question 5a', [r'[a-zA-Z]'], text,
+                                search_string=r'\s5a\. .+? tabledata (.+) 6a\.', min_length=10, points=1)
+    test6a = keyword_and_length('question 6a', [r'[a-zA-Z]'], text,
+                                search_string=r'\s6a\. .+? tabledata (.+) 7a\.', min_length=15, points=1)
+    test7a = keyword_and_length('question 7a', [r'[a-zA-Z]'], text,
+                                search_string=r'\s7a\. .+? tabledata (.+) 8a\.', min_length=10, points=1)
+    test8a = keyword_and_length('question 8a', [r'[a-zA-Z]'], text,
+                                search_string=r'\s8a\. .+? tabledata (.+) 9a\.', min_length=8, points=1)
+    test9a = keyword_and_length('question 9a', [r'[a-zA-Z]'], text,
+                                search_string=r'\s9a\. .+? tabledata (.+) $', min_length=10, points=1)
+    tests.extend([test1a, test2a, test3a, test4a, test5a, test6a, test7a, test8a, test9a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/lossy_compression')
+def docs_feedback_lossy_compression():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 25, 'manually_scored': 20, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a what is happening', [r'[a-zA-Z]'], text,
+                                search_string=r'\s1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = exact_answer('2a counts?', [r'\s2a\. .+? tabledata \s (y|yes) .+? 2b\.'], text, points=5)
+    test3a = keyword_and_length('3a Lossy refers to?', [r'[a-zA-Z]'], text,
+                                search_string=r'\s2b\. .+? tabledata (.+) 3a\.', min_length=10, points=1)
+    test4a1 = exact_answer('4a-1', [r'\s4a-1\. .+? tabledata \s (audio|video|image) .+? 4b-1\.'], text, points=2)
+    test4a2 = exact_answer('4a-2', [r'\s4a-2\. .+? tabledata \s (audio|video|image) .+? 4b-2\.'], text, points=2)
+    test4a3 = exact_answer('4a-3', [r'\s4a-3\. .+? tabledata \s (audio|video|image) .+? 4b-3\.'], text, points=2)
+    test4b1 = exact_answer('4b-1', [r'\s4b-1\. .+? tabledata \s [a-zA-Z] .+? 4c-1\.'], text, points=2)
+    test4b2 = exact_answer('4b-2', [r'\s4b-2\. .+? tabledata \s [a-zA-Z] .+? 4c-2\.'], text, points=2)
+    test4b3 = exact_answer('4b-3', [r'\s4b-3\. .+? tabledata \s [a-zA-Z] .+? 4c-3\.'], text, points=2)
+    test4c1 = exact_answer('4c-1', [r'\s4c-1\. .+? tabledata \s (uncompressed|lossy|lossless) .+? 4a-2\.'], text, points=2)
+    test4c2 = exact_answer('4c-2', [r'\s4c-2\. .+? tabledata \s (uncompressed|lossy|lossless) .+? 4a-3\.'], text, points=2)
+    test4c3 = exact_answer('4c-3', [r'\s4c-3\. .+? tabledata \s (uncompressed|lossy|lossless) .+? $'], text, points=2)
+    tests.extend([test1a, test2a, test3a, test4a1, test4b1, test4c1, test4a2, test4b2, test4c2, test4a3, test4b3,
+                  test4c3, ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/python_1020')
 def docs_feedback_python_1020():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length

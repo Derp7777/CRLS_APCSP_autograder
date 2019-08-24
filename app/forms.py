@@ -43,6 +43,8 @@ class UploadDocLinkForm(FlaskForm):
                                        ('hardware_esd_formfactors_cards', 'hardware_esd_formfactors_cards'),
                                        ('hex_minilab', 'hex_minilab'),
                                        ('ip_addressing_dns', 'ip_addressing_dns'),
+                                       ('lossless_compression', 'lossless_compression'),
+                                       ('lossy_compression', 'lossy_compression'),
                                        ('privacy_policies', 'privacy_policies'),
                                        ('research_yourself', 'research_yourself'),
                                        ('routers_and_redundancy', 'routers_and_redundancy'),
