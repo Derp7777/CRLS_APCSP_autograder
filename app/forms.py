@@ -7,7 +7,7 @@ class UploadForm(FlaskForm):
     lab = SelectField('Lab?', choices=[('1.040', '1.040'), ('1.060', '1.060'), ('2.020','2.020'),
                                        ('2.032a', '2.032a'), ('2.032b', '2.032b'), ('2.040', '2.040'),
                                        ('2.051a', '2.051a'), ('2.051b', '2.051b'), ('3.011', '3.011'),
-                                       ('3.020', '3.020'),  ('3.026', '3.026'),  ('4.011', '4.011'),
+                                       ('3.020', '3.020'),  ('3.026', '3.026'),  ('4.011', '4.011'), ('4.012', '4.012'),
                                        ('4.021', '4.021'), ('4.022', '4.022'),  ('4.025', '4.025'),
                                        ('4.031', '4.031'),  ('4.036', '4.036'), ('6.011', '6.011'), ('6.021', '6.021'),
                                        ('6.031', '6.031'),
@@ -34,14 +34,17 @@ class UploadScratchForm(FlaskForm):
 
 class UploadDocLinkForm(FlaskForm):
     link = StringField('Copy+paste link of Google document here')
-    lab = SelectField('Lab?', choices=[('binary_practice', 'binary_practice'),
+    lab = SelectField('Lab?', choices=[('binary_practice_v4', 'binary_practice_v4'),
                                        ('black_and_white_pixelation', 'black_and_white_pixelation'),
+                                       ('bytes_and_file_sizes_v3', 'bytes_and_file_sizes_v3'),
                                        ('encoding_color_images', 'encoding_color_images'),
                                        ('encryption_1', 'encryption_1'), ('encryption_2', 'encryption_2'),
                                        ('encryption_3', 'encryption_3'),
                                        ('encryption_4', 'encryption_4'),
                                        ('hardware_esd_formfactors_cards', 'hardware_esd_formfactors_cards'),
+                                       ('hexadecimal_numbers_v3', 'hexadecimal_numbers_v3'),
                                        ('hex_minilab', 'hex_minilab'),
+                                       ('internet_2_v2', 'internet_2_v2'),
                                        ('ip_addressing_dns', 'ip_addressing_dns'),
                                        ('lossless_compression', 'lossless_compression'),
                                        ('lossy_compression', 'lossy_compression'),
@@ -50,6 +53,10 @@ class UploadDocLinkForm(FlaskForm):
                                        ('routers_and_redundancy', 'routers_and_redundancy'),
                                        ('python_1.020', 'python_1.020'),
                                        ('python_1.030', 'python_1.030'),
+                                       ('python_2.020', 'python_2.020'),
+                                       ('python_2.032', 'python_2.032'),
+                                       ('python_2.040', 'python_2.040'),
+                                       ('python_2.050', 'python_2.050'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
     submit = SubmitField('Submit for autograding')
