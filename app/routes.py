@@ -84,6 +84,75 @@ def docs():
     return render_template('index.html', title='Home', user=user, form=form)
 
 
+@app.route('/docs/big_data_sleuth_card')
+def docs_feedback_big_data_sleuth_card():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 9, 'manually_scored': 16, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('1a. source?', [r'1a .+? tabledata \s* .+? archive.+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? measure .+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? wind .+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? earth .+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? twitter .+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? alternative.+? 2a\.',
+                                          r'1a .+? tabledata \s* .+? locator .+? 2a\.'], text, points=5)
+    test2a = keyword_and_length('2a. Website useful for?', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+?) tabledata .+? tabledata  .+? 3a\.',
+                                min_length=10, points=1)
+    test3a = keyword_and_length('3a. Visualization useful?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3a\. .+? tabledata (.+?) tabledata .+? tabledata  .+? 4a\.',
+                                min_length=10, points=1)
+    test4a = keyword_and_length('4a. Where data coming from?', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+?) tabledata .+? tabledata  .+? 5a\.',
+                                min_length=10, points=1)
+    test5a = keyword_and_length('5a. Is this big data??', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+?) tabledata .+? check', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test3a, test4a, test5a, ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/big_data_worksheet')
+def docs_feedback_big_data_worksheet():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 12, 'manually_scored': 23, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = exact_answer('1a. 5 years?', [r'1a .+? tabledata \s* 5\.7 .+? 1b\.'], text, points=5)
+    test1b = exact_answer('1b. 15 years?', [r'1b .+? tabledata \s* 190 .+? 1c\.'], text, points=1)
+    test1c = keyword_and_length('1c. Show work', [r'[a-zA-Z]+'], text,
+                                search_string=r'1c\. .+? tabledata (.+?) 1d\.', min_length=7, points=1)
+    test1d = keyword_and_length('1d. Moores law', [r'[a-zA-Z]+'], text,
+                                search_string=r'1d\. .+? tabledata (.+?) code', min_length=10, points=1)
+    test2a = keyword_and_length('2a. 3 sources of data', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+?) 3a\.', min_length=7, points=1)
+    test3a = keyword_and_length('3a. 3Vs', [r'[a-zA-Z]+'], text,
+                                search_string=r'3a\. .+? tabledata (.+?) 4a\.', min_length=10, points=1)
+    test4a = keyword_and_length('4a. Big data good?', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+?) 4b\.', min_length=10, points=1)
+    test4b = keyword_and_length('4b. Big data bad', [r'[a-zA-Z]+'], text,
+                                search_string=r'4b\. .+? tabledata (.+?) $', min_length=10, points=1)
+    tests.extend([test1a, test1b, test1c, test1d, test2a, test3a, test4a, test4b,])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/binary_practice')
 def docs_feedback_binary_practice():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -262,6 +331,34 @@ def docs_feedback_bytes_and_file_sizes_v3():
     tests.extend([test1a, test2a, test3a, test4a, test5a, test6a, test8a, test8b, test9a, test9b, test10a, test10b,
                   test11a, test11b, test12a, test12b, test13a, test13b, test14a, test14b, test15a, test15b, test16a,
                   test16b, test17a, test17b])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/cybersecurity_and_crime')
+def docs_feedback_cybersecurity_and_crime():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 5, 'manually_scored':20, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+    print(text)
+    test1a = keyword_and_length('1a. 3 examples of cybercrime', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = keyword_and_length('2a. What is a virus', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 3a\.', min_length=7, points=1)
+    test3a = keyword_and_length('3a. What is DDOS?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3a\. .+? tabledata (.+?) 4a\.', min_length=10, points=1)
+    test4a = keyword_and_length('4a. What is phishing?', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+?) 5a\.', min_length=10, points=1)
+    test5a = keyword_and_length('5a. Pick one, write about how to defend against it?', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+?) $', min_length=10, points=1)
+    tests.extend([test1a, test2a, test3a, test4a, test5a,])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
@@ -1391,6 +1488,88 @@ def docs_feedback_research_yourself():
     test3b = keyword_and_length('3b Why do you think so', [r'[a-zA-Z]+'], text,
                                 search_string=r'3b. .+? tabledata (.+) ', min_length=4, points=1)
     tests.extend([test_info, test_where, test2a, test3a, test3b])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/visualization_exploring_trends')
+def docs_feedback_visualization_exploring_trends():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 13, 'manually_scored': 37, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. Where data comes from', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=7, points=1)
+    test2a = keyword_and_length('2a. How data adjusted', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 2b\.', min_length=7, points=1)
+    test2b = keyword_and_length('2b. Value of 100?', [r'[a-zA-Z]+'], text,
+                                search_string=r'2b\. .+? tabledata (.+) 3a\.', min_length=7, points=1)
+    test3a = keyword_and_length('3a. Digital divide?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3a\. .+? tabledata (.+?) 3b\.', min_length=10, points=1)
+    test3b = keyword_and_length('3b. Digital divide affect result?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+?) exploring', min_length=10, points=1)
+    test4a = exact_answer('4a. screenshot', [r'4a\. .+? tabledata \s* aaa \s* inlineobject \s*  5a\.'], text, points=5)
+    test5a = keyword_and_length('5a. Describe terms?', [r'[a-zA-Z]+'], text,
+                               search_string=r'5a\. .+? tabledata (.+)  6a\.', min_length=10, points=1)
+    test6a = keyword_and_length('6a. Describe charts?', [r'[a-zA-Z]+'], text,
+                               search_string=r'6a\. .+? tabledata (.+)  7a\.', min_length=10, points=1)
+    test7a = keyword_and_length('7a. Plausible story?', [r'[a-zA-Z]+'], text,
+                                search_string=r'7a\. .+? tabledata (.+)  $', min_length=15, points=1)
+
+    tests.extend([test1a, test2a, test2b, test3a, test3b, test4a, test5a, test6a, test7a, ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/visualization_worksheet')
+def docs_feedback_visualization_worksheet():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 18, 'manually_scored': 32, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. GPA, what is wrong?', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2\.', min_length=10, points=1)
+    test2a = exact_answer('2a. screenshot', [r'2a\. .+? tabledata \s* aaa \s* inlineobject \s*  2b\.'], text, points=5)
+    test2b = keyword_and_length('2b. Describe what you see', [r'[a-zA-Z]+'], text,
+                                search_string=r'2b\. .+? tabledata (.+) 2c\.', min_length=7, points=1)
+    test2c = keyword_and_length('2c. Tricks?', [r'[a-zA-Z]+'], text,
+                                search_string=r'2c\. .+? tabledata (.+) 3\.', min_length=10, points=1)
+
+    test3a = keyword_and_length('3a. Correlation does not imply causation?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3a\. .+? tabledata (.+?) 3b\.', min_length=10, points=1)
+    test3b = keyword_and_length('3b. Dismissing correlation.', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+?) 4\.', min_length=10, points=1)
+    test4a = exact_answer('4a. screenshot', [r'4a\. .+? tabledata \s* aaa \s* inlineobject \s*  4b\.'], text, points=1)
+    test4b = keyword_and_length('4b. Explain what showing, explain why good', [r'[a-zA-Z]+'], text,
+                                search_string=r'4b\. .+? tabledata (.+?) 5\.', min_length=10, points=1)
+    test5a = exact_answer('5a. screenshot', [r'5a\. .+? tabledata \s* aaa \s* inlineobject \s*  5b\.'], text, points=1)
+    test5b = keyword_and_length('5b. Explain why bad', [r'[a-zA-Z]+'], text,
+                                search_string=r'5b\. .+? tabledata (.+?) 5c\.', min_length=10, points=1)
+    test5c = exact_answer('5c. screenshot', [r'5c\. .+? tabledata \s* aaa \s* inlineobject \s*  5d\.'], text, points=1)
+    test5d = keyword_and_length('5d. Explain why bad', [r'[a-zA-Z]+'], text,
+                                search_string=r'5d\. .+? tabledata (.+?) 5e\.', min_length=10, points=1)
+    test5e = exact_answer('5e. screenshot', [r'5e\. .+? tabledata \s* aaa \s* inlineobject \s*  5f\.'], text, points=1)
+    test5f = keyword_and_length('5f. Explain why bad', [r'[a-zA-Z]+'], text,
+                                search_string=r'5f\. .+? tabledata (.+?) $', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test2b, test2c, test3a, test3b, test4a, test4b, test5a, test5b, test5c, test5d,
+                  test5e, test5f])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']

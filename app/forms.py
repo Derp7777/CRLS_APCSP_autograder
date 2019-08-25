@@ -34,9 +34,12 @@ class UploadScratchForm(FlaskForm):
 
 class UploadDocLinkForm(FlaskForm):
     link = StringField('Copy+paste link of Google document here')
-    lab = SelectField('Lab?', choices=[('binary_practice_v4', 'binary_practice_v4'),
+    lab = SelectField('Lab?', choices=[('big_data_sleuth_card', 'big_data_sleuth_card'),
+                                       ('big_data_worksheet', 'big_data_worksheet'),
+                                       ('binary_practice_v4', 'binary_practice_v4'),
                                        ('black_and_white_pixelation', 'black_and_white_pixelation'),
                                        ('bytes_and_file_sizes_v3', 'bytes_and_file_sizes_v3'),
+                                       ('cybersecurity_and_crime', 'cybersecurity_and_crime'),
                                        ('encoding_color_images', 'encoding_color_images'),
                                        ('encryption_1', 'encryption_1'), ('encryption_2', 'encryption_2'),
                                        ('encryption_3', 'encryption_3'),
@@ -58,5 +61,8 @@ class UploadDocLinkForm(FlaskForm):
                                        ('python_2.040', 'python_2.040'),
                                        ('python_2.050', 'python_2.050'),
                                        ('scratch_1.2', 'scratch_1.2'),
-                                       ('scratch_2.5_alternate', 'scratch_2.5_alternate')])
+                                       ('scratch_2.5_alternate', 'scratch_2.5_alternate'),
+                                       ('visualization_exploring_trends', 'visualization_exploring_trends'),
+                                       ('visualization_worksheet', 'visualization_worksheet'),
+                                       ])
     submit = SubmitField('Submit for autograding')
