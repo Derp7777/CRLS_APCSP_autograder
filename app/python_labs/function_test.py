@@ -79,8 +79,9 @@ def create_testing_file(p_filename):
 
     if c.err:
         raise Exception("There as a problem creating the python test file " + cmd
-                        + "<br>One possible reason is there is nothing in the main part of the code.  If this"
-                          "is the case, add a dummy line there (like a print('hello') or something like that.")
+                        + "\nOne possible reason is there is nothing in the main part of the code.  If this"
+                          "is the case, add a dummy line there (like a print('hello') or something like that.\n"
+                          "Another possible reason is that you don't have any functions.\n")
 
 
 # Inputs: p_filename, filename to extract functions from
