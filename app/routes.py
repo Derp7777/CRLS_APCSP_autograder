@@ -31,8 +31,9 @@ def index():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
             if request.form['lab'] in ['1.040', '1.060', '2.020', '2.032a', '2.032b', '2.040', '2.050a', '2.050b',
-                                       '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.031',
-                                       '4.036', '6.011', '6.021', '6.031', '6.041', '7.021', '7.031', '7.034', ]:
+                                       '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.026',
+                                       '4.031', '4.036', '6.011', '6.021', '6.031', '6.041', '7.021', '7.031',
+                                       '7.034', ]:
                 return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
     form = UploadForm()
@@ -3787,6 +3788,97 @@ def feedback_4025():
 
             test_io_2 = win_most(filename)
             tests.append(test_io_2)
+
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
+            tests.append(test_pep8)
+            test_help = helps(filename, 5)
+            tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/feedback_4026')
+def feedback_4026():
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_loop, find_string
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, extract_single_function, \
+        run_unit_test
+    from app.python_labs.python_4_026 import case_1, case_2, case_3, case_4
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 134,  'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '4.026')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # extract functions and create python test file
+        extract_all_functions(filename)
+        create_testing_file(filename)
+        play_tournament_function = extract_single_function(filename, 'play_tournament')
+
+        test_function_1 = run_unit_test('4.026', 1, 15)
+        test_function_1['name'] += "2000 runs should give between 18000 and 21000 raised dead "
+        tests.append(test_function_1)
+
+        if test_function_1['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_function_2 = run_unit_test('4.026', 2, 10)
+            test_function_2['name'] += "100 runs of raise_army should have certain things in printout"
+            tests.append(test_function_2)
+
+            test_function_3 = run_unit_test('4.026', 3, 10)
+            test_function_3['name'] += "5 runs of raise_army should give correct undead_data."
+            tests.append(test_function_3)
+
+            test_function_4 = run_unit_test('4.026', 4, 15)
+            test_function_4['name'] += "500 runs of dance should give correct sim_data list."
+            tests.append(test_function_4)
+
+            test_function_5 = run_unit_test('4.026', 5, 10)
+            test_function_5['name'] += "Testing data analysis.  Spacing matters (i.e. 50.0% not 50.0 %)."
+            tests.append(test_function_5)
+
+
+            run_simulation_function = extract_single_function(filename, 'run_simulation')
+            test_run_sim = find_loop(run_simulation_function, 5)
+            test_run_sim['name'] = "Looking for loop in the run_simulation function (5 points).<br>"
+            tests.append(test_run_sim)
+
+            test_run_sim_data_analysis = find_string(run_simulation_function, r'\s*data_analysis\(', 1, points=5)
+            test_run_sim_data_analysis['name'] = "Checking that run_simulation calls data_analysis (5 points).<br>"
+            tests.append(test_run_sim_data_analysis)
+
+            test_function_6 = run_unit_test('4.026', 6, 5)
+            test_function_6['name'] = " Testing run_simulation function, verifying that if you call it with" \
+                                      "p_num_simulations of 300, the printout shows 300 runs. <br>" \
+                                      " Requires a working data_analysis (5 points).<br>"
+            tests.append(test_function_6)
+
+            # IO tests
+            test_io_1 = case_1(filename)
+            tests.append(test_io_1)
+            test_io_2 = case_2(filename)
+            tests.append(test_io_2)
+            test_io_3 = case_3(filename)
+            tests.append(test_io_3)
+            test_io_4 = case_4(filename)
+            tests.append(test_io_4)
 
             # Find number of PEP8 errors and helps
             test_pep8 = pep8(filename, 14)
