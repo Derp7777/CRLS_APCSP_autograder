@@ -6,30 +6,65 @@ import re
 
 
 class testAutograde(unittest.TestCase):
-      def test_1(self):
-            kann_list = ['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread',
-                         'noodles noodles', 'noodles noodles', 'Gooey gelato', 'fantastic spaghetti']
-            answer = item_list_to_dictionary(kann_list)
-            self.assertEqual(answer,
-                             {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles': 2, 'Gooey gelato': 1},
-                             "<br>Checking that item_list_to_dictionary works.<br>   Input "
-                             "['fantastic spaghetti', 'fantastic spaghetti', 'garlic bread', "
-                             "'noodles noodles', "
-                             "'noodles noodles', 'Gooey gelato', 'fantastic spaghetti'] "
-                             "<br>Expected {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles':2,"
-                             "'Gooey gelato':1}) <br>Got this: " + str(answer)
-                             )
+    def test_1(self):
+        hits = {"I got a scratch story to tell": 1500,
+                "mo history mo problems": 3000,
+                "The ten CRLS commandments": 3500,
+                "One more AP exam": 10000,
+                "Gimme the lunch money": 15000,
+                "Machine Fun Funk": 8000
+                }
+        answer = worst_hit(hits)
+        self.assertEqual(answer, 'I got a scratch story to tell'
+                         ,"<br>Checking that worst_hit works.<br>   Input dictionary: <br> " + str(hits) +
+                         "<br>Expected 'I got a scratch story to tell' <br>Got this: " + str(answer)
+                         )
 
-      def test_2(self):
-            kann_dict =  {'fantastic spaghetti': 3, 'garlic bread': 1, 'noodles noodles': 2, 'Gooey gelato': 99}
-            answer = min_item(kann_dict)
-            self.assertEqual(answer, 'garlic bread', "<br>Call min_item with input" \
-                                                     " {'fantastic spaghetti': 3, 'garlic bread': 1, "
-                                                     "'noodles noodles':2, " \
-                                                     "'Gooey gelato':99}.<br> " \
-                                                     "<br> Expect output 'garlic bread'). "
-                                                     "<br>Got this: " + str(answer))
+    def test_2(self):
+        hits = {"I got a scratch story to tell": 9500,
+                "mo history mo problems": 3000,
+                "The ten CRLS commandments": 3500,
+                "One more AP exam": 10000,
+                "Gimme the lunch money": 15000,
+                "Machine Fun Funk": 8000
+                }
+        answer = worst_hit(hits)
+        self.assertEqual(answer, 'mo history mo problems'
+                         , "<br>Checking that worst_hit works.<br>   Input dictionary: <br> " + str(hits) +
+                         "<br>Expected 'I got a scratch story to tell' <br>Got this: " + str(answer)
+                         )
 
+    def test_3(self):
+        hits = {"I got a scratch story to tell": 9500,
+                "mo history mo problems": 3000,
+                "The ten CRLS commandments": 3500,
+                "One more AP exam": 10000,
+                "Gimme the lunch money": 15000,
+                "Machine Fun Funk": 8000
+                }
+        answer = top_hits(hits)
+        self.assertEqual(answer,
+                         ['I got a scratch story to tell', 'One more AP exam', 'Gimme the lunch money',
+                          'Machine Fun Funk']
+                         , "<br>Checking that worst_hit works.<br>   Input dictionary: <br> " + str(hits) +
+                         "<br>Expected 'I got a scratch story to tell' <br>Got this: " + str(answer)
+                         )
+    def test_4(self):
+        hits = {"I got a scratch story to tell": 1500,
+                "mo history mo problems": 3000,
+                "The ten CRLS commandments": 13500,
+                "One more AP exam": 110000,
+                "Gimme the lunch money": 15000,
+                "Machine Fun Funk": 18000,
+                "oh holy night": 9999
+                }
+        answer = top_hits(hits)
+        self.assertEqual(answer,
+                         ['The ten CRLS commandments', 'One more AP exam', 'Gimme the lunch money', 'Machine Fun Funk',
+                          'oh holy night']
+                         , "<br>Checking that worst_hit works.<br>   Input dictionary: <br> " + str(hits) +
+                         "<br>Expected 'I got a scratch story to tell' <br>Got this: " + str(answer)
+                         )
 
 if __name__ == '__main__':
    unittest.main() 

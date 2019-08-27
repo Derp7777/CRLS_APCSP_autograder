@@ -4252,8 +4252,9 @@ def feedback_6041():
 @app.route('/feedback_6_042')
 def feedback_6042():
     from app.python_labs.filename_test import filename_test
-    from app.python_labs.find_items import find_function, find_string
-    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
+    from app.python_labs.find_items import find_function, find_loop, find_dictionary, function_called
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test, \
+        extract_single_function
     from app.python_labs.helps import helps
     from app.python_labs.pep8 import pep8
     from app.python_labs.python_6_041 import five_loop
@@ -4283,25 +4284,33 @@ def feedback_6042():
             extract_all_functions(filename)
             create_testing_file(filename)
 
-            # function test 1
-            test_function_1 = run_unit_test('6.042', 1, 10)
+            # unit tests
+            test_function_1 = run_unit_test('6.042', 1, 5)
             tests.append(test_function_1)
+            test_function_2 = run_unit_test('6.042', 2, 5)
+            tests.append(test_function_2)
 
-            # Check for function 1 inputs
+            # Check for function 2 inputs
             test_find_function_2 = find_function(filename, 'top_hits', 1, points=5)
             tests.append(test_find_function_2)
 
-            # unit test 2
-            test_function_2 = run_unit_test('6.042', 2, 20)
-            tests.append(test_function_2)
+            run_simulation_function = extract_single_function(filename, 'top_hits')
+            test_run_sim = find_loop(run_simulation_function, 5)
+            test_run_sim['name'] = "Looking for loop in the run_simulation function (5 points).<br>"
+            tests.append(test_run_sim)
 
-            # Check that removes, just look for del or pop
-            test_removal = find_string(filename_data, r"\.pop\( | del", 1, points=5)
-            tests.append(test_removal)
+            # unit tests
+            test_function_3 = run_unit_test('6.042', 3, 5)
+            tests.append(test_function_3)
+            test_function_4 = run_unit_test('6.042', 4, 5)
+            tests.append(test_function_4)
 
-            # Check that it's run 5x
-            test_five_times = five_loop(filename_data)
-            tests.append(test_five_times)
+            test_dictionary = find_dictionary(filename_data, num_items=6, points=5)
+            tests.append(test_dictionary)
+            test_function_run = function_called(filename, 'worst_hit', 3, points=5)
+            tests.append(test_function_run)
+            test_function_run = function_called(filename, 'top_hits', 3, points=5)
+            tests.append(test_function_run)
 
             # Find number of PEP8 errors and helps
             test_pep8 = pep8(filename, 14)
