@@ -40,6 +40,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('black_and_white_pixelation', 'black_and_white_pixelation'),
                                        ('bytes_and_file_sizes_v3', 'bytes_and_file_sizes_v3'),
                                        ('cybersecurity_and_crime', 'cybersecurity_and_crime'),
+                                       ('databases_2.002', 'databases_2.002'),
                                        ('encoding_color_images', 'encoding_color_images'),
                                        ('encryption_1', 'encryption_1'), ('encryption_2', 'encryption_2'),
                                        ('encryption_3', 'encryption_3'),
