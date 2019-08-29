@@ -418,13 +418,18 @@ def docs_feedback_databases_3002():
 
     user = {'username': 'CRLS Scratch Scholar'}
     tests = list()
-    score_info = {'score': 0, 'max_score': 59, 'manually_scored': 41, 'finished_scoring': True}
+    score_info = {'score': 0, 'max_score': 50, 'manually_scored': 0, 'finished_scoring': True}
 
     link = request.args['link']
     text = get_text(link)
 
     print(text)
-    test3a = exact_answer('3a. Christmas island', [r'3a\. .+? tabledata \s* aaa \s* inlineobject .+? create'], text, points=10)
+    test3a = exact_answer('3a. Christmas island',
+                          [r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* = .+? holiday \s island .+? '
+                           r'where \s `*name`* \s* = \s* .+? christmas \s island .+? 3b\.',
+                           r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* = .+? holiday \s island .+? '
+                           r'where \s `*code`* \s* = \s* .+? cxr .+? 3b\.'
+                           ], text, points=10)
     test3b = exact_answer('3b. population > 5M', [r'3b\. .+? tabledata \s* aaa \s* inlineobject .+? 4b\.'], text, points=10)
     test3c = exact_answer('3c. Beginning w/York', [r'3c\. .+? tabledata \s* insert \s* into .+? deleting'], text, points=5)
     test3d = exact_answer('3d. Ending w/York', [r'3d\. .+? tabledata \s* aaa \s* inlineobject .+? 5b\.'], text, points=5)
