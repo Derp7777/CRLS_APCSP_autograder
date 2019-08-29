@@ -412,6 +412,32 @@ def docs_feedback_databases_2002():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/databases_3_002')
+def docs_feedback_databases_3002():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 59, 'manually_scored': 41, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test3a = exact_answer('3a. Christmas island', [r'3a\. .+? tabledata \s* aaa \s* inlineobject .+? create'], text, points=10)
+    test3b = exact_answer('3b. population > 5M', [r'3b\. .+? tabledata \s* aaa \s* inlineobject .+? 4b\.'], text, points=10)
+    test3c = exact_answer('3c. Beginning w/York', [r'3c\. .+? tabledata \s* insert \s* into .+? deleting'], text, points=5)
+    test3d = exact_answer('3d. Ending w/York', [r'3d\. .+? tabledata \s* aaa \s* inlineobject .+? 5b\.'], text, points=5)
+    test3e = exact_answer('3e. Avg. Africa population', [r'3e\. .+? tabledata \s* delete \s* from .+? updating'], text, points=10)
+    test3f = exact_answer('3f. unville', [r'3f\. .+? tabledata \s* aaa \s* inlineobject .+? 6b\.'], text, points=10)
+
+    tests.extend([test3a, test3b, test3c, test3d, test3e, test3f])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/encoding_color_images')
 def docs_feedback_encoding_color_images():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
