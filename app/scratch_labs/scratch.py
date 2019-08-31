@@ -220,8 +220,10 @@ def find_question(p_json, question_string, p_points):
                 if 'opcode' not in block:
                     continue
                 if block['opcode'] == 'sensing_askandwait':
-                    question = block['inputs']['QUESTION'][1][1]
-                    if re.search(question_string, question, re.X | re.M | re.S):
+                    question = extract_value(block['inputs']['QUESTION'], blocks)
+#                    question = block['inputs']['QUESTION'][1][1]
+                    print("QUESTION IS HTERE {}".format(question))
+                    if re.search(question_string, str(question), re.X | re.M | re.S):
                         p_test['pass'] = True
     if p_test['pass']:
         p_test['points'] += p_points
@@ -418,10 +420,10 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'motion_changeyby':
             dy = extract_value(current_block['inputs']['DY'], p_blocks)
             #dy = current_block['inputs']['DY'][1][1]
-            script.append(['motion_changeyby', dy])
+            script.extend(['motion_changeyby', dy]) # updated
         elif current_block['opcode'] == 'motion_changexby':
             dx = extract_value(current_block['inputs']['DX'], p_blocks)
-            script.append(['motion_changexby', dx])
+            script.extend(['motion_changexby', dx]) # tested
         elif current_block['opcode'] == 'motion_pointindirection':
             direction = extract_value(current_block['inputs']['DIRECTION'], p_blocks)
             script.append(['motion_pointindirection', direction])
@@ -457,15 +459,18 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'sensing_touchingobject':
             touchingobjectmenu_id = current_block['inputs']['TOUCHINGOBJECTMENU'][1]
             touching_object_list = build_scratch_script(touchingobjectmenu_id, p_blocks)
-            script.append(['sensing_touchingobject', touching_object_list])
+            script.extend(['sensing_touchingobject', touching_object_list])
         elif current_block['opcode'] == 'sensing_touchingobjectmenu':
             touching_object = current_block['fields']['TOUCHINGOBJECTMENU'][0]
-            script.append(['sensing_touchingobjectmenu', touching_object])
+            script.extend(['sensing_touchingobjectmenu', touching_object])
         elif current_block['opcode'] == 'looks_sayforsecs':
             time = current_block['inputs']['SECS'][1][1]
             message = extract_value(current_block['inputs']['MESSAGE'], p_blocks)
-            script.append(['looks_sayforsecs', message, time])  # Needs the append
-            print("script is this {}".format(script))
+            script.append(['looks_sayforsecs', message, time])  # Needs the append # 7/31 try again extend 8/1 need append
+
+            # 4.4 wants extend 4.3b wants append?
+            #return ['looks_sayforsecs', message, time]
+            print("looks_sayforsecs script is this {}".format(script))
         elif current_block['opcode'] == 'sensing_answer':
             return 'sensing_answer'
         elif current_block['opcode'] == 'data_setvariableto':
@@ -507,12 +512,12 @@ def build_scratch_script(starting_block_id, p_blocks):
             condition_id = current_block['inputs']['CONDITION'][1]
             if_script = build_scratch_script(substack_1_id, p_blocks)
             condition_script = build_scratch_script(condition_id, p_blocks)
-            script.append(['control_if', condition_script, if_script])
+            script.append(['control_if', condition_script, if_script])  # need append
         elif current_block['opcode'] == 'control_if_else':
             if 'SUBSTACK' not in current_block['inputs'].keys():
                 raise Exception("You have an if/else statement with nothing in the if.  "
                                 "Add something inside it before autograding")
-            if 'SUBSTACK2' not in  current_block['inputs'].keys():
+            if 'SUBSTACK2' not in current_block['inputs'].keys():
                 raise Exception("You have an if/else statement with nothing in the else.  "
                                 "Add something inside it before autograding")
 
@@ -524,22 +529,34 @@ def build_scratch_script(starting_block_id, p_blocks):
             condition_script = build_scratch_script(condition_id, p_blocks)
             script.append(['control_if_else', condition_script, if_script, else_script])
         elif current_block['opcode'] == 'operator_not':
-            operand_id = current_block['inputs']['OPERAND'][2]
+            #operand = extract_value(current_block['inputs']['OPERAND'], p_blocks)
+            operand_id = current_block['inputs']['OPERAND'][1]
             operand = build_scratch_script(operand_id, p_blocks)
-            script.append(['operator_not', operand])
-        elif current_block['opcode'] == 'operator_or':
-            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
-            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.append([operand1, 'or', operand2])
+            script.extend(['operator_not', operand])
         elif current_block['opcode'] == 'operator_mod':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
             script.extend(['operator_mod', num1, num2])
 
         elif current_block['opcode'] == 'operator_and':
-            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
-            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.append([operand1, 'and', operand2])
+            operand1_id = current_block['inputs']['OPERAND1'][1]
+            operand2_id = current_block['inputs']['OPERAND2'][1]
+            operand1 = build_scratch_script(operand1_id, p_blocks)
+            operand2 = build_scratch_script(operand2_id, p_blocks)
+            # operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
+            # operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
+            # script.extend([operand1, 'and', operand2])
+            script.extend(['operator_and', operand1, operand2])
+        elif current_block['opcode'] == 'operator_or':
+            operand1_id = current_block['inputs']['OPERAND1'][1]
+            operand2_id = current_block['inputs']['OPERAND2'][1]
+            operand1 = build_scratch_script(operand1_id, p_blocks)
+            operand2 = build_scratch_script(operand2_id, p_blocks)
+            # operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
+            # operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
+            # script.extend([operand1, 'or', operand2])
+            script.extend(['operator_or', operand1, operand2])
+
         elif current_block['opcode'] == 'operator_length':
             operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
             script.extend(['operator_length', operator_string])
@@ -548,10 +565,6 @@ def build_scratch_script(starting_block_id, p_blocks):
             operator_string = extract_value(current_block['inputs']['STRING'], p_blocks)
             script.extend(['operator_letter_of', letter, operator_string])
 
-        elif current_block['opcode'] == 'operator_equals':
-            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
-            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, '=', operand2])
         elif current_block['opcode'] == 'operator_subtract':
             num1 = extract_value(current_block['inputs']['NUM1'], p_blocks)
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
@@ -570,15 +583,21 @@ def build_scratch_script(starting_block_id, p_blocks):
             num2 = extract_value(current_block['inputs']['NUM2'], p_blocks)
             print("hhh num1 {} num2 {}".format(num1, num2))
             script.extend(['operator_multiply', num1, num2])
+        elif current_block['opcode'] == 'operator_equals':
+            operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
+            operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
+            # script.extend([operand1, '=', operand2])
+            script.extend(['operator_equals', operand1, operand2])
         elif current_block['opcode'] == 'operator_lt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
             print("QWERTY operator_lt operand 1 {} operand {}".format(operand1, operand2))
-            script.extend([operand1, '<', operand2])
+            script.extend(['operator_lt', operand1, operand2])
         elif current_block['opcode'] == 'operator_gt':
             operand1 = extract_value(current_block['inputs']['OPERAND1'], p_blocks)
             operand2 = extract_value(current_block['inputs']['OPERAND2'], p_blocks)
-            script.extend([operand1, '>', operand2])
+            #script.extend([operand1, '>', operand2])
+            script.extend(['operator_gt', operand1, operand2])
         elif current_block['opcode'] == 'operator_join':
             string1 = extract_value(current_block['inputs']['STRING1'], p_blocks)
             string2 = extract_value(current_block['inputs']['STRING2'], p_blocks)
@@ -591,12 +610,13 @@ def build_scratch_script(starting_block_id, p_blocks):
         elif current_block['opcode'] == 'looks_switchbackdropto':
             backdrop_id = current_block['inputs']['BACKDROP'][1]
             backdrop = build_scratch_script(backdrop_id, p_blocks)
-            script.append(['looks_switchbackdropto', backdrop])
+            script.extend(['looks_switchbackdropto', backdrop])
         elif current_block['opcode'] == 'looks_nextbackdrop':
             script = 'looks_nextbackdrop'
         elif current_block['opcode'] == 'looks_backdrops':
             backdrop = current_block['fields']['BACKDROP'][0]
-            script.append(backdrop)
+            return backdrop
+#            script.append(backdrop)
         elif current_block['opcode'] == 'pen_penDown':
             script.append('pen_penDown')
         elif current_block['opcode'] == 'pen_penUp':
@@ -607,7 +627,8 @@ def build_scratch_script(starting_block_id, p_blocks):
             color = current_block['inputs']['COLOR'][1][1]
             script.append(['pen_setPenColorToColor', color])
         elif current_block['opcode'] == 'argument_reporter_string_number':
-            script.append('VARIABLE_' + str(current_block['fields']['VALUE'][0]))
+            # script.extend(['VARIABLE_' + str(current_block['fields']['VALUE'][0])])
+            return 'VARIABLE_' + str(current_block['fields']['VALUE'][0])
         elif 'opcode' in current_block.keys():
             print("This opcode not done " + current_block['opcode'])
         next_block_id = current_block['next']
@@ -765,9 +786,14 @@ def count_stage_changes(p_json):
     :return: all matches, as a list of integers
     """
     import re
+    changes = 0
     for target in p_json['targets']:
         if target['isStage'] is True:
             matches = len(re.findall(r'(looks_switchcostumeto|looks_nextbackdrop)', str(p_json), re.X | re.M | re.S))
+        else:
+            matches = len(re.findall(r'(looks_nextbackdrop|looks_switchbackdropto)', str(p_json), re.X | re.M | re.S))
+        if matches:
+            changes += matches
     return matches
 
 

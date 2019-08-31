@@ -8,6 +8,7 @@ def run_unit_test(p_lab, p_test_number, p_points):
     """
     import delegator
     import re
+    import os.path
 
     p_unit_test = {"name": "Testing calling functions, test " + str(p_test_number) + ".  (" + str(p_points) +
                            " points )",
@@ -19,8 +20,15 @@ def run_unit_test(p_lab, p_test_number, p_points):
                    'points': 0
                    }
 
+    test_filename = '/tmp/' + str(p_lab) + '.test.py'
+    if not os.path.exists(test_filename):
+        p_unit_test['pass'] = False
+        p_unit_test['fail_message'] += "Testing file " + test_filename + " doesn't exist.  Bug somewhere?<br>"
+        return p_unit_test
+
     cmd = 'python3 /tmp/' + str(p_lab) + '.test.py testAutograde.test_' + str(p_test_number) + " 2>&1 "
     c = delegator.run(cmd)
+
 
     error = re.search('Error', c.out, re.X | re.M | re.S)
     failed_assertion = re.search('AssertionError', c.out, re.X | re.M | re.S)
@@ -70,7 +78,10 @@ def create_testing_file(p_filename):
     c = delegator.run(cmd)
 
     if c.err:
-        raise Exception("There as a problem creating the python test file " + cmd)
+        raise Exception("There as a problem creating the python test file " + cmd
+                        + "\nOne possible reason is there is nothing in the main part of the code.  If this"
+                          "is the case, add a dummy line there (like a print('hello') or something like that.\n"
+                          "Another possible reason is that you don't have any functions.\n")
 
 
 # Inputs: p_filename, filename to extract functions from

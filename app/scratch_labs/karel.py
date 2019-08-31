@@ -525,6 +525,8 @@ def _check_block(p_main_script, p_repeat_blocks, p_blocks):
                 opcode = p_blocks[key]['opcode']
                 if opcode == 'control_repeat':
                     times = p_blocks[key]['inputs']['TIMES'][1][1]
+                    print("aaa TIMES HERE {} ".format(times))
+
                     p_main_script[i] = ['control_repeat', times, p_repeat_blocks[key]]
                 else:
                     p_main_script[i] = p_repeat_blocks[key]
@@ -657,7 +659,7 @@ def _sub_dict_into_dict_helper(p_dict_subbed, p_dict_subber, p_blocks):
                 if item in p_dict_subber.keys():
                     opcode = p_blocks[item]['opcode']
                     if opcode == 'control_repeat' or opcode == 'control_forever':
-                        if opcode == 'control_repeat':
+                        if opcode == 'control_forever':
                             times = 150
                         else:
                             times = p_blocks[item]['inputs']['TIMES'][1][1]
@@ -692,7 +694,7 @@ def sub_dict_into_dict(p_dict_subbed, p_dict_subber, p_blocks):
     """
     _sub_dict_into_dict_helper(p_dict_subbed, p_dict_subber, p_blocks)
     for key in p_dict_subbed:
-        print(f"aaa simplify this key key {key}")
+        print(f"aaa simplify this key: {key}")
         print(f"aaa enumerate {p_dict_subbed[key]} type  {type(p_dict_subbed[key])}")
         for i, item in enumerate(p_dict_subbed[key]):
             if isinstance(item, list):
@@ -875,6 +877,9 @@ def arrange_karel_blocks(p_json):
     user_blocks_string = str(user_blocks)
     counter = 1
     updated_scripts = user_blocks
+    print("what the heck, updated scripts here: {}".format(updated_scripts))
+    print("what the heck, repeat scripts here: {}".format(repeat_scripts))
+
     print("ddd TRYING TO SIMPLIFY THE USER SCRIPTS")
     while replace_items:
         counter += 1
@@ -943,7 +948,7 @@ def find_turnright(p_user_blocks, p_points):
     :param p_points: number of points this is worth (int)
     :return:true of false
     """
-    p_test = {"name": "Testing that there is a user-defined turn right (" + str(p_points) + " points) <br>",
+    p_test = {"name": "Testing that there is a user-defined turnright (" + str(p_points) + " points) <br>",
               "pass": True,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>"
                               "There is a user-defined turn right!"
@@ -962,7 +967,8 @@ def find_turnright(p_user_blocks, p_points):
             p_test['fail_message'] += "turnright needs to turn right (2 possible definitions will pass) (fail)"
     else:
         p_test['pass'] = False
-        p_test['fail_message'] += "There is not a user-defined turnright block (fail)."
+        p_test['fail_message'] += "There is not a user-defined turnright block (fail).<br>" \
+                                  "The block needs to be named <b> exactly </b> turnright."
     return p_test
 
 

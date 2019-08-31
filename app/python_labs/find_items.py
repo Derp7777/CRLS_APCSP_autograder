@@ -84,7 +84,7 @@ def find_if(p_filename_data, p_num, p_points, *, minmax='min'):
     """
     import re
 
-    matches = len(re.findall(r"if \s", p_filename_data, re.X | re.M | re.S))
+    matches = len(re.findall(r"[^l]if \s", p_filename_data, re.X | re.M | re.S))
 
     p_test_find_questions = {"name": "Testing that there are least " + str(p_num) + " ifs (" + str(p_points) +
                                      " points)<br>",
