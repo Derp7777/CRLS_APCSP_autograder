@@ -64,6 +64,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('python_2.050', 'python_2.050'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate'),
+                                       ('two_factor_authentication', 'two_factor_authentication'),
                                        ('visualization_exploring_trends', 'visualization_exploring_trends'),
                                        ('visualization_worksheet', 'visualization_worksheet'),
                                        ])

@@ -1572,6 +1572,40 @@ def docs_feedback_research_yourself():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/two_factor_authentication')
+def docs_feedback_two_factor_authentication():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 7, 'manually_scored': 93, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. Two factor good?', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = keyword_and_length('2a. Two factor bad?', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 3\.', min_length=10, points=1)
+    test3a = exact_answer('3a. Screenshot of two-factor',
+                          [r'3a\. .+? tabledata \s* aaa \s* inlineobject \s*  3b\.'], text, points=1)
+    test3b = keyword_and_length('3b. Authentications more secure than before??', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+?) 3c\.', min_length=10, points=1)
+    test3c = keyword_and_length('3c. Authentications when you lose phone?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3c\. .+? tabledata (.+?) 3d\.', min_length=10, points=1)
+    test3d = keyword_and_length('3c. What happens when cancel two-factor??', [r'[a-zA-Z]+'], text,
+                                search_string=r'3d\. .+? tabledata (.+?) 4a\.', min_length=10, points=1)
+    test4a = keyword_and_length('4a. Celeb hack, what you think??', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+?) check', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test3a, test3b, test3c, test3d, test4a, ])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/visualization_exploring_trends')
 def docs_feedback_visualization_exploring_trends():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
