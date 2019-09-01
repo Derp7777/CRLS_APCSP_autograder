@@ -53,6 +53,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('ip_addressing_dns', 'ip_addressing_dns'),
                                        ('lossless_compression', 'lossless_compression'),
                                        ('lossy_compression', 'lossy_compression'),
+                                       ('network_protocols_nmap', 'network_protocols_nmap'),
                                        ('privacy_policies', 'privacy_policies'),
                                        ('research_yourself', 'research_yourself'),
                                        ('routers_and_redundancy', 'routers_and_redundancy'),

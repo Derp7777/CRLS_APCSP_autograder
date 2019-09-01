@@ -885,6 +885,39 @@ def docs_feedback_lossy_compression():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/network_protocols_nmap')
+def docs_feedback_network_protocols_nmap():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 46, 'manually_scored': 54, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('1a. SSH protocol', [r'1a\. .+? tabledata \s* tcp \s*  tabledata \s* 1b\.'], text, points=2)
+    test1b = exact_answer('1b. SSH protocol', [r'1b\. .+? tabledata \s* 22\s*  tabledata \s* '], text, points=2)
+
+    test2a = exact_answer('2a. http protocol', [r'2a\. .+? tabledata \s* tcp \s*  tabledata \s* 2b\.'], text, points=2)
+    test3a = exact_answer('3a. https protocol', [r'3a\. .+? tabledata \s* tcp \s*  tabledata \s* 3b\.'], text, points=2)
+    test4a = exact_answer('4a. ping protocol', [r'4a\. .+? tabledata \s* icmp \s*  tabledata \s* 4b\.'], text, points=2)
+    test5a = exact_answer('5a. DNS protocol', [r'5a\. .+? tabledata \s* both\s*  tabledata \s* 5b\.'], text, points=2)
+    test6a = exact_answer('6a. DHCP protocol', [r'6a\. .+? tabledata \s* udp\s*  tabledata \s* 6b\.'], text, points=2)
+    test7a = exact_answer('6a. remote desktop protocol',
+                          [r'7a\. .+? tabledata \s* both\s*  tabledata \s* 7b\.'], text, points=2)
+
+    test3b = keyword_and_length('3b. Authentications more secure than before??', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+?) 3c\.', min_length=10, points=1)
+
+    tests.extend([test1a, test1b, test2a, test3a, test3b, test4a, test5a, test6a, test7a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/python_1020')
 def docs_feedback_python_1020():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -1282,8 +1315,6 @@ def docs_feedback_python_2032():
         if test['pass']:
             score_info['score'] += test['points']
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
-
-
 
 
 @app.route('/docs/python_2040')
