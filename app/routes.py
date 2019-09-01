@@ -898,20 +898,45 @@ def docs_feedback_network_protocols_nmap():
 
     print(text)
     test1a = exact_answer('1a. SSH protocol', [r'1a\. .+? tabledata \s* tcp \s*  tabledata \s* 1b\.'], text, points=2)
-    test1b = exact_answer('1b. SSH protocol', [r'1b\. .+? tabledata \s* 22\s*  tabledata \s* '], text, points=2)
-
+    test1b = exact_answer('1b. SSH port', [r'1b\. .+? tabledata \s* 22\s*  tabledata \s* '], text, points=2)
     test2a = exact_answer('2a. http protocol', [r'2a\. .+? tabledata \s* tcp \s*  tabledata \s* 2b\.'], text, points=2)
+    test2b = exact_answer('2b. http port', [r'2b\. .+? tabledata \s* 80\s*  tabledata \s* '], text, points=2)
     test3a = exact_answer('3a. https protocol', [r'3a\. .+? tabledata \s* tcp \s*  tabledata \s* 3b\.'], text, points=2)
+    test3b = exact_answer('3b. https port', [r'3b\. .+? tabledata \s* 443\s*  tabledata \s* '], text, points=2)
     test4a = exact_answer('4a. ping protocol', [r'4a\. .+? tabledata \s* icmp \s*  tabledata \s* 4b\.'], text, points=2)
+    test4b = exact_answer('4b. ping port', [r'4b\. .+? tabledata \s* none\s*  tabledata \s* '], text, points=2)
     test5a = exact_answer('5a. DNS protocol', [r'5a\. .+? tabledata \s* both\s*  tabledata \s* 5b\.'], text, points=2)
+    test5b = exact_answer('5b. DNS port', [r'5b\. .+? tabledata \s* 53 \s*  tabledata \s* '], text, points=2)
     test6a = exact_answer('6a. DHCP protocol', [r'6a\. .+? tabledata \s* udp\s*  tabledata \s* 6b\.'], text, points=2)
-    test7a = exact_answer('6a. remote desktop protocol',
+    test6b = exact_answer('6b. DHCP port', [r'6b\. .+? tabledata .+? 68 .+? tabledata ',
+                                            r'6b\. .+? tabledata .+? 67 .+? tabledata'], text, points=2,
+                          required=2)
+    test7a = exact_answer('7a. remote desktop protocol',
                           [r'7a\. .+? tabledata \s* both\s*  tabledata \s* 7b\.'], text, points=2)
+    test7b = exact_answer('7b. remote desktop port', [r'7b\. .+? tabledata \s* 3389 \s*  tabledata \s* '], text,
+                          points=2)
+    test8a = exact_answer('8a. screenshot scan',
+                          [r'8a\. .+? tabledata \s aaa \s inlineobject .+? 8b\.'], text, points=1)
+    test8b = exact_answer('8b. open ports?',
+                          [r'8b\. .+? tabledata  .+? [0-9]+ .+? 8c\.'], text, points=1)
+    test8c = exact_answer('8c. TCP/UDP?',
+                          [r'8c\. .+? tabledata  .+? tcp .+? 8d\.'], text, points=10)
+    test8d = keyword_and_length('8d. Describe what you found', [r'[0-9]+', r'(tcp|udp)'], text,
+                                search_string=r'8d\. .+? tabledata (.+) 9\.', min_length=10, points=1, min_matches=2)
+    test9a = exact_answer('9a. copy+paste scan of Windows',
+                          [r'9a\. .+? tabledata .+? windows .+? 10\.'], text, points=1)
+    test10a = keyword_and_length('10. copy+paste UDP scan', [r'53', r'udp'], text,
+                                search_string=r'10a\. .+? tabledata (.+) 11.', min_length=10, points=1, min_matches=2)
+    test11a = exact_answer('11a. screenshot scan',
+                          [r'11a\. .+? tabledata \s aaa \s inlineobject .+? 11b\.'], text, points=1)
+    test11b = exact_answer('11b. open ports?',
+                          [r'11b\. .+? tabledata  .+? [0-9]+ .+?11c\.'], text, points=1)
+    test11c = keyword_and_length('11c. Describe what you found', [r'[0-9]+', r'(tcp|udp)'], text,
+                                 search_string=r'11c\. .+? tabledata (.+) $', min_length=10, points=1, min_matches=2)
 
-    test3b = keyword_and_length('3b. Authentications more secure than before??', [r'[a-zA-Z]+'], text,
-                                search_string=r'3b\. .+? tabledata (.+?) 3c\.', min_length=10, points=1)
 
-    tests.extend([test1a, test1b, test2a, test3a, test3b, test4a, test5a, test6a, test7a])
+    tests.extend([test1a, test1b, test2a, test2b, test3a, test3b, test4a, test4b, test5a, test5b, test6a, test6b,
+                  test7a, test7b, test8a, test8b, test8c, test8d, test9a, test10a, test11a, test11b, test11c])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
