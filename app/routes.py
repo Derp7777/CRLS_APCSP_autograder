@@ -367,6 +367,41 @@ def docs_feedback_cybersecurity_and_crime():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/databases_1')
+def docs_feedback_databases_1():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 12, 'manually_scored': 78, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test2a = exact_answer('2a. screenshot connection', [r'2a\. .+? tabledata \s aaa \s inlineobject .+? 3a\.'],
+                           text, points=1)
+    test3a = exact_answer('3a. screenshot DB+table', [r'3a\. .+? tabledata \s aaa \s inlineobject .+? 4a\.'],
+                           text, points=1)
+    test4a = exact_answer('4a. screenshot table+columns', [r'4a\. .+? tabledata \s aaa \s inlineobject .+? 4b\.'],
+                          text, points=1)
+    test4b = exact_answer('4b. screenshot primary key', [r'4b\. .+? tabledata \s aaa \s inlineobject .+? 5a\.'],
+                          text, points=1)
+    test5a = keyword_and_length('5a. What is primary key', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+) 5b\.', min_length=7, points=1)
+    test5b = exact_answer('5b. jersey or name? ', [r'5b\. .+? tabledata .+? jersey .+? 5c\.'],
+                          text, points=5)
+    test5c = keyword_and_length('5c. Why', [r'[a-zA-Z]+'], text,
+                                search_string=r'5c\. .+? tabledata (.+) 6\.', min_length=7, points=1)
+    test6a = exact_answer('6a. screenshot data', [r'6a\. .+? tabledata \s aaa \s inlineobject .+? $.'],
+                          text, points=1)
+    tests.extend([test2a, test3a, test4a, test4b, test5a, test5b, test5c, test6a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/databases_2_002')
 def docs_feedback_databases_2002():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -934,9 +969,41 @@ def docs_feedback_network_protocols_nmap():
     test11c = keyword_and_length('11c. Describe what you found', [r'[0-9]+', r'(tcp|udp)'], text,
                                  search_string=r'11c\. .+? tabledata (.+) $', min_length=10, points=1, min_matches=2)
 
-
     tests.extend([test1a, test1b, test2a, test2b, test3a, test3b, test4a, test4b, test5a, test5b, test6a, test6b,
                   test7a, test7b, test8a, test8b, test8c, test8d, test9a, test10a, test11a, test11b, test11c])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/password_crack')
+def docs_feedback_password_crack():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 7, 'manually_scored': 93, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test2a = exact_answer('2a. screenshot new users', [r'2a\. .+? tabledata \s aaa \s inlineobject .+? 3\.'],
+                           text, points=1)
+    test6a = exact_answer('6a. screenshot brute force', [r'6a\. .+? tabledata \s aaa \s inlineobject .+? 6b\.'],
+                           text, points=1)
+    test6b = exact_answer('6b. screenshot precomputation', [r'6b\. .+? tabledata \s aaa \s inlineobject .+? 7a\.'],
+                          text, points=1)
+    test7a = keyword_and_length('7a. Interpret your results', [r'[a-zA-Z]+'], text,
+                                search_string=r'7a\. .+? tabledata (.+) 8\.', min_length=15, points=1)
+    test8a = keyword_and_length('8a. precomputation drawback', [r'[a-zA-Z]+'], text,
+                                search_string=r'8a\. .+? tabledata (.+) 8b\.', min_length=15, points=1)
+    test8b = keyword_and_length('8b. max length and why', [r'[a-zA-Z]+'], text,
+                                search_string=r'8b\. .+? tabledata (.+) 9a\.', min_length=10, points=1)
+    test9a = keyword_and_length('9a. max length and why', [r'[a-z]+'], text,
+                                search_string=r'9a\. .+? tabledata (.+) $', min_length=10, points=1)
+    tests.extend([test2a, test6a, test6b, test7a, test8a, test8b, test9a])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
