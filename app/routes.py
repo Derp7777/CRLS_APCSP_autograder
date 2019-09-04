@@ -34,7 +34,7 @@ def index():
                                        '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.026',
                                        '4.031', '4.036', '6.011', '6.021', '6.022', '6.031', '6.041', '6.042',
                                        '7.021', '7.031',
-                                       '7.034', ]:
+                                       '7.034', '7.036']:
                 return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
     form = UploadForm()
@@ -460,16 +460,27 @@ def docs_feedback_databases_3002():
 
     print(text)
     test3a = exact_answer('3a. Christmas island',
-                          [r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* = .+? holiday \s island .+? '
+                          [r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* \s* = '
+                           r'\s* .+? holiday \s island .+? '
                            r'where \s `*name`* \s* = \s* .+? christmas \s island .+? 3b\.',
-                           r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* = .+? holiday \s island .+? '
+                           r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* \s* = '
+                           r'\s* .+? holiday \s island .+? '
                            r'where \s `*code`* \s* = \s* .+? cxr .+? 3b\.'
                            ], text, points=10)
-    test3b = exact_answer('3b. population > 5M', [r'3b\. .+? tabledata \s* aaa \s* inlineobject .+? 4b\.'], text, points=10)
-    test3c = exact_answer('3c. Beginning w/York', [r'3c\. .+? tabledata \s* insert \s* into .+? deleting'], text, points=5)
-    test3d = exact_answer('3d. Ending w/York', [r'3d\. .+? tabledata \s* aaa \s* inlineobject .+? 5b\.'], text, points=5)
-    test3e = exact_answer('3e. Avg. Africa population', [r'3e\. .+? tabledata \s* delete \s* from .+? updating'], text, points=10)
-    test3f = exact_answer('3f. unville', [r'3f\. .+? tabledata \s* aaa \s* inlineobject .+? 6b\.'], text, points=10)
+    test3b = exact_answer('3b. population > 5M', [r'3b\. .+? tabledata \s* select \s* .+? \s* from \s* `*world`* \.'
+                                                  r'`*country`* \s* where `* \s* `* population`* \s* > \s* 5,*000,*000 '
+                                                  r'\s*'
+                                                  r'.+? 3c\.'],
+                          text, points=10)
+    test3c = exact_answer('3c. Beginning w/York', [r'3c\. .+? tabledata \s* select \s* .+? \s* from .+? `* city `* \s* '
+                                                   r'where \s* `*name`* \s* like .+? %york .+? 3d\.'], text, points=5)
+    test3d = exact_answer('3d. Ending w/York',  [r'3d\. .+? tabledata \s* select \s* .+? \s* from .+? `* city `* \s* '
+                                                 r'where \s* `*name`* \s* like .+? york% .+? 3e\.'], text, points=5)
+    test3e = exact_answer('3e. Avg. Africa population', [r'3e\. .+? tabledata \s* select  \s* avg  \(population\) \s* '
+                                                         r'from \s `*country`* \s* where \s* continent .+? asia .+? '
+                                                         r'3f\.'], text, points=10)
+    test3f = exact_answer('3f. unville', [r'3f\. .+? tabledata \s*  insert \s* into \s* country .+? unville .+? $'],
+                          text, points=10)
 
     tests.extend([test3a, test3b, test3c, test3d, test3e, test3f])
     for test in tests:
@@ -4736,6 +4747,70 @@ def feedback_7034():
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+
+
+@app.route('/feedback_7_036')
+def feedback_7036():
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.find_items import find_class
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 44.5,  'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '7.036')
+    tests.append(test_filename)
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Check for class Collectible
+        test_class = find_class(filename, 'Contraband', 'object', points=5)
+        tests.append(test_class)
+   ##     test_class = {}
+     #   test_class['pass'] = False
+        if test_class['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
+            #
+            # Unit tests
+            unit_test_1 = run_unit_test('7.036', 1, 5)
+            tests.append(unit_test_1)
+
+            # # Check for class Collectible
+            test_class2 = find_class(filename, 'Ship', 'object', points=5)
+            tests.append(test_class2)
+
+            # unit tests
+            unit_test_2 = run_unit_test('7.036', 2, 5)
+            tests.append(unit_test_2)
+            unit_test_3 = run_unit_test('7.036', 3, 5)
+            tests.append(unit_test_3)
+            unit_test_4 = run_unit_test('7.036', 4, 5)
+            tests.append(unit_test_4)
+            unit_test_5 = run_unit_test('7.036', 5, 5)
+            tests.append(unit_test_5)
+            #
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
+            tests.append(test_pep8)
+            test_help = helps(filename, 2.5)
+            tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4031')
