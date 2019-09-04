@@ -396,7 +396,7 @@ def build_scratch_script(starting_block_id, p_blocks):
     script = []
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
-        print(f"aaa {current_block_id} opcode {current_block['opcode']}")
+        # print(f"aaa {current_block_id} opcode {current_block['opcode']}")
         if current_block['opcode'] == 'motion_movesteps':
             print("XXX script {}".format(script))
             steps = extract_value(current_block['inputs']['STEPS'], p_blocks)
@@ -656,7 +656,7 @@ def arrange_blocks_v2(p_json):
             blocks = sprite['blocks']
             for block_id in blocks:
                 block = blocks[block_id]
-                print(f"jjj  block_id {block_id} ")
+                # print(f"jjj  block_id {block_id} ")
                 if 'opcode' not in block:
                     continue
                 if block['opcode'] == "control_repeat" or \
@@ -696,7 +696,7 @@ def arrange_blocks_v2(p_json):
                         if parent_block['opcode'] == 'control_repeat' or \
                                 parent_block['opcode'] == 'control_forever':
                             if 'SUBSTACK' in parent_block['inputs']:
-                                print(f"yyy {block_id} this block has a parent with substack. This is a repeat ")
+                                # print(f"yyy {block_id} this block has a parent with substack. This is a repeat ")
                                 if parent_block['inputs']['SUBSTACK'][1] == block_id:
                                     script = build_scratch_script(block_id, blocks)
                                     temp_repeat_commands = []
@@ -705,7 +705,7 @@ def arrange_blocks_v2(p_json):
                                         temp_repeat_commands.append(item)
                                     repeat_scripts[block_id] = temp_repeat_commands
                 elif block['parent'] is None:
-                    print(f"yyy {block_id} doing things without parents now.")
+                    # print(f"yyy {block_id} doing things without parents now.")
                     script = build_scratch_script(block_id, blocks)
                     scripts[block_id] = script
     return scripts

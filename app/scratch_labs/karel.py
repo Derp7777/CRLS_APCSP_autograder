@@ -45,7 +45,6 @@ class robot(object):
     def pickbeeper(self):
         print("PICKING UP A BEEPER")
         coordinate = [self.x, self.y]
-        print(f"coordinate {coordinate}, self beeters {self.beepers}")
 
         if coordinate in self.beepers:
             self.beepers.remove(coordinate)
@@ -69,7 +68,6 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
         return False
     for i, move in enumerate(moves):
         if isinstance(move, list):
-            # print(f"ooo LIST rerun the move {move}")
             do_karel(p_karel, moves[i], success)
         else:
             if move == 'move':
@@ -108,7 +106,6 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
                         (moves[i + 1][0] == 'True' and moves[i + 1][1] == '=' and moves[i + 1][2] == 'frontIsClear'):
                     while p_karel.front_is_clear() is False:
                         print("checking front is clear")
-                        print(f"sending this in {moves[2]}")
                         do_karel(p_karel, moves[2], success)
                         print("exiting")
                         if abs(p_karel.x) > 150 or abs(p_karel.y) > 150:
@@ -136,7 +133,6 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
                     else:
                         do_karel(p_karel, moves[2], success)
                 break
-        print(f"at end position and direction end {p_karel.x} {p_karel.y} {p_karel.direction} ")
     return success
 
 
@@ -174,8 +170,6 @@ def karel1a(p_moves, p_points):
         p_test['pass'] = False
     else:
         p_test['points'] += p_points
-    print(f"x{karel.x} y {karel.y} beepers {karel.num_beepers}")
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -204,8 +198,6 @@ def karel2a(p_moves, p_points):
         p_test['pass'] = False
         p_test['fail_message'] += "Karel needed to pick up 30 beepers.  Karel picked up this many: <br>" \
                                   "" + str(karel.num_beepers)
-    print(f"x{karel.x} y {karel.y} beepers {karel.num_beepers}")
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -232,8 +224,6 @@ def karel2b(p_moves, p_points):
         p_test['pass'] = False
         p_test['fail_message'] += "Karel needed to pick up 16 beepers.  Karel picked up this many: <br>" \
                                   "" + str(karel.num_beepers)
-    print(f"x{karel.x} y {karel.y} beepers {karel.num_beepers}")
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -260,8 +250,6 @@ def karel3a_1(p_moves, p_points):
                                   "X: " + str(karel.x) + "<br>" \
                                   "Y: " + str(karel.y) + "<br>"\
                                   "Karel is also not allowed to go above 10 height for 5 steps.<br>"
-
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -292,7 +280,6 @@ def karel3a_2(p_moves, p_points):
                                   "Y: " + str(karel.y) + "<br>" \
                                   "Karel is also not allowed to go above 10 height for 5 steps.<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -323,7 +310,6 @@ def karel3b_1(p_moves, p_points):
                                   "Y: " + str(karel.y) + "<br>" \
                                   "Karel is also not allowed to go above 30 height for 5 steps.<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -352,7 +338,6 @@ def karel3b_2(p_moves, p_points):
                                   "Y: " + str(karel.y) + "<br>" \
                                   "Karel is also not allowed to go above 30 height for 5 steps.<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -382,7 +367,6 @@ def karel3c_1(p_moves, p_points):
                                   "Y: " + str(karel.y) + "<br>" \
                                   "Karel is also not allowed to go above 60 height for 5 steps.<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -416,7 +400,6 @@ def karel3c_2(p_moves, p_points):
                                   "Y: " + str(karel.y) + "<br>" \
                                   "Karel is also not allowed to go above 70 height for 5 steps.<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -449,7 +432,6 @@ def karel3d_1(p_moves, p_points):
                                   "X: " + str(karel.x) + "<br>" \
                                   "Y: " + str(karel.y) + "<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -477,7 +459,6 @@ def karel3d_2(p_moves, p_points):
                                   "X: " + str(karel.x) + "<br>" \
                                   "Y: " + str(karel.y) + "<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -504,7 +485,6 @@ def karel_final_spot(p_moves, p_points):
                                   "X: " + str(karel.x/10) + "<br>" \
                                                             "Y: " + str(karel.y/10) + "<br>"
 
-    print(f"success? {karel_result}")
     return p_test
 
 
@@ -695,8 +675,6 @@ def sub_dict_into_dict(p_dict_subbed, p_dict_subber, p_blocks):
     """
     _sub_dict_into_dict_helper(p_dict_subbed, p_dict_subber, p_blocks)
     for key in p_dict_subbed:
-        print(f"aaa simplify this key: {key}")
-        print(f"aaa enumerate {p_dict_subbed[key]} type  {type(p_dict_subbed[key])}")
         for i, item in enumerate(p_dict_subbed[key]):
             if isinstance(item, list):
                 if p_dict_subbed[key][i][0] == 'control_repeat' or p_dict_subbed[key][i][0] == 'control_forever'\
@@ -724,8 +702,8 @@ def _order_procedure_blocks(starting_block_id, p_target):
     temp_block['ID'] = starting_block_id  # #stick the ID onto the dictionary
     script = [temp_block]
     current_block_id = starting_block_id
-    if 'mutation' in p_target['blocks'][starting_block_id].keys():
-        print(f"current block info {p_target['blocks'][starting_block_id]['mutation']['proccode']}")
+    #if 'mutation' in p_target['blocks'][starting_block_id].keys():
+    #    print(f"current block info {p_target['blocks'][starting_block_id]['mutation']['proccode']}")
     next_block_id = p_target['blocks'][current_block_id]['next']
     while next_block_id is not None:
         temp_block = p_target['blocks'][next_block_id]
@@ -818,19 +796,17 @@ def arrange_karel_blocks(p_json):
                     if target['blocks'][block_id]['opcode'] == "control_repeat" or \
                             target['blocks'][block_id]['opcode'] == "control_forever" or \
                             target['blocks'][block_id]['opcode'] == "control_repeat_until":
-                        print(f"yyy {block_id} doing repeat now.   ")
+                        # print(f"yyy {block_id} doing repeat now.   ")
                         if 'inputs' in target['blocks'][block_id]:
                             if 'SUBSTACK' in target['blocks'][block_id]['inputs']:
                                 repeat_scripts[block_id] = [target['blocks'][block_id]['inputs']['SUBSTACK'][1]]
                     if target['blocks'][block_id]['opcode'] == "operator_equals":
-                        print(f"yyy {block_id} doing operator equal now.   ")
                         if 'inputs' in target['blocks'][block_id]:
                             if 'OPERAND1' in target['blocks'][block_id]['inputs']:
                                 operator_scripts[block_id] = [target['blocks'][block_id]['inputs']['OPERAND1'][1][1],
                                                               '=',
                                                               target['blocks'][block_id]['inputs']['OPERAND2'][1][1]]
                     if target['blocks'][block_id]['opcode'] == "control_if_else":
-                        print(f"yyy {block_id} doing if/else now.   ")
                         if 'inputs' in target['blocks'][block_id]:
                             if 'SUBSTACK' in target['blocks'][block_id]['inputs']:
                                 if_scripts[block_id] = [target['blocks'][block_id]['inputs']['CONDITION'][1],
@@ -839,7 +815,6 @@ def arrange_karel_blocks(p_json):
                     elif 'parent' in target['blocks'][block_id]:
                         if target['blocks'][block_id]['parent'] is not None:
                             parent_id = target['blocks'][block_id]['parent']
-                            print(f"yyy {block_id} doing repeat substacks now .")
                             if target['blocks'][parent_id]['inputs']:
                                 if 'SUBSTACK' in target['blocks'][parent_id]['inputs']:
                                     print("yyy maybe it's a repeat block with a parent")
@@ -865,16 +840,16 @@ def arrange_karel_blocks(p_json):
                         print(main_script)
 
     user_blocks_orig = deepcopy(user_blocks)
-    print(f"repeat blocks pre simplification of repeat ")
+    # print(f"repeat blocks pre simplification of repeat ")
     for key in repeat_scripts:
         print(f"key {key} block {repeat_scripts[key]}")
-    print(f"user blocks pre simplification os user BLOCKS")
+    # print(f"user blocks pre simplification os user BLOCKS")
     for key in user_blocks:
         print(f"key {key} block {user_blocks[key]}")
     replace_items = True
-    print(f"OPERATOR scripts")
-    for key in operator_scripts:
-        print(f"key {key} block {operator_scripts[key]}")
+    # print(f"OPERATOR scripts")
+    # for key in operator_scripts:
+    #     print(f"key {key} block {operator_scripts[key]}")
     user_blocks_string = str(user_blocks)
     counter = 1
     updated_scripts = user_blocks
@@ -887,18 +862,14 @@ def arrange_karel_blocks(p_json):
         if counter > 20 or not user_blocks:
             break
         updated_script = sub_dict_into_dict(updated_scripts, repeat_scripts, p_json['targets'][0]['blocks'])
-        print(f"AAA simplifying inside loop SCRIPT AFTER SIMPLIFY {str(updated_scripts)} ")
-        print(f"AAA simplifying inside loop AFTER SIMPLIFY if different loop again{user_blocks_string}")
         if str(updated_script) == user_blocks_string:
             replace_items = False
         else:
             user_blocks_string = str(updated_scripts)
-    print(f"FINALLY again! REPEAT BLOCKS")
-    for key in repeat_scripts:
-        print(f"key {key} block {repeat_scripts[key]}")
-    print(f"FINALLY again! USER BLOCKS")
-    for key in user_blocks:
-        print(f"key {key} block {user_blocks[key]}")
+    # for key in repeat_scripts:
+    #    print(f"key {key} block {repeat_scripts[key]}")
+    # for key in user_blocks:
+    #   print(f"key {key} block {user_blocks[key]}")
     print("\n\n\n")
     # do main script
     print("\n\n\n\n\n\nDDD main script, pre substitution of repeat scripts:")
@@ -911,7 +882,7 @@ def arrange_karel_blocks(p_json):
         print("\n\n\n\n\n\nDDD main script, pre substitution of repeat scripts:")
         print(main_script)
         updated_script = sub_dict_into_list(updated_script, repeat_scripts, p_json['targets'][0]['blocks'])
-        print(f"updated script subbing repeats {str(updated_script)}")
+        # print(f"updated script subbing repeats {str(updated_script)}")
 
         print("DDD main script, post substitution of repeat script:")
         print("DDD \n\n\n\n")
