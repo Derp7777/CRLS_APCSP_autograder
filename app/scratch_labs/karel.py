@@ -95,7 +95,7 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
 
                 times = int(moves[i + 1])
                 for _ in range(times):
-                    print(f"ooo repeat time {_}")
+                    # print(f"ooo repeat time {_}")
                     do_karel(p_karel, moves[2], success)
                 break
             elif move == 'control_repeat_until':
@@ -840,11 +840,11 @@ def arrange_karel_blocks(p_json):
 
     user_blocks_orig = deepcopy(user_blocks)
     # print(f"repeat blocks pre simplification of repeat ")
-    for key in repeat_scripts:
-        print(f"key {key} block {repeat_scripts[key]}")
+    # for key in repeat_scripts:
+    #     print(f"key {key} block {repeat_scripts[key]}")
     # print(f"user blocks pre simplification os user BLOCKS")
-    for key in user_blocks:
-        print(f"key {key} block {user_blocks[key]}")
+    # for key in user_blocks:
+    #     print(f"key {key} block {user_blocks[key]}")
     replace_items = True
     # print(f"OPERATOR scripts")
     # for key in operator_scripts:
