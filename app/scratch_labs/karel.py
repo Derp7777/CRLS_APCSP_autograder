@@ -71,7 +71,6 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
             do_karel(p_karel, moves[i], success)
         else:
             if move == 'move':
-                print(f"max height {max_height_counter}")
                 if max_fly:
                     if p_karel.y >= max_height:
                         max_height_counter -= 1
