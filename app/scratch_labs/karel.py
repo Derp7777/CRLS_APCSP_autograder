@@ -89,7 +89,7 @@ def do_karel(p_karel, moves, success, *, max_fly=False, max_height=0):
                     success = False
                     break
                 else:
-                    print(f"PICKUP  up beeper {p_karel.num_beepers}")
+                    print("PICKUP  up beeper ")
             elif move == 'control_repeat':
                 print("aaa control repeat")
 
