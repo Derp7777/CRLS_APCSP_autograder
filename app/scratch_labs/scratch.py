@@ -701,7 +701,6 @@ def arrange_blocks_v2(p_json):
                                     script = build_scratch_script(block_id, blocks)
                                     temp_repeat_commands = []
                                     for item in script:
-                                        print(f"IN A REPEAT STACK item['opcode']" + str(item))
                                         temp_repeat_commands.append(item)
                                     repeat_scripts[block_id] = temp_repeat_commands
                 elif block['parent'] is None:
