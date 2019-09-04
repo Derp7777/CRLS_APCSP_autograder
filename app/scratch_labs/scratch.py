@@ -16,7 +16,7 @@ def scratch_filename_test(p_filename, p_lab):
                        "pass": True,
                        "pass_message": "<h5 style=\"color:green;\">Pass!</h5> File name looks correct "
                                        "(i.e. something like 2019_luismartinez_" + p_lab +
-                                       ".sb3)",
+                                       ".sb3).  Filename was this:" + p_filename,
                        "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
                                        "File name of submitted file does not follow required convention. "
                                        " Rename and resubmit.<br>"
