@@ -31,8 +31,10 @@ def index():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash(file.filename + ' uploaded')
             if request.form['lab'] in ['1.040', '1.060', '2.020', '2.032a', '2.032b', '2.040', '2.050a', '2.050b',
-                                       '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.031',
-                                       '4.036', '6.011', '6.021', '6.031', '6.041', '7.021', '7.031', '7.034', ]:
+                                       '3.011', '3.020', '3.026', '4.011', '4.012', '4.021', '4.022', '4.025', '4.026',
+                                       '4.031', '4.036', '6.011', '6.021', '6.022', '6.031', '6.041', '6.042',
+                                       '7.021', '7.031',
+                                       '7.034', '7.036']:
                 return redirect(url_for('feedback_' + request.form['lab'].replace(".", ""), filename=filename))
 
     form = UploadForm()
@@ -359,6 +361,128 @@ def docs_feedback_cybersecurity_and_crime():
     test5a = keyword_and_length('5a. Pick one, write about how to defend against it?', [r'[a-zA-Z]+'], text,
                                 search_string=r'5a\. .+? tabledata (.+?) $', min_length=10, points=1)
     tests.extend([test1a, test2a, test3a, test4a, test5a,])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/databases_1')
+def docs_feedback_databases_1():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 12, 'manually_scored': 78, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test2a = exact_answer('2a. screenshot connection', [r'2a\. .+? tabledata \s aaa \s inlineobject .+? 3a\.'],
+                           text, points=1)
+    test3a = exact_answer('3a. screenshot DB+table', [r'3a\. .+? tabledata \s aaa \s inlineobject .+? 4a\.'],
+                           text, points=1)
+    test4a = exact_answer('4a. screenshot table+columns', [r'4a\. .+? tabledata \s aaa \s inlineobject .+? 4b\.'],
+                          text, points=1)
+    test4b = exact_answer('4b. screenshot primary key', [r'4b\. .+? tabledata \s aaa \s inlineobject .+? 5a\.'],
+                          text, points=1)
+    test5a = keyword_and_length('5a. What is primary key', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+) 5b\.', min_length=7, points=1)
+    test5b = exact_answer('5b. jersey or name? ', [r'5b\. .+? tabledata .+? jersey .+? 5c\.'],
+                          text, points=5)
+    test5c = keyword_and_length('5c. Why', [r'[a-zA-Z]+'], text,
+                                search_string=r'5c\. .+? tabledata (.+) 6\.', min_length=7, points=1)
+    test6a = exact_answer('6a. screenshot data', [r'6a\. .+? tabledata \s aaa \s inlineobject .+? $.'],
+                          text, points=1)
+    tests.extend([test2a, test3a, test4a, test4b, test5a, test5b, test5c, test6a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/databases_2_002')
+def docs_feedback_databases_2002():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 59, 'manually_scored': 41, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test3a = exact_answer('3a. screenshot', [r'3a\. .+? tabledata \s* aaa \s* inlineobject .+? create'], text, points=1)
+    test4a = exact_answer('4a. screenshot', [r'4a\. .+? tabledata \s* aaa \s* inlineobject .+? 4b\.'], text, points=1)
+    test4b = exact_answer('4b. code', [r'4b\. .+? tabledata \s* insert \s* into .+? deleting'], text, points=5)
+    test5a = exact_answer('5a. screenshot', [r'5a\. .+? tabledata \s* aaa \s* inlineobject .+? 5b\.'], text, points=1)
+    test5b = exact_answer('5b. code', [r'5b\. .+? tabledata \s* delete \s* from .+? updating'], text, points=5)
+    test6a = exact_answer('6a. screenshot', [r'6a\. .+? tabledata \s* aaa \s* inlineobject .+? 6b\.'], text, points=1)
+    test6b = exact_answer('6b. code', [r'6b\. .+? tabledata \s* update \s* country .+? running'], text, points=5)
+    test7a = exact_answer('7a. sql query select all',
+                          [r'7a\. .+? tabledata \s* select \s* \* \s* from \s* country .+? 7b\.'],
+                          text, points=10)
+    test7b = exact_answer('7b. sql query select city, M names',
+                          [r'7b\. .+? tabledata \s* select \s* .+?\s* from \s* city \s* where \s* name \s* like \s*'
+                           r' .+? m%  .+? 7c\.'],
+                          text, points=10)
+    test7c = exact_answer('7c. sql query surface area',
+                          [r'7c\. .+? tabledata \s* select \s .+? \s from \s country \s where \s surfacearea \s* > '
+                           r'\s* 50 ,* 000 \s*'
+                           r' .+?  7d\.'],
+                          text, points=10)
+    test7d = exact_answer('7d. life expectancy > 70',
+                          [r'7d\. .+? tabledata \s* select \s count .+? \s from \s country \s where \s '
+                           r'lifeexpectancy \s* > '
+                           r'\s* 70 \s*'
+                           r' .+?  $'],
+                          text, points=10)
+
+    tests.extend([test3a, test4a, test4b, test5a, test5b, test6a, test6b, test7a, test7b, test7c, test7d])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/databases_3_002')
+def docs_feedback_databases_3002():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 50, 'manually_scored': 0, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test3a = exact_answer('3a. Christmas island',
+                          [r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* \s* = '
+                           r'\s* .+? holiday \s island .+? '
+                           r'where \s `*name`* \s* = \s* .+? christmas \s island .+? 3b\.',
+                           r'3a\. .+? tabledata \s* update .+? country \s set \s `*name`* \s* = '
+                           r'\s* .+? holiday \s island .+? '
+                           r'where \s `*code`* \s* = \s* .+? cxr .+? 3b\.'
+                           ], text, points=10)
+    test3b = exact_answer('3b. population > 5M', [r'3b\. .+? tabledata \s* select \s* .+? \s* from \s* `*world`* \.'
+                                                  r'`*country`* \s* where `* \s* `* population`* \s* > \s* 5,*000,*000 '
+                                                  r'\s*'
+                                                  r'.+? 3c\.'],
+                          text, points=10)
+    test3c = exact_answer('3c. Beginning w/York', [r'3c\. .+? tabledata \s* select \s* .+? \s* from .+? `* city `* \s* '
+                                                   r'where \s* `*name`* \s* like .+? %york .+? 3d\.'], text, points=5)
+    test3d = exact_answer('3d. Ending w/York',  [r'3d\. .+? tabledata \s* select \s* .+? \s* from .+? `* city `* \s* '
+                                                 r'where \s* `*name`* \s* like .+? york% .+? 3e\.'], text, points=5)
+    test3e = exact_answer('3e. Avg. Africa population', [r'3e\. .+? tabledata \s* select  \s* avg  \(population\) \s* '
+                                                         r'from \s `*country`* \s* where \s* continent .+? asia .+? '
+                                                         r'3f\.'], text, points=10)
+    test3f = exact_answer('3f. unville', [r'3f\. .+? tabledata \s*  insert \s* into \s* country .+? unville .+? $'],
+                          text, points=10)
+
+    tests.extend([test3a, test3b, test3c, test3d, test3e, test3f])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
@@ -807,6 +931,96 @@ def docs_feedback_lossy_compression():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/network_protocols_nmap')
+def docs_feedback_network_protocols_nmap():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 46, 'manually_scored': 54, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = exact_answer('1a. SSH protocol', [r'1a\. .+? tabledata \s* tcp \s*  tabledata \s* 1b\.'], text, points=2)
+    test1b = exact_answer('1b. SSH port', [r'1b\. .+? tabledata \s* 22\s*  tabledata \s* '], text, points=2)
+    test2a = exact_answer('2a. http protocol', [r'2a\. .+? tabledata \s* tcp \s*  tabledata \s* 2b\.'], text, points=2)
+    test2b = exact_answer('2b. http port', [r'2b\. .+? tabledata \s* 80\s*  tabledata \s* '], text, points=2)
+    test3a = exact_answer('3a. https protocol', [r'3a\. .+? tabledata \s* tcp \s*  tabledata \s* 3b\.'], text, points=2)
+    test3b = exact_answer('3b. https port', [r'3b\. .+? tabledata \s* 443\s*  tabledata \s* '], text, points=2)
+    test4a = exact_answer('4a. ping protocol', [r'4a\. .+? tabledata \s* icmp \s*  tabledata \s* 4b\.'], text, points=2)
+    test4b = exact_answer('4b. ping port', [r'4b\. .+? tabledata \s* none\s*  tabledata \s* '], text, points=2)
+    test5a = exact_answer('5a. DNS protocol', [r'5a\. .+? tabledata \s* both\s*  tabledata \s* 5b\.'], text, points=2)
+    test5b = exact_answer('5b. DNS port', [r'5b\. .+? tabledata \s* 53 \s*  tabledata \s* '], text, points=2)
+    test6a = exact_answer('6a. DHCP protocol', [r'6a\. .+? tabledata \s* udp\s*  tabledata \s* 6b\.'], text, points=2)
+    test6b = exact_answer('6b. DHCP port', [r'6b\. .+? tabledata .+? 68 .+? tabledata ',
+                                            r'6b\. .+? tabledata .+? 67 .+? tabledata'], text, points=2,
+                          required=2)
+    test7a = exact_answer('7a. remote desktop protocol',
+                          [r'7a\. .+? tabledata \s* both\s*  tabledata \s* 7b\.'], text, points=2)
+    test7b = exact_answer('7b. remote desktop port', [r'7b\. .+? tabledata \s* 3389 \s*  tabledata \s* '], text,
+                          points=2)
+    test8a = exact_answer('8a. screenshot scan',
+                          [r'8a\. .+? tabledata \s aaa \s inlineobject .+? 8b\.'], text, points=1)
+    test8b = exact_answer('8b. open ports?',
+                          [r'8b\. .+? tabledata  .+? [0-9]+ .+? 8c\.'], text, points=1)
+    test8c = exact_answer('8c. TCP/UDP?',
+                          [r'8c\. .+? tabledata  .+? tcp .+? 8d\.'], text, points=10)
+    test8d = keyword_and_length('8d. Describe what you found', [r'[0-9]+', r'(tcp|udp)'], text,
+                                search_string=r'8d\. .+? tabledata (.+) 9\.', min_length=10, points=1, min_matches=2)
+    test9a = exact_answer('9a. copy+paste scan of Windows',
+                          [r'9a\. .+? tabledata .+? windows .+? 10\.'], text, points=1)
+    test10a = keyword_and_length('10. copy+paste UDP scan', [r'53', r'udp'], text,
+                                search_string=r'10a\. .+? tabledata (.+) 11.', min_length=10, points=1, min_matches=2)
+    test11a = exact_answer('11a. screenshot scan',
+                          [r'11a\. .+? tabledata \s aaa \s inlineobject .+? 11b\.'], text, points=1)
+    test11b = exact_answer('11b. open ports?',
+                          [r'11b\. .+? tabledata  .+? [0-9]+ .+?11c\.'], text, points=1)
+    test11c = keyword_and_length('11c. Describe what you found', [r'[0-9]+', r'(tcp|udp)'], text,
+                                 search_string=r'11c\. .+? tabledata (.+) $', min_length=10, points=1, min_matches=2)
+
+    tests.extend([test1a, test1b, test2a, test2b, test3a, test3b, test4a, test4b, test5a, test5b, test6a, test6b,
+                  test7a, test7b, test8a, test8b, test8c, test8d, test9a, test10a, test11a, test11b, test11c])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/password_crack')
+def docs_feedback_password_crack():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 7, 'manually_scored': 93, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test2a = exact_answer('2a. screenshot new users', [r'2a\. .+? tabledata \s aaa \s inlineobject .+? 3\.'],
+                           text, points=1)
+    test6a = exact_answer('6a. screenshot brute force', [r'6a\. .+? tabledata \s aaa \s inlineobject .+? 6b\.'],
+                           text, points=1)
+    test6b = exact_answer('6b. screenshot precomputation', [r'6b\. .+? tabledata \s aaa \s inlineobject .+? 7a\.'],
+                          text, points=1)
+    test7a = keyword_and_length('7a. Interpret your results', [r'[a-zA-Z]+'], text,
+                                search_string=r'7a\. .+? tabledata (.+) 8\.', min_length=15, points=1)
+    test8a = keyword_and_length('8a. precomputation drawback', [r'[a-zA-Z]+'], text,
+                                search_string=r'8a\. .+? tabledata (.+) 8b\.', min_length=15, points=1)
+    test8b = keyword_and_length('8b. max length and why', [r'[a-zA-Z]+'], text,
+                                search_string=r'8b\. .+? tabledata (.+) 9a\.', min_length=10, points=1)
+    test9a = keyword_and_length('9a. max length and why', [r'[a-z]+'], text,
+                                search_string=r'9a\. .+? tabledata (.+) $', min_length=10, points=1)
+    tests.extend([test2a, test6a, test6b, test7a, test8a, test8b, test9a])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/python_1020')
 def docs_feedback_python_1020():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -1206,8 +1420,6 @@ def docs_feedback_python_2032():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
-
-
 @app.route('/docs/python_2040')
 def docs_feedback_python_2040():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
@@ -1488,6 +1700,81 @@ def docs_feedback_research_yourself():
     test3b = keyword_and_length('3b Why do you think so', [r'[a-zA-Z]+'], text,
                                 search_string=r'3b. .+? tabledata (.+) ', min_length=4, points=1)
     tests.extend([test_info, test_where, test2a, test3a, test3b])
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/search_sort')
+def docs_feedback_search_sort():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 14, 'manually_scored': 86, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. Good algorithm?', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = keyword_and_length('2a. Efficiency of merge vs. bubble, small sets??', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 2b\.', min_length=7, points=1)
+    test2b = keyword_and_length('2b. Efficiency of merge vs. bubble, large sets??', [r'[a-zA-Z]+'], text,
+                                search_string=r'2b\. .+? tabledata (.+) 3a\.', min_length=7, points=1)
+    test3a = exact_answer('3a. merge always faster?',
+                          [r'3a\. .+? tabledata \s* yes \s*  3b\.'], text, points=1)
+    test3b = keyword_and_length('3b. Explain 3a', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+) 3c\.', min_length=7, points=1)
+    test3c = exact_answer('3c. Before binary search must?',
+                          [r'3a\. .+? tabledata \s* sort \s*  3b\.'], text, points=3)
+    test3d = exact_answer('3d. Must sort for linear search?',
+                          [r'3a\. .+? tabledata \s* no \s*  3b\.'], text, points=3)
+    test4a = keyword_and_length('4a. Put numbers on it', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+) 5a\.', min_length=12, points=1)
+    test5a = keyword_and_length('5a. Why sort?', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+) 6a\.', min_length=10, points=1)
+    test6a = keyword_and_length('6a. Example of time want to sort?', [r'[a-zA-Z]+'], text,
+                                search_string=r'6a\. .+? tabledata (.+) $\.', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test2b, test3a, test3b, test3c, test3d, test4a, test5a, test6a])
+
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
+@app.route('/docs/two_factor_authentication')
+def docs_feedback_two_factor_authentication():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 7, 'manually_scored': 93, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. Two factor good?', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = keyword_and_length('2a. Two factor bad?', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 3\.', min_length=10, points=1)
+    test3a = exact_answer('3a. Screenshot of two-factor',
+                          [r'3a\. .+? tabledata \s* aaa \s* inlineobject \s*  3b\.'], text, points=1)
+    test3b = keyword_and_length('3b. Authentications more secure than before??', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+?) 3c\.', min_length=10, points=1)
+    test3c = keyword_and_length('3c. Authentications when you lose phone?', [r'[a-zA-Z]+'], text,
+                                search_string=r'3c\. .+? tabledata (.+?) 3d\.', min_length=10, points=1)
+    test3d = keyword_and_length('3c. What happens when cancel two-factor??', [r'[a-zA-Z]+'], text,
+                                search_string=r'3d\. .+? tabledata (.+?) 4a\.', min_length=10, points=1)
+    test4a = keyword_and_length('4a. Celeb hack, what you think??', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+?) check', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test3a, test3b, test3c, test3d, test4a, ])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
@@ -3802,6 +4089,97 @@ def feedback_4025():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
+@app.route('/feedback_4026')
+def feedback_4026():
+
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.helps import helps
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_loop, find_string
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, extract_single_function, \
+        run_unit_test
+    from app.python_labs.python_4_026 import case_1, case_2, case_3, case_4
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 134,  'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '4.026')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # extract functions and create python test file
+        extract_all_functions(filename)
+        create_testing_file(filename)
+        play_tournament_function = extract_single_function(filename, 'play_tournament')
+
+        test_function_1 = run_unit_test('4.026', 1, 15)
+        test_function_1['name'] += "2000 runs should give between 18000 and 21000 raised dead "
+        tests.append(test_function_1)
+
+        if test_function_1['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            test_function_2 = run_unit_test('4.026', 2, 10)
+            test_function_2['name'] += "100 runs of raise_army should have certain things in printout"
+            tests.append(test_function_2)
+
+            test_function_3 = run_unit_test('4.026', 3, 10)
+            test_function_3['name'] += "5 runs of raise_army should give correct undead_data."
+            tests.append(test_function_3)
+
+            test_function_4 = run_unit_test('4.026', 4, 15)
+            test_function_4['name'] += "500 runs of dance should give correct sim_data list."
+            tests.append(test_function_4)
+
+            test_function_5 = run_unit_test('4.026', 5, 10)
+            test_function_5['name'] += "Testing data analysis.  Spacing matters (i.e. 50.0% not 50.0 %)."
+            tests.append(test_function_5)
+
+
+            run_simulation_function = extract_single_function(filename, 'run_simulation')
+            test_run_sim = find_loop(run_simulation_function, 5)
+            test_run_sim['name'] = "Looking for loop in the run_simulation function (5 points).<br>"
+            tests.append(test_run_sim)
+
+            test_run_sim_data_analysis = find_string(run_simulation_function, r'\s*data_analysis\(', 1, points=5)
+            test_run_sim_data_analysis['name'] = "Checking that run_simulation calls data_analysis (5 points).<br>"
+            tests.append(test_run_sim_data_analysis)
+
+            test_function_6 = run_unit_test('4.026', 6, 5)
+            test_function_6['name'] = " Testing run_simulation function, verifying that if you call it with" \
+                                      "p_num_simulations of 300, the printout shows 300 runs. <br>" \
+                                      " Requires a working data_analysis (5 points).<br>"
+            tests.append(test_function_6)
+
+            # IO tests
+            test_io_1 = case_1(filename)
+            tests.append(test_io_1)
+            test_io_2 = case_2(filename)
+            tests.append(test_io_2)
+            test_io_3 = case_3(filename)
+            tests.append(test_io_3)
+            test_io_4 = case_4(filename)
+            tests.append(test_io_4)
+
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
+            tests.append(test_pep8)
+            test_help = helps(filename, 5)
+            tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
 @app.route('/feedback_6_011')
 def feedback_6011():
     from app.python_labs.filename_test import filename_test
@@ -3946,6 +4324,67 @@ def feedback_6021():
             return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
+@app.route('/feedback_6_022')
+def feedback_6022():
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_function, function_called, find_dictionary
+    from app.python_labs.function_test import extract_all_functions, extract_single_function, \
+        create_testing_file, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 69, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '6.022')
+    tests.append(test_filename)
+    if test_filename['pass'] is False:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Read in the python file to filename_data
+        extract_all_functions(filename)
+        create_testing_file(filename)
+
+        test_find_function = find_function(filename, 'dr_lam_workout_counter', 1, points=10)
+        tests.append(test_find_function)
+
+        # Check that function is called 3x
+        test_function_run = function_called(filename, 'dr_lam_workout_counter', 3, points=10)
+        tests.append(test_function_run)
+
+        # extract dr_lam_workout_counter functions and look for dictionary
+        martinez_function = extract_single_function(filename, 'dr_lam_workout_counter')
+        test_dictionary = find_dictionary(martinez_function, num_items=0, points=10)
+        tests.append(test_dictionary)
+
+        # Martinez test 1
+        test_function_1 = run_unit_test('6.022', 1, 10)
+        tests.append(test_function_1)
+
+        # Martinez test 2
+        test_function_2 = run_unit_test('6.022', 2, 10)
+        tests.append(test_function_2)
+
+        # Find number of PEP8 errors and helps
+        test_pep8 = pep8(filename, 14)
+        tests.append(test_pep8)
+        test_help = helps(filename, 5)
+        tests.append(test_help)
+
+        for test in tests:
+            if test['pass']:
+                score_info['score'] += test['points']
+            flash(test['name'])
+            flash(score_info['score'])
+
+        score_info['finished_scoring'] = True
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
 @app.route('/feedback_6_031')
 def feedback_6031():
     from app.python_labs.function_test import extract_all_functions, run_unit_test, create_testing_file
@@ -4080,6 +4519,83 @@ def feedback_6041():
             # Check that it's run 5x
             test_five_times = five_loop(filename_data)
             tests.append(test_five_times)
+
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 14)
+            tests.append(test_pep8)
+            test_help = helps(filename, 5)
+            tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+
+
+@app.route('/feedback_6_042')
+def feedback_6042():
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.find_items import find_function, find_loop, find_dictionary, function_called
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test, \
+        extract_single_function
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.python_6_041 import five_loop
+    from app.python_labs.read_file_contents import read_file_contents
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 69, 'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '6.042')
+    tests.append(test_filename)
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        filename_data = read_file_contents(filename)
+
+        # Check for function add with 1 inputs
+        test_find_function = find_function(filename, 'worst_hit', 1, points=5)
+        tests.append(test_find_function)
+        if test_find_function['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
+
+            # unit tests
+            test_function_1 = run_unit_test('6.042', 1, 5)
+            tests.append(test_function_1)
+            test_function_2 = run_unit_test('6.042', 2, 5)
+            tests.append(test_function_2)
+
+            # Check for function 2 inputs
+            test_find_function_2 = find_function(filename, 'top_hits', 1, points=5)
+            tests.append(test_find_function_2)
+
+            run_simulation_function = extract_single_function(filename, 'top_hits')
+            test_run_sim = find_loop(run_simulation_function, 5)
+            test_run_sim['name'] = "Looking for loop in the run_simulation function (5 points).<br>"
+            tests.append(test_run_sim)
+
+            # unit tests
+            test_function_3 = run_unit_test('6.042', 3, 5)
+            tests.append(test_function_3)
+            test_function_4 = run_unit_test('6.042', 4, 5)
+            tests.append(test_function_4)
+
+            test_dictionary = find_dictionary(filename_data, num_items=6, points=5)
+            tests.append(test_dictionary)
+            test_function_run = function_called(filename, 'worst_hit', 3, points=5)
+            tests.append(test_function_run)
+            test_function_run = function_called(filename, 'top_hits', 3, points=5)
+            tests.append(test_function_run)
 
             # Find number of PEP8 errors and helps
             test_pep8 = pep8(filename, 14)
@@ -4272,6 +4788,70 @@ def feedback_7034():
 
         score_info['finished_scoring'] = True
         return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)    
+
+
+@app.route('/feedback_7_036')
+def feedback_7036():
+    from app.python_labs.filename_test import filename_test
+    from app.python_labs.function_test import extract_all_functions, create_testing_file, run_unit_test
+    from app.python_labs.helps import helps
+    from app.python_labs.pep8 import pep8
+    from app.python_labs.find_items import find_class
+
+    user = {'username': 'CRLS Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 44.5,  'manually_scored': 11, 'finished_scoring': False}
+
+    # Test 1: file name
+    filename = request.args['filename']
+    filename = '/tmp/' + filename
+    test_filename = filename_test(filename, '7.036')
+    tests.append(test_filename)
+    if not test_filename['pass']:
+        return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+    else:
+        # Check for class Collectible
+        test_class = find_class(filename, 'Contraband', 'object', points=5)
+        tests.append(test_class)
+   ##     test_class = {}
+     #   test_class['pass'] = False
+        if test_class['pass'] is False:
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
+        else:
+            # extract functions and create python test file
+            extract_all_functions(filename)
+            create_testing_file(filename)
+            #
+            # Unit tests
+            unit_test_1 = run_unit_test('7.036', 1, 5)
+            tests.append(unit_test_1)
+
+            # # Check for class Collectible
+            test_class2 = find_class(filename, 'Ship', 'object', points=5)
+            tests.append(test_class2)
+
+            # unit tests
+            unit_test_2 = run_unit_test('7.036', 2, 5)
+            tests.append(unit_test_2)
+            unit_test_3 = run_unit_test('7.036', 3, 5)
+            tests.append(unit_test_3)
+            unit_test_4 = run_unit_test('7.036', 4, 5)
+            tests.append(unit_test_4)
+            unit_test_5 = run_unit_test('7.036', 5, 5)
+            tests.append(unit_test_5)
+            #
+            # Find number of PEP8 errors and helps
+            test_pep8 = pep8(filename, 7)
+            tests.append(test_pep8)
+            test_help = helps(filename, 2.5)
+            tests.append(test_help)
+
+            for test in tests:
+                if test['pass']:
+                    score_info['score'] += test['points']
+
+            score_info['finished_scoring'] = True
+            return render_template('feedback.html', user=user, tests=tests, filename=filename, score_info=score_info)
 
 
 @app.route('/feedback_4031')

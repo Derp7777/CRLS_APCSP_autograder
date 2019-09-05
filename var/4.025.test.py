@@ -16,9 +16,8 @@ class testAutograde(unittest.TestCase):
                 wins += 1
         if 710 < wins < 790:
             passed = True
-        self.assertTrue(passed, "<br>Ran 1000 sims, should get between 710 and 790 wins.  "
-                                "Got this many wins: " + str(wins) + "<br>")
-
+        self.assertTrue(passed, "<br>Ran 1000 sims, should get between 9000 and 10500 raised dead.  "
+                                "Got this many raised ead: " + str(wins) + "<br>")
 
     def test_2(self):
         f = io.StringIO()
@@ -70,7 +69,7 @@ class testAutograde(unittest.TestCase):
         data_analysis_output = f.getvalue()
         data_analysis_output = data_analysis_output.rstrip()
         data_analysis_output = data_analysis_output.lower()
-        found1 = len(re.findall(r"10\.0", data_analysis_output,  re.X | re.M | re.S))
+        found1 = len(re.findall(r"10\.0 ", data_analysis_output,  re.X | re.M | re.S))
         found2 = len(re.findall(r"20\.0", data_analysis_output,  re.X | re.M | re.S))
         found3 = len(re.findall(r"30\.0", data_analysis_output,  re.X | re.M | re.S))
         found4 = len(re.findall(r"1\.2", data_analysis_output,  re.X | re.M | re.S))
