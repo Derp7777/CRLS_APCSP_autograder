@@ -1706,6 +1706,47 @@ def docs_feedback_research_yourself():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
+@app.route('/docs/search_sort')
+def docs_feedback_search_sort():
+    from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
+
+    user = {'username': 'CRLS Scratch Scholar'}
+    tests = list()
+    score_info = {'score': 0, 'max_score': 14, 'manually_scored': 86, 'finished_scoring': True}
+
+    link = request.args['link']
+    text = get_text(link)
+
+    print(text)
+    test1a = keyword_and_length('1a. Good algorithm?', [r'[a-zA-Z]+'], text,
+                                search_string=r'1a\. .+? tabledata (.+) 2a\.', min_length=10, points=1)
+    test2a = keyword_and_length('2a. Efficiency of merge vs. bubble, small sets??', [r'[a-zA-Z]+'], text,
+                                search_string=r'2a\. .+? tabledata (.+) 2b\.', min_length=7, points=1)
+    test2b = keyword_and_length('2b. Efficiency of merge vs. bubble, large sets??', [r'[a-zA-Z]+'], text,
+                                search_string=r'2b\. .+? tabledata (.+) 3a\.', min_length=7, points=1)
+    test3a = exact_answer('3a. merge always faster?',
+                          [r'3a\. .+? tabledata \s* yes \s*  3b\.'], text, points=1)
+    test3b = keyword_and_length('3b. Explain 3a', [r'[a-zA-Z]+'], text,
+                                search_string=r'3b\. .+? tabledata (.+) 3c\.', min_length=7, points=1)
+    test3c = exact_answer('3c. Before binary search must?',
+                          [r'3a\. .+? tabledata \s* sort \s*  3b\.'], text, points=3)
+    test3d = exact_answer('3d. Must sort for linear search?',
+                          [r'3a\. .+? tabledata \s* no \s*  3b\.'], text, points=3)
+    test4a = keyword_and_length('4a. Put numbers on it', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+) 5a\.', min_length=12, points=1)
+    test5a = keyword_and_length('5a. Why sort?', [r'[a-zA-Z]+'], text,
+                                search_string=r'5a\. .+? tabledata (.+) 6a\.', min_length=10, points=1)
+    test6a = keyword_and_length('6a. Example of time want to sort?', [r'[a-zA-Z]+'], text,
+                                search_string=r'6a\. .+? tabledata (.+) $\.', min_length=10, points=1)
+
+    tests.extend([test1a, test2a, test2b, test3a, test3b, test3c, test3d, test4a, test5a, test6a])
+
+    for test in tests:
+        if test['pass']:
+            score_info['score'] += test['points']
+    return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
+
+
 @app.route('/docs/two_factor_authentication')
 def docs_feedback_two_factor_authentication():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
