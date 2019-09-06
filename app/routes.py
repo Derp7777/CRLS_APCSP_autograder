@@ -199,7 +199,7 @@ def docs_feedback_binary_practice_v4():
     test3h = exact_answer('question 3h', [r'3h. .+? tabledata \s* 0*? 101 .+ tabledata \s* 5 .+? 3b'], text, points=2)
     test3i = exact_answer('question 3i', [r'3i. .+? tabledata \s* 0*? 1\s* 0001.+ tabledata \s* 17'], text, points=2)
     test3j = exact_answer('question 3j', [r'3j. .+? tabledata \s* 0*? 11\s*1111 .+ tabledata \s* 63'], text, points=2)
-    test3k = exact_answer('question 3k', [r'3k. .+? tabledata \s* 0*? 100 \s* 0000 .+ tabledata \s* 128'], text, points=2)
+    test3k = exact_answer('question 3k', [r'3k. .+? tabledata \s* 0*? 100 \s* 0000 .+ tabledata \s* 64'], text, points=2)
     test3l = exact_answer('question 3l', [r'3l. .+? tabledata \s* 0*? 111 \s* 1111 .+ tabledata \s* 127'], text, points=2)
     test3m = exact_answer('question 3m', [r'3m. .+? tabledata \s* 0*? 1 \s* 0000 \s* 0000.+ tabledata \s* 256'],
                           text, points=2)
