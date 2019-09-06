@@ -998,6 +998,45 @@ def is_parallelogram(p_coordinates):
     else:
         return False
 
+
+def is_pentagon(p_coordinates):
+    """
+    tests to see if 4 points is square.  See algorithm:
+    https://www.geeksforgeeks.org/check-whether-four-points-make-parallelogram/
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+    if len(p_coordinates) != 5:
+        return False
+ #   else:
+ #       return True
+    d12 = distance(p_coordinates[0], p_coordinates[1])
+
+    tol = 0.03 * d12
+    matches = {}
+    print("pentagon go tol" + str(tol))
+    for i, point1 in enumerate(p_coordinates):
+        for j, point2 in enumerate(p_coordinates):
+            if j <= i:
+                continue
+            distance_p1_p2 = distance(point1, point2)
+            key = round(distance_p1_p2, 2)
+            found = False
+            for key2 in matches.keys():
+                print("key keys2 {} {}".format(key, key2))
+                if abs(float(key) - float(key2)) < tol:
+                    matches[key2] += 1
+                    found = True
+                    break
+            if found is False:
+                matches[key] = 1
+    print("matches here")
+    print(matches)
+    for key in matches:
+        if matches[key] != 5:
+            return False
+    return True
+
 def procedure_exists(p_name, p_scripts):
     """
     Tests to see if procedure with X name and certain variables exists
