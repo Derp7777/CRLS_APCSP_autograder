@@ -187,7 +187,7 @@ def docs_feedback_binary_practice_v4():
     test2f = exact_answer('question 2f',
                           [r'2f. .+? tabledata \s* 1000 \s 0000 .+? tabledata \s* 128 .+? conversion \s practice'],
                           text, points=2)
-    test3a = exact_answer('question 3a', [r'3a. .+? tabledata \s* 100 .+ tabledata \s* 5 .+? 3h'], text, points=2)
+    test3a = exact_answer('question 3a', [r'3a. .+? tabledata \s* 100 .+ tabledata \s* 4 .+? 3h'], text, points=2)
     test3b = exact_answer('question 3b', [r'3b. .+? tabledata \s* 111 .+ tabledata \s* 7 .+? 3i'], text, points=2)
     test3c = exact_answer('question 3c', [r'3c. .+? tabledata \s* 1101 .+ tabledata \s* 13 .+? 3j'], text, points=2)
     test3d = exact_answer('question 3d', [r'3d. .+? tabledata \s* 0011\s1111 .+ tabledata \s* 63 .+? 3k'],
