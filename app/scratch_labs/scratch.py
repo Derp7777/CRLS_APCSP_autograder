@@ -950,6 +950,54 @@ def is_square(p_coordinates):
             return False
 
 
+def midpoint(p1, p2):
+    """
+        Given 2 points p1 and p2, calculate distance
+        :param p1: list like [0,0]
+        :param p2: list like [0,150]
+        :return: midpoint (list like [0,75]
+        """
+    p_midpoint = [(p1[0] + p2[0]) / 2.0, (p1[1] + p2[1])]
+    return p_midpoint
+
+
+def is_parallelogram(p_coordinates):
+    """
+    tests to see if 4 points is square.  See algorithm:
+    https://www.geeksforgeeks.org/check-whether-four-points-make-parallelogram/
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+
+    if len(p_coordinates) != 4:
+        return False
+
+    midpoint12 = midpoint(p_coordinates[0], p_coordinates[1])
+    midpoint13 = midpoint(p_coordinates[0], p_coordinates[2])
+    midpoint14 = midpoint(p_coordinates[0], p_coordinates[3])
+    midpoint23 = midpoint(p_coordinates[1], p_coordinates[2])
+    midpoint24 = midpoint(p_coordinates[1], p_coordinates[3])
+    midpoint34 = midpoint(p_coordinates[2], p_coordinates[3])
+
+    midpoints = [midpoint12,  midpoint13, midpoint14, midpoint23, midpoint24, midpoint34 ]
+
+    tol = 0.1
+    match = 0
+    print("midpoints")
+    print(midpoints)
+    for i, midpoint1 in enumerate(midpoints):
+        for j, midpoint2 in enumerate(midpoints):
+            if i == j:
+                continue
+            if distance(midpoint1, midpoint2) < tol:
+                match += 1
+                print("midpoint 1 {} midpoint 2 {} i, j {} {}".format(midpoint1, midpoint2, i, j))
+    print("parallelogra matches " + str(match))
+    if match == 2:
+        return True
+    else:
+        return False
+
 def procedure_exists(p_name, p_scripts):
     """
     Tests to see if procedure with X name and certain variables exists
