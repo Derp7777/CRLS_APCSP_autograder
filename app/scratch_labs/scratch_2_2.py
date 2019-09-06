@@ -871,7 +871,7 @@ def do_sprite(p_sprite, moves, success):
             elif move == 'control_repeat':
                 times = int(moves[i + 1])
                 for _ in range(times):
-                    print(f"ooo repeat time {_}")
+                    print("ooo repeat time {_}")
                     ret_val = do_sprite(p_sprite, moves[2], success)
                     if ret_val is False:
                         success = False

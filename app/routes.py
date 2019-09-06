@@ -1865,7 +1865,7 @@ def docs_feedback_visualization_worksheet():
 
 @app.route('/scratch/scratch_feedback_13')
 def scratch_feedback_13():
-    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks
+    from app.scratch_labs.scratch import scratch_filename_test, unzip_sb3, read_json_file, find_help, arrange_blocks_v2
     from app.scratch_labs.scratch_1_3 import press_zero, press_one, press_two, press_four, press_five
 
     user = {'username': 'CRLS Scratch Scholar'}
@@ -1882,7 +1882,7 @@ def scratch_feedback_13():
     else:
         unzip_sb3(filename)
         json_data = read_json_file()
-        scripts = arrange_blocks(json_data)
+        scripts = arrange_blocks_v2(json_data)
         test_zero = press_zero(scripts, 10)
         tests.append(test_zero)
         if test_zero['pass'] is False:

@@ -1,16 +1,14 @@
-def press_zero(p_json_data, p_points):
+def press_zero(p_scripts, p_points):
     """
-
-    :param p_json_data: json data from file, which is the code of the scratch file. (dict)
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
     :param p_points: Number of points this test is worth (int)
     :return: The test dictionary
     """
     from app.scratch_labs.scratch import match_string
-    import re
 
     p_test = {"name": "Checking that there is a script that has 'when 0 key is pressed' along with a "
                       "pen down, goto 0 0, clear, and point 90. (" + str(p_points) + " points)<br>",
-              "pass": True,
+              "pass": False,
               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
                               "We found the strings in the code!<br>",
               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
@@ -18,62 +16,106 @@ def press_zero(p_json_data, p_points):
                               "Be sure that there is only one 'when 0 key is pressed'<br>",
               "points": 0
               }
-    zero_pen_down = \
-        r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-        r".+" \
-        r"{'opcode':\s+'pen_penDown',\s+'inputs':\s+{},\s+'fields':\s+{}}"
-
-    zero_goto_zero_zero = \
-        r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-        r".+" \
-        r"{'opcode':\s+'motion_gotoxy',\s+'inputs':\s+{'X':\s+\[1,\s+\[4,\s+'0']]," \
-        r"\s+'Y':\s+\[1,\s+\[4,\s+'0']]},\s+'fields':\s+{}}"
-
-    zero_clear = \
-        r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-        r".+" \
-        r"{'opcode':\s+'pen_clear',\s+'inputs':\s+{},\s+'fields':\s+{}}"
-
-    zero_point_right = \
-        r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-        r".+" \
-        r"{'opcode':\s+'motion_pointindirection',\s+" \
-        r"'inputs':\s+{'DIRECTION':\s+\[1,\s+\[8,\s+'90']]},\s+'fields':\s+{}}"
-
-    script_of_interest = []
-    for key in p_json_data:
-        print("Trying this key {} ".format(p_json_data[key]))
-        match_zero = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
-                               r"\s+{'KEY_OPTION':\s+\['0',\s+None]}}", str(p_json_data[key]))
-        if match_zero:
-            script_of_interest = p_json_data[key]
-    if script_of_interest is False:
-        p_test['pass'] = False
-    else:
-        match_zero_pen_down = match_string(zero_pen_down, script_of_interest)
-        if match_zero_pen_down['pass'] is False:
-            p_test['fail_message'] += match_zero_pen_down['fail_message'] + "<br>" +\
-                                      "Could not find Pen down inside when press zero. <br> "
-        match_zero_goto_zero_zero = match_string(zero_goto_zero_zero, script_of_interest)
-        print("asdfasdf asdf asdf asdf ")
-        print(match_zero_goto_zero_zero)
-        if match_zero_goto_zero_zero['pass'] is False:
-            p_test['fail_message'] += match_zero_goto_zero_zero['fail_message'] + "<br>" + \
-                                      "Could not find go to zero zero inside when press zero.<br> "
-        match_zero_clear = match_string(zero_clear, script_of_interest)
-        if match_zero_clear['pass'] is False:
-            p_test['fail_message'] += match_zero_clear['fail_message'] + "<br>" +\
-                                      "Could not find erase all inside when press zero. <br> "
-        match_zero_point_right = match_string(zero_point_right, script_of_interest)
-        if match_zero_point_right['pass'] is False:
-            p_test['fail_message'] += match_zero_point_right['fail_message'] + "<br>" +\
-                                      "Could not find point 90 degrees (point to right) inside when press zero.<br> "
-        if match_zero_pen_down['pass'] and match_zero_goto_zero_zero['pass'] and match_zero_clear['pass'] and \
-                match_zero_point_right['pass']:
-            p_test['points'] += p_points
-        else:
-            p_test['pass'] = False
+    print("aaa asdfasdf {} ".format(p_scripts))
+    test_pendown = match_string(r"\['event_whenkeypressed', \s* '0'] .+ 'pen_penDown'", p_scripts)
+    if test_pendown['pass'] is False:
+        p_test['fail_message'] += "Did not find a when 0 pressed followed by a pen erase all.<br>"
+    test_clear = match_string(r"\['event_whenkeypressed', \s* '0'] .+ 'pen_clear'", p_scripts)
+    if test_clear['pass'] is False:
+        p_test['fail_message'] += "Did not find a when 0 pressed followed by an erase all.<br>"
+    test_point = match_string(r"\['event_whenkeypressed', \s* '0'] .+ \['motion_pointindirection', \s '90'],",
+                              p_scripts)
+    if test_point['pass'] is False:
+        p_test['fail_message'] += "Did not find a when 0 pressed followed by a point in direction 90.<br>"
+    test_goto = match_string(r"\['event_whenkeypressed', \s* '0'] .+ \['motion_gotoxy', \s '0', \s '0'],",
+                             p_scripts)
+    if test_goto['pass'] is False:
+        p_test['fail_message'] += "Did not find a when 0 pressed followed by goto 0 0 .<br>"
+    if test_pendown['pass'] and test_clear['pass'] and test_point['pass'] and test_goto['pass']:
+        p_test['pass'] = True
+        p_test['points'] += p_points
     return p_test
+
+
+
+#
+# def press_zero(p_json_data, p_points):
+#     """
+#
+#     :param p_json_data: json data from file, which is the code of the scratch file. (dict)
+#     :param p_points: Number of points this test is worth (int)
+#     :return: The test dictionary
+#     """
+#     from app.scratch_labs.scratch import match_string
+#     import re
+#
+#     p_test = {"name": "Checking that there is a script that has 'when 0 key is pressed' along with a "
+#                       "pen down, goto 0 0, clear, and point 90. (" + str(p_points) + " points)<br>",
+#               "pass": True,
+#               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+#                               "We found the strings in the code!<br>",
+#               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+#                               "Code does not find string we were looking for.<br>"
+#                               "Be sure that there is only one 'when 0 key is pressed'<br>",
+#               "points": 0
+#               }
+#     zero_pen_down = \
+#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
+#         r".+" \
+#         r"{'opcode':\s+'pen_penDown',\s+'inputs':\s+{},\s+'fields':\s+{}}"
+#
+#     zero_goto_zero_zero = \
+#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
+#         r".+" \
+#         r"{'opcode':\s+'motion_gotoxy',\s+'inputs':\s+{'X':\s+\[1,\s+\[4,\s+'0']]," \
+#         r"\s+'Y':\s+\[1,\s+\[4,\s+'0']]},\s+'fields':\s+{}}"
+#
+#     zero_clear = \
+#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
+#         r".+" \
+#         r"{'opcode':\s+'pen_clear',\s+'inputs':\s+{},\s+'fields':\s+{}}"
+#
+#     zero_point_right = \
+#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
+#         r".+" \
+#         r"{'opcode':\s+'motion_pointindirection',\s+" \
+#         r"'inputs':\s+{'DIRECTION':\s+\[1,\s+\[8,\s+'90']]},\s+'fields':\s+{}}"
+#
+#     script_of_interest = []
+#     for key in p_json_data:
+#         print("Trying this key {} ".format(p_json_data[key]))
+#         p_test['fail_message'] += "Trying this key {} ".format(p_json_data[key])
+#         match_zero = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
+#                                r"\s+{'KEY_OPTION':\s+\['0',\s+None]}}", str(p_json_data[key]))
+#         if match_zero:
+#             script_of_interest = p_json_data[key]
+#     if script_of_interest is False:
+#         p_test['pass'] = False
+#     else:
+#         match_zero_pen_down = match_string(zero_pen_down, script_of_interest)
+#         if match_zero_pen_down['pass'] is False:
+#             p_test['fail_message'] += match_zero_pen_down['fail_message'] + "<br>" +\
+#                                       "Could not find Pen down inside when press zero. <br> "
+#         match_zero_goto_zero_zero = match_string(zero_goto_zero_zero, script_of_interest)
+#         print("asdfasdf asdf asdf asdf ")
+#         print(match_zero_goto_zero_zero)
+#         if match_zero_goto_zero_zero['pass'] is False:
+#             p_test['fail_message'] += match_zero_goto_zero_zero['fail_message'] + "<br>" + \
+#                                       "Could not find go to zero zero inside when press zero.<br> "
+#         match_zero_clear = match_string(zero_clear, script_of_interest)
+#         if match_zero_clear['pass'] is False:
+#             p_test['fail_message'] += match_zero_clear['fail_message'] + "<br>" +\
+#                                       "Could not find erase all inside when press zero. <br> "
+#         match_zero_point_right = match_string(zero_point_right, script_of_interest)
+#         if match_zero_point_right['pass'] is False:
+#             p_test['fail_message'] += match_zero_point_right['fail_message'] + "<br>" +\
+#                                       "Could not find point 90 degrees (point to right) inside when press zero.<br> "
+#         if match_zero_pen_down['pass'] and match_zero_goto_zero_zero['pass'] and match_zero_clear['pass'] and \
+#                 match_zero_point_right['pass']:
+#             p_test['points'] += p_points
+#         else:
+#             p_test['pass'] = False
+#     return p_test
 
 
 def press_one(p_json_data, p_points):
