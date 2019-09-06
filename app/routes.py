@@ -687,7 +687,7 @@ def docs_feedback_hardware_esd_formfactors_cards():
     link = request.args['link']
     text = get_text(link)
     print(text)
-    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s*  electr .+ static .+ discharg .+ 1b'], text, points=5)
+    test1a = exact_answer('question 1a', [r'1a .+? tabledata \s* .+? electr .+ static .* discharg .+ 1b'], text, points=5)
     test1b = keyword_and_length('question 1b', [r'[a-zA-Z]+'], text,
                                 search_string=r'1b. .+? tabledata (.+) 1c.', min_length=7, points=1)
     test1c1 = exact_answer('question 1c-1', [r'1c. .+? tabledata .+ touch .+ side .+ 2.'], text, points=4)

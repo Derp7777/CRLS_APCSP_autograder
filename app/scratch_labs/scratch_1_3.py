@@ -42,11 +42,11 @@ def press_zero(p_json_data, p_points):
 
     script_of_interest = []
     for key in p_json_data:
+        print("Trying this key {} ".format(p_json_data[key]))
         match_zero = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
                                r"\s+{'KEY_OPTION':\s+\['0',\s+None]}}", str(p_json_data[key]))
         if match_zero:
             script_of_interest = p_json_data[key]
-
     if script_of_interest is False:
         p_test['pass'] = False
     else:
@@ -55,6 +55,8 @@ def press_zero(p_json_data, p_points):
             p_test['fail_message'] += match_zero_pen_down['fail_message'] + "<br>" +\
                                       "Could not find Pen down inside when press zero. <br> "
         match_zero_goto_zero_zero = match_string(zero_goto_zero_zero, script_of_interest)
+        print("asdfasdf asdf asdf asdf ")
+        print(match_zero_goto_zero_zero)
         if match_zero_goto_zero_zero['pass'] is False:
             p_test['fail_message'] += match_zero_goto_zero_zero['fail_message'] + "<br>" + \
                                       "Could not find go to zero zero inside when press zero.<br> "
