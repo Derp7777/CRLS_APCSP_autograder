@@ -932,6 +932,7 @@ def is_square(p_coordinates):
     d24 = distance(p_coordinates[1], p_coordinates[3])
     d34 = distance(p_coordinates[2], p_coordinates[3])
     tol = 0.01 * d12
+    print("here are the tolerances in is_square {} {} {} {} {} {}".format(d12, d13, d14, d23, d24, d34))
     if abs(d12 - d13) < tol:   # distance to 4 is the long one
         if abs(d14 - d23) < tol:
             return True

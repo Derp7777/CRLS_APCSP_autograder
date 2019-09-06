@@ -37,265 +37,229 @@ def press_zero(p_scripts, p_points):
     return p_test
 
 
+def press_one(p_scripts, p_points):
+    """
+    :param p_scripts: json data from file, which is the code of the scratch file. (dict)
+    :param p_points: Number of points this test is worth (int)
+    :return: The test dictionary
+    """
+    from app.scratch_labs.scratch import match_string, unique_coordinates, is_square
+    from app.scratch_labs.scratch_2_2 import brickLayer, do_sprite
 
+    p_test = {"name": "Checking that there is a script that has 'when 1 key is pressed' that draws a square"
+                      " (" + str(p_points) + " points)<br>",
+              "pass": False,
+              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
+                              "There is a script that has 'when 1 key is pressed' that draws a "
+                              "square.<br>",
+              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
+                              "There is not a script that has 'when 1 key is pressed' that draws a "
+                              "square<br>",
+              "points": 0
+              }
+    #test_repeat = match_string(r"'control_repeat',\s'4'", p_scripts)
+    test_two = match_string(r"'event_whenkeypressed',\s'1'", p_scripts)
+    sprite = brickLayer(0, 0, 0, pendown=False)
+    if test_two['pass'] is False:
+        p_test['fail_message'] += "Did not find a 'when key 1 is pressed' in the code .<br>"
+    #if test_repeat['pass'] is False:
+    #    p_test['fail_message'] += "Did not find a repeat block that repeats the expected number of times.<br>"
+    move_success = False
+    if test_two['pass']:
+        for key in p_scripts:
+            script = p_scripts[key]
+            if len(script) > 1:
+                if script[0] == ['event_whenkeypressed', '1']:
+                    move_success = do_sprite(sprite, script, True)
+    coords = unique_coordinates(sprite.move_history)
+    if len(coords) != 4:
+        p_test['fail_message'] += "After pressing 1, sprite should land on 4 unique coordinates, but does not.<br>"
+    square = is_square(coords)
+    if square is False:
+        p_test['fail_message'] += "Failed test for square <br>.<br>"
+    if test_two['pass'] and square and move_success:
+        p_test['pass'] = True
+        p_test['points'] += p_points
+    return p_test
+
+# def press_one(p_json_data, p_points):
 #
-# def press_zero(p_json_data, p_points):
-#     """
-#
-#     :param p_json_data: json data from file, which is the code of the scratch file. (dict)
-#     :param p_points: Number of points this test is worth (int)
-#     :return: The test dictionary
-#     """
-#     from app.scratch_labs.scratch import match_string
+#     from app.scratch_labs.scratch import extract_move_steps, match_string
 #     import re
 #
-#     p_test = {"name": "Checking that there is a script that has 'when 0 key is pressed' along with a "
-#                       "pen down, goto 0 0, clear, and point 90. (" + str(p_points) + " points)<br>",
+#     p_test = {"name": "Checking that there is a script that has 'when 1 key is pressed' that draws a square. (" +
+#                       str(p_points) + " points)<br>",
 #               "pass": True,
 #               "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
-#                               "We found the strings in the code!<br>",
+#                               "Pressing '1' draws a square!!<br>",
 #               "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-#                               "Code does not find string we were looking for.<br>"
-#                               "Be sure that there is only one 'when 0 key is pressed'<br>",
+#                               "Code does not match bank of correct answers.  Possible problems:<br>"
+#                               "- Code has extra things (only use move and turn, and no more than required). <br>"
+#                               "- Code is uneven (you should end up where you started, pointing in the same direction)."
+#                               "<br> - You did a repeat, but did it a less-than ideal number of times."
+#                               "<br> - You do not have any 'when 1 key is pressed'. "
+#                               "<br> - You have more than one 'when 1 key is pressed'. <br>",
 #               "points": 0
 #               }
-#     zero_pen_down = \
-#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-#         r".+" \
-#         r"{'opcode':\s+'pen_penDown',\s+'inputs':\s+{},\s+'fields':\s+{}}"
 #
-#     zero_goto_zero_zero = \
-#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-#         r".+" \
-#         r"{'opcode':\s+'motion_gotoxy',\s+'inputs':\s+{'X':\s+\[1,\s+\[4,\s+'0']]," \
-#         r"\s+'Y':\s+\[1,\s+\[4,\s+'0']]},\s+'fields':\s+{}}"
+#     # Get move steps
+#     move_steps = 0
+#     for key in p_json_data:
+#         match_one = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
+#                               r"\s+{'KEY_OPTION':\s+\['1',\s+None]}}", str(p_json_data[key]))
+#         if match_one:
+#             matches_move = extract_move_steps(p_json_data[key])
+#             if matches_move:
+#                 move_steps = str(matches_move[0])
+#             else:
+#                 p_test['pass'] = False
+#                 return p_test
+#     if move_steps == 0:
+#         p_test['pass'] = False
+#         return p_test
 #
-#     zero_clear = \
-#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-#         r".+" \
-#         r"{'opcode':\s+'pen_clear',\s+'inputs':\s+{},\s+'fields':\s+{}}"
+#     solution_1 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+"\
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" +\
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}}]"
 #
-#     zero_point_right = \
-#         r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+{'KEY_OPTION':\s+\['0',\s+None\]}}" \
-#         r".+" \
-#         r"{'opcode':\s+'motion_pointindirection',\s+" \
-#         r"'inputs':\s+{'DIRECTION':\s+\[1,\s+\[8,\s+'90']]},\s+'fields':\s+{}}"
+#     solution_2 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+"\
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" +\
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}}]"
+#
+#     solution_3 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" + \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                               r"'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}}]"
+#
+#     solution_4 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+"\
+#                               \
+#                               r"'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" + \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+"\
+#                               \
+#                               r"'fields':\s+{}},\s+" \
+#                               r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
+#                  move_steps + r"']]},\s+'fields':\s+{}}]"
+#
+#     solution_5 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
+#                  r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
+#                  r"\[{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
+#                  r"']]}," \
+#                  r"\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}}]]},\s+" \
+#                  r"'fields':\s+{}}]"
+#
+#     solution_6 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
+#                  r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
+#                  r"\[{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
+#                  r"']]}," \
+#                  r"\s+'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}}]]},\s+" \
+#                  r"'fields':\s+{}}]"
+#
+#     solution_7 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
+#                  r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
+#                  r"\[{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
+#                  r"']]}," \
+#                  r"\s+'fields':\s+{}}]]},\s+" \
+#                  r"'fields':\s+{}}]"
+#
+#     solution_8 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
+#                  r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
+#                  r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
+#                  r"\[{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
+#                  r"'fields':\s+{}},\s+" \
+#                  r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
+#                  r"']]}," \
+#                  r"\s+'fields':\s+{}}]]},\s+" \
+#                  r"'fields':\s+{}}]"
 #
 #     script_of_interest = []
 #     for key in p_json_data:
-#         print("Trying this key {} ".format(p_json_data[key]))
-#         p_test['fail_message'] += "Trying this key {} ".format(p_json_data[key])
 #         match_zero = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
-#                                r"\s+{'KEY_OPTION':\s+\['0',\s+None]}}", str(p_json_data[key]))
+#                                r"\s+{'KEY_OPTION':\s+\['1',\s+None]}}", str(p_json_data[key]))
 #         if match_zero:
 #             script_of_interest = p_json_data[key]
 #     if script_of_interest is False:
 #         p_test['pass'] = False
 #     else:
-#         match_zero_pen_down = match_string(zero_pen_down, script_of_interest)
-#         if match_zero_pen_down['pass'] is False:
-#             p_test['fail_message'] += match_zero_pen_down['fail_message'] + "<br>" +\
-#                                       "Could not find Pen down inside when press zero. <br> "
-#         match_zero_goto_zero_zero = match_string(zero_goto_zero_zero, script_of_interest)
-#         print("asdfasdf asdf asdf asdf ")
-#         print(match_zero_goto_zero_zero)
-#         if match_zero_goto_zero_zero['pass'] is False:
-#             p_test['fail_message'] += match_zero_goto_zero_zero['fail_message'] + "<br>" + \
-#                                       "Could not find go to zero zero inside when press zero.<br> "
-#         match_zero_clear = match_string(zero_clear, script_of_interest)
-#         if match_zero_clear['pass'] is False:
-#             p_test['fail_message'] += match_zero_clear['fail_message'] + "<br>" +\
-#                                       "Could not find erase all inside when press zero. <br> "
-#         match_zero_point_right = match_string(zero_point_right, script_of_interest)
-#         if match_zero_point_right['pass'] is False:
-#             p_test['fail_message'] += match_zero_point_right['fail_message'] + "<br>" +\
-#                                       "Could not find point 90 degrees (point to right) inside when press zero.<br> "
-#         if match_zero_pen_down['pass'] and match_zero_goto_zero_zero['pass'] and match_zero_clear['pass'] and \
-#                 match_zero_point_right['pass']:
+#         match_soln_one = match_string(solution_1, script_of_interest)
+#         match_soln_two = match_string(solution_2, script_of_interest)
+#         match_soln_three = match_string(solution_3, script_of_interest)
+#         match_soln_four = match_string(solution_4, script_of_interest)
+#         match_soln_five = match_string(solution_5, script_of_interest)
+#         match_soln_six = match_string(solution_6, script_of_interest)
+#         match_soln_seven = match_string(solution_7, script_of_interest)
+#         match_soln_eight = match_string(solution_8, script_of_interest)
+#         if match_soln_one['pass'] or match_soln_two['pass'] or match_soln_three['pass'] or match_soln_four['pass']\
+#                 or match_soln_five['pass'] or match_soln_six['pass'] or match_soln_seven['pass']  \
+#                 or match_soln_eight['pass']:
 #             p_test['points'] += p_points
 #         else:
 #             p_test['pass'] = False
 #     return p_test
-
-
-def press_one(p_json_data, p_points):
-
-    from app.scratch_labs.scratch import extract_move_steps, match_string
-    import re
-
-    p_test = {"name": "Checking that there is a script that has 'when 1 key is pressed' that draws a square. (" +
-                      str(p_points) + " points)<br>",
-              "pass": True,
-              "pass_message": "<h5 style=\"color:green;\">Pass!</h5>  "
-                              "Pressing '1' draws a square!!<br>",
-              "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
-                              "Code does not match bank of correct answers.  Possible problems:<br>"
-                              "- Code has extra things (only use move and turn, and no more than required). <br>"
-                              "- Code is uneven (you should end up where you started, pointing in the same direction)."
-                              "<br> - You did a repeat, but did it a less-than ideal number of times."
-                              "<br> - You do not have any 'when 1 key is pressed'. "
-                              "<br> - You have more than one 'when 1 key is pressed'. <br>",
-              "points": 0
-              }
-
-    # Get move steps
-    move_steps = 0
-    for key in p_json_data:
-        match_one = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
-                              r"\s+{'KEY_OPTION':\s+\['1',\s+None]}}", str(p_json_data[key]))
-        if match_one:
-            matches_move = extract_move_steps(p_json_data[key])
-            if matches_move:
-                move_steps = str(matches_move[0])
-            else:
-                p_test['pass'] = False
-                return p_test
-    if move_steps == 0:
-        p_test['pass'] = False
-        return p_test
-
-    solution_1 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+"\
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" +\
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}}]"
-
-    solution_2 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+"\
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" +\
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}}]"
-
-    solution_3 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" + \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                              r"'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}}]"
-
-    solution_4 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+"\
-                              \
-                              r"'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" + \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+"\
-                              \
-                              r"'fields':\s+{}},\s+" \
-                              r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + \
-                 move_steps + r"']]},\s+'fields':\s+{}}]"
-
-    solution_5 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
-                 r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
-                 r"\[{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
-                 r"']]}," \
-                 r"\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}}]]},\s+" \
-                 r"'fields':\s+{}}]"
-
-    solution_6 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
-                 r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
-                 r"\[{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
-                 r"']]}," \
-                 r"\s+'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}}]]},\s+" \
-                 r"'fields':\s+{}}]"
-
-    solution_7 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
-                 r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
-                 r"\[{'opcode':\s+'motion_turnright',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
-                 r"']]}," \
-                 r"\s+'fields':\s+{}}]]},\s+" \
-                 r"'fields':\s+{}}]"
-
-    solution_8 = r"\[{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':\s+" \
-                 r"{'KEY_OPTION':\s+\['1',\s+None]}},\s+{'opcode':\s+'control_repeat',\s+" \
-                 r"'inputs':\s+{'TIMES':\s+\[1,\s+\[6,\s+'4']],\s+'SUBSTACK':\s+\[2,\s+'.+',\s+" \
-                 r"\[{'opcode':\s+'motion_turnleft',\s+'inputs':\s+{'DEGREES':\s+\[1,\s+\[4,\s+'90']]},\s+" \
-                 r"'fields':\s+{}},\s+" \
-                 r"{'opcode':\s+'motion_movesteps',\s+'inputs':\s+{'STEPS':\s+\[1,\s+\[4,\s+'" + move_steps + \
-                 r"']]}," \
-                 r"\s+'fields':\s+{}}]]},\s+" \
-                 r"'fields':\s+{}}]"
-
-    script_of_interest = []
-    for key in p_json_data:
-        match_zero = re.search(r"{'opcode':\s+'event_whenkeypressed',\s+'inputs':\s+{},\s+'fields':"
-                               r"\s+{'KEY_OPTION':\s+\['1',\s+None]}}", str(p_json_data[key]))
-        if match_zero:
-            script_of_interest = p_json_data[key]
-    if script_of_interest is False:
-        p_test['pass'] = False
-    else:
-        match_soln_one = match_string(solution_1, script_of_interest)
-        match_soln_two = match_string(solution_2, script_of_interest)
-        match_soln_three = match_string(solution_3, script_of_interest)
-        match_soln_four = match_string(solution_4, script_of_interest)
-        match_soln_five = match_string(solution_5, script_of_interest)
-        match_soln_six = match_string(solution_6, script_of_interest)
-        match_soln_seven = match_string(solution_7, script_of_interest)
-        match_soln_eight = match_string(solution_8, script_of_interest)
-        if match_soln_one['pass'] or match_soln_two['pass'] or match_soln_three['pass'] or match_soln_four['pass']\
-                or match_soln_five['pass'] or match_soln_six['pass'] or match_soln_seven['pass']  \
-                or match_soln_eight['pass']:
-            p_test['points'] += p_points
-        else:
-            p_test['pass'] = False
-    return p_test
 
 
 def press_two(p_json_data, p_points):
