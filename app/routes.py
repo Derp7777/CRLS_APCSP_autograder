@@ -155,8 +155,8 @@ def docs_feedback_big_data_worksheet():
     return render_template('feedback.html', user=user, tests=tests, filename=link, score_info=score_info)
 
 
-@app.route('/docs/binary_practice')
-def docs_feedback_binary_practice():
+@app.route('/docs/binary_practice_v4')
+def docs_feedback_binary_practice_v4():
     from app.docs_labs.docs import get_text, exact_answer, keyword_and_length
 
     user = {'username': 'CRLS Scratch Scholar'}
