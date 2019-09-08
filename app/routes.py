@@ -704,7 +704,7 @@ def docs_feedback_hardware_esd_formfactors_cards():
                                 search_string=r'4a. .+? tabledata (.+) 4b', min_length=7, points=1)
     test4b = exact_answer('question 4b', [r'4b. .+? tabledata .+ (1|16) .+ 4c'], text, points=5)
     test4c = keyword_and_length('question 4c', [r'[a-zA-Z]+'], text,
-                                search_string=r'4c. .+? tabledata (.+) How', min_length=15, points=1)
+                                search_string=r'4c. .+? tabledata (.+) how', min_length=15, points=1)
     tests.extend([test1a, test1b, test1c1, test1c2, test1c3, test2a, test2b, test3a, test3b, test4a, test4b, test4c])
     for test in tests:
         if test['pass']:
