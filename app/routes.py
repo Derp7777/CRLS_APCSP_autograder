@@ -238,7 +238,7 @@ def docs_feedback_black_and_white_pixelation():
     test3a = exact_answer('question 3a', [r'3a. .+? tabledata \s* 255 .+? 255 .+ 3b.'], text, points=5)
     test3b = keyword_and_length('question 3b', [r'[a-z]+'], text,
                                search_string=r'3b.+? tabledata (.+) .+? 3c.', min_length=7, points=1)
-    test3c = exact_answer('question 3c', [r'3c. .+? tabledata \s* 65 .+? 041 .+ 3'], text, points=5)
+    test3c = exact_answer('question 3c', [r'3c. .+? tabledata \s* 65 .*? 041 .+ 3'], text, points=5)
     test3d = keyword_and_length('question 3d', [r'[a-z]+'], text,
                                 search_string=r'3d.+? tabledata (.+) .+? 3e.', min_length=7, points=1)
     test3e = exact_answer('question 3e', [r'3e. .+? tabledata \s* (1|17) .+ 3f.'], text, points=5)
