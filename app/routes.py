@@ -773,37 +773,36 @@ def docs_feedback_hardware_storage():
     text = get_text(link)
 
     print(text)
-    test1c = exact_answer('1c. How much memory?', [r'1c\. .+? tabledata \s* (8|16|32) .*? g .+? 1d\.'], text, points=5)
-    test1d = exact_answer('1d. ECC?', [r'1d\. .+? tabledata \s* n .+? 1e\.'], text, points=5)
-    test1e = exact_answer('1e. Full memory test. How long??', [r'1d\. .+? tabledata \s* [0-9] .+? 1f\.'],
+    test1a = exact_answer('1a. Capacity range of SATA?', [r'1a\. .+? tabledata .*? [0-9]+ .*? g .+? 1b\.',
+                                                          r'1a\. .+? tabledata .*? aaa \s inlineobject .*? 1b\.',],\
+                          text, points=1, required=2)
+    test1b = exact_answer('1b. Cost/TB  of SATA?', [r'1b\. .+? tabledata \s* [0-9]+ .*? g .+? ssd'], text, points=1)
+    test2a = exact_answer('2a. Capacity range of SSD?', [r'2a\. .+? tabledata .*? [0-9]+ .*? g .*? 2b\.',
+                                                         r'2a\. .+? tabledata .*? aaa \s inlineobject .*? 2b\.'],
+                          text, points=1, required=2)
+    test2b = exact_answer('2b. cost/TB of SSD?', [r'2b\. .+? tabledata \s* [0-9]+ .*? g .+? speed'], text, points=1)
+    test3a = exact_answer('3a. SSD reads?', [r'3a\. .+? tabledata \s* [0-9]+ .*?  3b\.',
+                                             r'3a\. .+? tabledata .*? s .*?  3b\.', ], text, points=1, required=2)
+    test3b = exact_answer('3b. SSD writes?', [r'3b\. .+? tabledata .*? [0-9]+ .*? 3c\.',
+                                              r'3b\. .+? tabledata .*? s .*?  3c\.',], text, points=1, required=2)
+    test3c = exact_answer('3c. SATA reads?', [r'3c\. .+? tabledata .*? [0-9]+ .*? 3d\.',
+                                              r'3c\. .+? tabledata .*? s .*? 3d\.'], text, points=1, required=2)
+    test3d = exact_answer('3d. SATA writes?', [r'3d\. .+? tabledata .*? [0-9]+ .*? putting.',
+                                               r'3d\. .+? tabledata .*? s .*? .+? putting.'], text, points=1, required=2)
+    test4a = keyword_and_length('4a. Table', [r'[a-zA-Z]+'], text,
+                                search_string=r'4a\. .+? tabledata (.+) 4b', min_length=15, points=1)
+    test4b = keyword_and_length('4b. Explain', [r'[a-zA-Z]+'], text,
+                                search_string=r'4b\. .+? tabledata (.+) hardware', min_length=15, points=1)
+    test5a = exact_answer('5a. screenshot SATA cable', [r'5a\. .+? tabledata \s aaa \s inlineobject .+? 5b\.'],
                           text, points=1)
-    test1f = exact_answer('1f. Memory speed and type', [r'1f\. .+? tabledata .+? [0-9] .+? 1g\.',
-                                                        r'1f\. .+? tabledata .+? ddr .+? 1g\.'],
-                          text, required=2, points=1)
-    test1g = exact_answer('1g. Full memory test 192G. How long??', [r'1g\. .+? tabledata \s* [0-9] .+? memory'],
+    test5b = exact_answer('5b. screenshot power cable', [r'5b\. .+? tabledata \s aaa \s inlineobject .+? 5c\.'],
                           text, points=1)
-    test2b = exact_answer('2b. removed. Teacher marks?', [r'2b\. .+? tabledata .+? [a-z] .+? 2c\.'], text, points=1)
-    test2c = exact_answer('2c. replaced. Teacher marks?', [r'2c\. .+? tabledata .+? [a-z] .+? how'], text, points=1)
-    test3a = exact_answer('3a. screenshot memory', [r'3a\. .+? tabledata \s aaa \s inlineobject .+? picking'],
-                          text, points=1)
-    test4a = exact_answer('4a. Memory speed and type', [r'4a\. .+? tabledata .+? [0-9] .+? 4b\.',
-                                                        r'4a\. .+? tabledata .+? ddr .+? 4b\.',
-                                                        r'4a\. .+? tabledata .+? ecc .+? 4b\.'],
-                          text, required=3, points=1)
-    test4b = exact_answer('4b. Max memory desktop?', [r'4b\. .+? tabledata \s* [0-9] .*? g .+? pick'], text, points=1)
-    test5a = exact_answer('5a. Memory speed and type', [r'5a\. .+? tabledata .+? [0-9] .+? 5b\.',
-                                                        r'5a\. .+? tabledata .+? ddr .+? 5b\.',
-                                                        r'5a\. .+? tabledata .+? ecc .+? 5b\.'],
-                          text, required=3, points=1)
-    test5b = exact_answer('5b. Max memory server?', [r'5b\. .+? tabledata \s* [0-9] .*? g .+? comparison'],
-                          text, points=1)
-
-    test6a = keyword_and_length('6a. Compare server/desktop memory', [r'[a-zA-Z]+'], text,
-                                search_string=r'6a\. .+? tabledata (.+) laptop', min_length=15, points=1)
-    test7a = keyword_and_length('7a. sodimm', [r'[a-zA-Z]+'], text,
-                                search_string=r'7a\. .+? tabledata (.+) check', min_length=7, points=1)
-    tests.extend([test1c, test1d, test1e, test1f, test1g, test2b, test2c, test3a, test4a, test4b, test5a, test5b,
-                  test6a, test7a])
+    test5c = exact_answer('5c. Teacher checkoff rubric', [r'5c\. .+? tabledata .+? wu .+? 5d\.'],
+                          text, points=5)
+    test5d = exact_answer('5d. Teacher checkoff rubric', [r'5d\. .+? tabledata .+? wu .+? $'],
+                          text, points=5)
+    
+    tests.extend([test1a, test1b, test2a, test2b, test3a, test3b, test3c, test3d, test4a, test4b, test5a, test5b, test5c, test5d,])
     for test in tests:
         if test['pass']:
             score_info['score'] += test['points']
