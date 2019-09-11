@@ -12,7 +12,7 @@ class UploadForm(FlaskForm):
                                        ('4.031', '4.031'),  ('4.036', '4.036'), ('6.011', '6.011'), ('6.021', '6.021'),
                                        ('6.022', '6.022'), ('6.031', '6.031'),
                                        ('6.041', '6.041'), ('6.042', '6.042'), ('7.021', '7.021'), ('7.031', '7.031'),
-                                       ('7.034', '7.034'), ])
+                                       ('7.034', '7.034'), ('7.036', '7.036'), ])
     submit = SubmitField('Submit for autograding')
 
 
@@ -40,6 +40,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('black_and_white_pixelation', 'black_and_white_pixelation'),
                                        ('bytes_and_file_sizes_v3', 'bytes_and_file_sizes_v3'),
                                        ('cybersecurity_and_crime', 'cybersecurity_and_crime'),
+                                       ('databases_1', 'databases_1'),
                                        ('databases_2.002', 'databases_2.002'),
                                        ('databases_3.002', 'databases_3.002'),
                                        ('encoding_color_images', 'encoding_color_images'),
@@ -47,12 +48,16 @@ class UploadDocLinkForm(FlaskForm):
                                        ('encryption_3', 'encryption_3'),
                                        ('encryption_4', 'encryption_4'),
                                        ('hardware_esd_formfactors_cards', 'hardware_esd_formfactors_cards'),
+                                       ('hardware_memory', 'hardware_memory'),
+                                       ('hardware_storage', 'hardware_storage'),
                                        ('hexadecimal_numbers_v3', 'hexadecimal_numbers_v3'),
                                        ('hex_minilab', 'hex_minilab'),
                                        ('internet_2_v2', 'internet_2_v2'),
                                        ('ip_addressing_dns', 'ip_addressing_dns'),
                                        ('lossless_compression', 'lossless_compression'),
                                        ('lossy_compression', 'lossy_compression'),
+                                       ('network_protocols_nmap', 'network_protocols_nmap'),
+                                       ('password_crack', 'password_crack'),
                                        ('privacy_policies', 'privacy_policies'),
                                        ('research_yourself', 'research_yourself'),
                                        ('routers_and_redundancy', 'routers_and_redundancy'),
@@ -64,6 +69,7 @@ class UploadDocLinkForm(FlaskForm):
                                        ('python_2.050', 'python_2.050'),
                                        ('scratch_1.2', 'scratch_1.2'),
                                        ('scratch_2.5_alternate', 'scratch_2.5_alternate'),
+                                       ('search_sort', 'search_sort'),
                                        ('two_factor_authentication', 'two_factor_authentication'),
                                        ('visualization_exploring_trends', 'visualization_exploring_trends'),
                                        ('visualization_worksheet', 'visualization_worksheet'),

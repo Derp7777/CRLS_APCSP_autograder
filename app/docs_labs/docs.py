@@ -148,10 +148,8 @@ def exact_answer(p_label, p_answers, p_text, *, points=0, required=1):
     for answer in p_answers:
         answer = answer.lower()
         p_text = p_text.lower()
-        print("aaa text  {} answer {}".format(answer, p_text))
         if re.search(answer, p_text, re.X | re.M | re.S):
             passed += 1
-    #print("lala passed {} reqd {} ".format(passed, required))
     if passed >= required:
         p_test['pass'] = True
         p_test['points'] += points
@@ -193,7 +191,6 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
 
     final_search_string = ''
     p_text = p_text.lower()
-    # print("search this {} in this {}".format(search_string, p_text))
     if search_string:
         search_obj = re.search(search_string, p_text, re.X | re.M | re.S)
         if search_obj:
@@ -202,13 +199,10 @@ def keyword_and_length(p_label, p_answers, p_text, *, search_string='', min_matc
         final_search_string = search_string
     final_search_string = final_search_string.lower()
     p_test['match'] += final_search_string
-    #print("aaa this is label {} final-search_string {} ".format(p_label, final_search_string))
+    print("final search string is this" + final_search_string + "search is this" + search_string)
     for answer in p_answers:
         answer = answer.lower()
-        # print("bbb answer {} string {}".format(answer, final_search_string))
         if re.search(answer, final_search_string, re.X | re.M | re.S):
-            print("lala found it!" + str(answer))
-
             found_matches += 1
     if found_matches < min_matches:
         p_test['fail_message'] += "Found this many words we were looking for: " + str(found_matches) + "<br>" \

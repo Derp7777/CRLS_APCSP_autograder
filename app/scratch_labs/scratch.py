@@ -16,7 +16,7 @@ def scratch_filename_test(p_filename, p_lab):
                        "pass": True,
                        "pass_message": "<h5 style=\"color:green;\">Pass!</h5> File name looks correct "
                                        "(i.e. something like 2019_luismartinez_" + p_lab +
-                                       ".sb3)",
+                                       ".sb3).  Filename was this:" + p_filename,
                        "fail_message": "<h5 style=\"color:red;\">Fail.</h5> "
                                        "File name of submitted file does not follow required convention. "
                                        " Rename and resubmit.<br>"
@@ -396,7 +396,7 @@ def build_scratch_script(starting_block_id, p_blocks):
     script = []
     while next_block_id is not None:
         current_block = p_blocks[current_block_id]
-        print(f"aaa {current_block_id} opcode {current_block['opcode']}")
+        # print(f"aaa {current_block_id} opcode {current_block['opcode']}")
         if current_block['opcode'] == 'motion_movesteps':
             print("XXX script {}".format(script))
             steps = extract_value(current_block['inputs']['STEPS'], p_blocks)
@@ -656,7 +656,7 @@ def arrange_blocks_v2(p_json):
             blocks = sprite['blocks']
             for block_id in blocks:
                 block = blocks[block_id]
-                print(f"jjj  block_id {block_id} ")
+                # print(f"jjj  block_id {block_id} ")
                 if 'opcode' not in block:
                     continue
                 if block['opcode'] == "control_repeat" or \
@@ -696,16 +696,15 @@ def arrange_blocks_v2(p_json):
                         if parent_block['opcode'] == 'control_repeat' or \
                                 parent_block['opcode'] == 'control_forever':
                             if 'SUBSTACK' in parent_block['inputs']:
-                                print(f"yyy {block_id} this block has a parent with substack. This is a repeat ")
+                                # print(f"yyy {block_id} this block has a parent with substack. This is a repeat ")
                                 if parent_block['inputs']['SUBSTACK'][1] == block_id:
                                     script = build_scratch_script(block_id, blocks)
                                     temp_repeat_commands = []
                                     for item in script:
-                                        print(f"IN A REPEAT STACK item['opcode']" + str(item))
                                         temp_repeat_commands.append(item)
                                     repeat_scripts[block_id] = temp_repeat_commands
                 elif block['parent'] is None:
-                    print(f"yyy {block_id} doing things without parents now.")
+                    # print(f"yyy {block_id} doing things without parents now.")
                     script = build_scratch_script(block_id, blocks)
                     scripts[block_id] = script
     return scripts
@@ -917,6 +916,7 @@ def is_square(p_coordinates):
     d24 = distance(p_coordinates[1], p_coordinates[3])
     d34 = distance(p_coordinates[2], p_coordinates[3])
     tol = 0.01 * d12
+    print("here are the tolerances in is_square {} {} {} {} {} {}".format(d12, d13, d14, d23, d24, d34))
     if abs(d12 - d13) < tol:   # distance to 4 is the long one
         if abs(d14 - d23) < tol:
             return True
@@ -933,6 +933,93 @@ def is_square(p_coordinates):
         else:
             return False
 
+
+def midpoint(p1, p2):
+    """
+        Given 2 points p1 and p2, calculate distance
+        :param p1: list like [0,0]
+        :param p2: list like [0,150]
+        :return: midpoint (list like [0,75]
+        """
+    p_midpoint = [(p1[0] + p2[0]) / 2.0, (p1[1] + p2[1])]
+    return p_midpoint
+
+
+def is_parallelogram(p_coordinates):
+    """
+    tests to see if 4 points is square.  See algorithm:
+    https://www.geeksforgeeks.org/check-whether-four-points-make-parallelogram/
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+
+    if len(p_coordinates) != 4:
+        return False
+
+    midpoint12 = midpoint(p_coordinates[0], p_coordinates[1])
+    midpoint13 = midpoint(p_coordinates[0], p_coordinates[2])
+    midpoint14 = midpoint(p_coordinates[0], p_coordinates[3])
+    midpoint23 = midpoint(p_coordinates[1], p_coordinates[2])
+    midpoint24 = midpoint(p_coordinates[1], p_coordinates[3])
+    midpoint34 = midpoint(p_coordinates[2], p_coordinates[3])
+
+    midpoints = [midpoint12,  midpoint13, midpoint14, midpoint23, midpoint24, midpoint34 ]
+
+    tol = 0.1
+    match = 0
+    print("midpoints")
+    print(midpoints)
+    for i, midpoint1 in enumerate(midpoints):
+        for j, midpoint2 in enumerate(midpoints):
+            if i == j:
+                continue
+            if distance(midpoint1, midpoint2) < tol:
+                match += 1
+                print("midpoint 1 {} midpoint 2 {} i, j {} {}".format(midpoint1, midpoint2, i, j))
+    print("parallelogra matches " + str(match))
+    if match == 2:
+        return True
+    else:
+        return False
+
+
+def is_pentagon(p_coordinates):
+    """
+    tests to see if 4 points is square.  See algorithm:
+    https://www.geeksforgeeks.org/check-whether-four-points-make-parallelogram/
+    :param p_coordinates:
+    :return: True is yes, F if no
+    """
+    if len(p_coordinates) != 5:
+        return False
+ #   else:
+ #       return True
+    d12 = distance(p_coordinates[0], p_coordinates[1])
+
+    tol = 0.03 * d12
+    matches = {}
+    print("pentagon go tol" + str(tol))
+    for i, point1 in enumerate(p_coordinates):
+        for j, point2 in enumerate(p_coordinates):
+            if j <= i:
+                continue
+            distance_p1_p2 = distance(point1, point2)
+            key = round(distance_p1_p2, 2)
+            found = False
+            for key2 in matches.keys():
+                print("key keys2 {} {}".format(key, key2))
+                if abs(float(key) - float(key2)) < tol:
+                    matches[key2] += 1
+                    found = True
+                    break
+            if found is False:
+                matches[key] = 1
+    print("matches here")
+    print(matches)
+    for key in matches:
+        if matches[key] != 5:
+            return False
+    return True
 
 def procedure_exists(p_name, p_scripts):
     """
